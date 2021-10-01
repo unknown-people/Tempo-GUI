@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="TempoWithGUI.MVVM.View.MusicBotView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TempoWithGUI.MVVM.View"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <Grid Height="50">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="400"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Login" FontSize="36" FontFamily="Fonts/#Poppins"
+                       VerticalAlignment="Center" Margin="20, 10, 0, 0"
+                       Foreground="AntiqueWhite"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                <RadioButton Style="{StaticResource BotButtonTheme}" Width="100" Content="Bot" Click="RadioButton_Click"/>
+                <RadioButton Style="{StaticResource BotButtonTheme}" Width="100" Content="User" Click="RadioButton_Click_1"
+                             IsChecked="True"/>
+            </StackPanel>
+        </Grid>
+
+        <Border BorderThickness="0" CornerRadius="20" Background="MediumVioletRed"
+                Height="5" Width="600" Margin="10" HorizontalAlignment="Left"/>
+        <Grid Height="360">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="305">
+                </ColumnDefinition>
+                <ColumnDefinition Width="400">
+                </ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Vertical" Margin="60">
+                <TextBox Style="{DynamicResource ModernTextBoxUsername}" x:Name="UsernameIn"
+                         Margin="0,35,0,0"/>
+                <TextBox Style="{DynamicResource ModernTextBoxPassword}" x:Name="PasswordIn"
+                         Margin="0,30,0,0"/>
+                <Button Content="START" Style="{DynamicResource LoginButtonTheme}"
+                        Height="40" Width="176" Margin="0,35,0,0" Click="Button_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Grid.Column="1"
+                        HorizontalAlignment="Left" Width="401">
+                <TextBlock Text="Token" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="300" Margin="0,0,0,0" x:Name="TokenIn"/>
+                
+                <TextBlock Text="Owner ID" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                <TextBox Style="{DynamicResource ModernTextBoxOther}" Text ="" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="300" Margin="0,0,0,0" x:Name="OwnerIn"/>
+                <Grid Height="95">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="150"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Prefix" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" Grid.Column="0" HorizontalAlignment="Left" Padding="5,0,0,0"
+                         Height="25" Width="100" Margin="0,0,0,0" x:Name="PrefixIn"/>
+                    <TextBlock Text="Image (Path)" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" Grid.Column="2" HorizontalAlignment="Left" Padding="5,0,0,0"
+                         Height="25" Width="150" Margin="0,0,0,0" x:Name="ImageIn"/>
+                </Grid>
+                
+                <TextBlock Text="Dj Role ID" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" x:Name="DjRoleLabel"/>
+                <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="185" Margin="0,0,0,0" x:Name="DjRoleIn"/>
+
+                <Grid Height="180">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="145"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Whitelist" Margin="10,0,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0" x:Name="WhitelistLabel"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxMultiLine}" Grid.Column="0" HorizontalAlignment="Left" Padding="5,0,0,0"
+                         Height="100" Width="130" Margin="0,0,0,0" x:Name="WhitelistIn"/>
+                    <TextBlock Text="Admins" Margin="10,0,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2" x:Name="AdminsLabel"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxMultiLine}" Grid.Column="2" HorizontalAlignment="Left" Padding="15"
+                         Height="100" Width="145" Margin="0,0,0,0" x:Name="AdminsIn"/>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
+</UserControl>
