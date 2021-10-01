@@ -71,6 +71,7 @@ namespace TempoWithGUI.MVVM.View
         }
         public void Start()
         {
+            this.StartBtn.Cursor = Cursors.AppStarting;
             if (UsernameIn.Text != "" && PasswordIn.Text != "")
             {
                 Settings.Default.Username = UsernameIn.Text;
@@ -180,7 +181,8 @@ namespace TempoWithGUI.MVVM.View
             client.Login(Settings.Default.Token);
 
             this.StartBtn.IsEnabled = false;
-            this.StartBtn.Cursor = Cursors.Cross;
+            this.StartBtn.Cursor = Cursors.Hand;
+            this.StatusLight.Fill = Brushes.Green;
             Settings.Default.Save();
             Settings.Default.Reload();
             App.SaveSettings();

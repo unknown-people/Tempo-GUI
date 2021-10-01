@@ -12,9 +12,23 @@
                 <ColumnDefinition Width="400"/>
                 <ColumnDefinition Width="400"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Login" FontSize="36" FontFamily="Fonts/#Poppins"
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Login" FontSize="36" FontFamily="Fonts/#Poppins"
                        VerticalAlignment="Center" Margin="20, 10, 0, 0"
                        Foreground="AntiqueWhite"/>
+                <Canvas Grid.Column="1" HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                    <Ellipse Canvas.Left="0" Canvas.Bottom="0" 
+                             Canvas.Top="0"
+                             Width="12" Height="12" Fill="Red"
+                             x:Name="StatusLight"/>
+                </Canvas>
+            </Grid>
+
             <StackPanel Orientation="Horizontal" Grid.Column="1">
                 <RadioButton Style="{StaticResource BotButtonTheme}" Width="100" Content="Bot" Click="RadioButton_Click"/>
                 <RadioButton Style="{StaticResource BotButtonTheme}" Width="100" Content="User" Click="RadioButton_Click_1"
