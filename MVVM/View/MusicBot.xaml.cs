@@ -59,9 +59,17 @@ namespace TempoWithGUI.MVVM.View
                 this.DjRoleIn.Visibility = Visibility.Collapsed;
                 this.DjRoleLabel.Visibility = Visibility.Collapsed;
             }
+            if (!App.ask_settings)
+            {
+                Start();
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Start();
+        }
+        public void Start()
         {
             if (UsernameIn.Text != "" && PasswordIn.Text != "")
             {
@@ -171,11 +179,12 @@ namespace TempoWithGUI.MVVM.View
             client.OnLeftVoiceChannel += App.Client_OnLeftVoiceChannel;
             client.Login(Settings.Default.Token);
 
+            this.StartBtn.IsEnabled = false;
+            this.StartBtn.Cursor = Cursors.Cross;
             Settings.Default.Save();
             Settings.Default.Reload();
             App.SaveSettings();
         }
-
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
             Settings.Default.isBot = true;

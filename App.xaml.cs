@@ -40,9 +40,10 @@ namespace TempoWithGUI
         public static string programFiles { get; set; }
         public static string botToken { get; set; }
         public static bool isBot { get; set; }
+        public static bool ask_settings { get; set; }
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            bool ask_settings = true;
+            ask_settings = true;
             try
             {
                 if (e.Args[0] == "-na")

@@ -39,6 +39,7 @@ namespace TempoWithGUI
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
+            TrackQueue.currentSong.CancellationTokenSource.Cancel();
             Application.Current.Shutdown();
         }
     }

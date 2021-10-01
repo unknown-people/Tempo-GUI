@@ -36,8 +36,8 @@
                          Margin="0,35,0,0"/>
                 <TextBox Style="{DynamicResource ModernTextBoxPassword}" x:Name="PasswordIn"
                          Margin="0,30,0,0"/>
-                <Button Content="START" Style="{DynamicResource LoginButtonTheme}"
-                        Height="40" Width="176" Margin="0,35,0,0" Click="Button_Click"/>
+                <Button Content="START" Style="{DynamicResource LoginButtonTheme}" x:Name="StartBtn"
+                        Height="40" Width="176" Margin="0,35,0,0" Click="Button_Click" Cursor="Hand"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="1"
                         HorizontalAlignment="Left" Width="401">
