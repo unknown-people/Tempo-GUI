@@ -1,0 +1,892 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\OpusDotNet.opus.win-x64.1.3.1\build\OpusDotNet.opus.win-x64.props" Condition="Exists('packages\OpusDotNet.opus.win-x64.1.3.1\build\OpusDotNet.opus.win-x64.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{20D95309-16FC-4F92-8088-7E6DB97CE46A}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>TempoWithGUI</RootNamespace>
+    <AssemblyName>TempoWithGUI</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>TempoWithGUI.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon-bot-removebg-preview.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.14.0.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>packages\AngleSharp.0.14.0\lib\net461\AngleSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.3.1.9, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>packages\SharpZipLib.1.3.1\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Leaf.xNet, Version=5.2.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Leaf.xNet.5.2.10\lib\net45\Leaf.xNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.WebUtilities, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNetCore.WebUtilities.2.0.2\lib\netstandard2.0\Microsoft.AspNetCore.WebUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.1.1.1\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CognitiveServices.Speech.csharp, Version=1.18.0.28, Culture=neutral, PublicKeyToken=d2e6dcccb609e663, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.CognitiveServices.Speech.1.18.0\lib\net461\Microsoft.CognitiveServices.Speech.csharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.Logging.2.0.2\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.Logging.Abstractions.2.0.2\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.Options.2.0.2\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Extensions.Primitives.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Net.Http.Headers, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Net.Http.Headers.2.0.2\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp, Version=2.0.4666.42387, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCVSharp.2.4.0.1\lib\OpenCvSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.Blob, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCVSharp.2.4.0.1\lib\OpenCvSharp.Blob.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.CPlusPlus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCVSharp.2.4.0.1\lib\OpenCvSharp.CPlusPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.DebuggerVisualizers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCVSharp.2.4.0.1\lib\OpenCvSharp.DebuggerVisualizers.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCVSharp.2.4.0.1\lib\OpenCvSharp.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.Gpu, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCVSharp.2.4.0.1\lib\OpenCvSharp.Gpu.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.MachineLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCVSharp.2.4.0.1\lib\OpenCvSharp.MachineLearning.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.UserInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCVSharp.2.4.0.1\lib\OpenCvSharp.UserInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenQA.Selenium.Winium, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\OpenQA.Selenium.Winium.1.0.0.4\lib\OpenQA.Selenium.Winium.dll</HintPath>
+    </Reference>
+    <Reference Include="PuppeteerSharp, Version=5.1.0.0, Culture=neutral, PublicKeyToken=db12f80f85d8ba23, processorArchitecture=MSIL">
+      <HintPath>packages\PuppeteerSharp.5.1.0\lib\netstandard2.0\PuppeteerSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SpotifyAPI.Web, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\SpotifyAPI.Web.6.2.2\lib\netstandard2.0\SpotifyAPI.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Diagnostics.Process, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Diagnostics.Process.4.3.0\lib\net461\System.Diagnostics.Process.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Text.Encoding.CodePages, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Encoding.CodePages.4.5.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Encodings.Web.4.7.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Json.4.7.2\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.RegularExpressions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.RegularExpressions.4.3.1\lib\net463\System.Text.RegularExpressions.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WebDriver, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Selenium.WebDriver.3.141.0\lib\net45\WebDriver.dll</HintPath>
+    </Reference>
+    <Reference Include="websocket-sharp, Version=1.0.1.0, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <HintPath>packages\WebSocketSharp-netstandard.1.0.1\lib\net45\websocket-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="YoutubeExplode, Version=1.2.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>packages\YoutubeExplodeModified.1.2.0\lib\net461\YoutubeExplode.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Admin.cs" />
+    <Compile Include="Anarchy.Puppeteer\DiscordPuppeteer.cs" />
+    <Compile Include="Anarchy.Puppeteer\DiscordResponse.cs" />
+    <Compile Include="Anarchy\Commands\Command\CommandAttribute.cs" />
+    <Compile Include="Anarchy\Commands\Command\CommandBase.cs" />
+    <Compile Include="Anarchy\Commands\Command\CommandHandler.cs" />
+    <Compile Include="Anarchy\Commands\Command\DiscordCommand.cs" />
+    <Compile Include="Anarchy\Commands\Command\Parameter\CommandParameter.cs" />
+    <Compile Include="Anarchy\Commands\Command\Parameter\ParameterAttribute.cs" />
+    <Compile Include="Anarchy\Commands\SlashCommands\IMentionable.cs" />
+    <Compile Include="Anarchy\Commands\SlashCommands\SlashCommand.cs" />
+    <Compile Include="Anarchy\Commands\SlashCommands\SlashCommandAttribute.cs" />
+    <Compile Include="Anarchy\Commands\SlashCommands\SlashCommandCategoryAttribute.cs" />
+    <Compile Include="Anarchy\Commands\SlashCommands\SlashCommandHandler.cs" />
+    <Compile Include="Anarchy\Commands\SlashCommands\SlashParameterAttribute.cs" />
+    <Compile Include="Anarchy\Commands\SlashCommands\SlashParameterChoiceAttribute.cs" />
+    <Compile Include="Anarchy\Local\Collections\AutoConcurrentDictionary.cs" />
+    <Compile Include="Anarchy\Local\Collections\ConcurrentDictionary.cs" />
+    <Compile Include="Anarchy\Local\Collections\ConcurrentList.cs" />
+    <Compile Include="Anarchy\Local\Controllable\Controllable.cs" />
+    <Compile Include="Anarchy\Local\Controllable\DeepJsonConverter.cs" />
+    <Compile Include="Anarchy\Local\Controllable\Extensions.cs" />
+    <Compile Include="Anarchy\Local\Controllable\JsonExtensions.cs" />
+    <Compile Include="Anarchy\Local\DiscordImage.cs" />
+    <Compile Include="Anarchy\Local\DiscordParameter.cs" />
+    <Compile Include="Anarchy\Local\Proxies\AnarchyProxy.cs" />
+    <Compile Include="Anarchy\Local\Proxies\AnarchyProxyType.cs" />
+    <Compile Include="Anarchy\REST\Billing\BillingAddress.cs" />
+    <Compile Include="Anarchy\REST\Billing\CardPaymentMethod.cs" />
+    <Compile Include="Anarchy\REST\Billing\DiscordPayment.cs" />
+    <Compile Include="Anarchy\REST\Billing\DiscordPaymentFlags.cs" />
+    <Compile Include="Anarchy\REST\Billing\DiscordPaymentStatus.cs" />
+    <Compile Include="Anarchy\REST\Billing\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Billing\PaymentMethod.cs" />
+    <Compile Include="Anarchy\REST\Billing\PaymentMethodType.cs" />
+    <Compile Include="Anarchy\REST\Billing\PayPalPaymentMethod.cs" />
+    <Compile Include="Anarchy\REST\CDN\CDNEndpoint.cs" />
+    <Compile Include="Anarchy\REST\CDN\CDNEndpoints.cs" />
+    <Compile Include="Anarchy\REST\CDN\DiscordCDNImage.cs" />
+    <Compile Include="Anarchy\REST\CDN\DiscordCDNImageFormat.cs" />
+    <Compile Include="Anarchy\REST\Channel\Channel\ChannelType.cs" />
+    <Compile Include="Anarchy\REST\Channel\Channel\CreationProperties.cs" />
+    <Compile Include="Anarchy\REST\Channel\Channel\DiscordChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Channel\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Channel\Channel\IMessageChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Channel\MinimalChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Channel\MinimalTextChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Guild\CreationProperties.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Guild\GuildChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Guild\GuildChannelProperties.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Stage\DiscordStageInstance.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Stage\StageChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Stage\StageDiscoveryItem.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Stage\StagePrivacyLevel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Text\TextChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Text\TextChannelProperties.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Voice\VoiceChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Guild\Voice\VoiceChannelProperties.cs" />
+    <Compile Include="Anarchy\REST\Channel\Private\DM\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Channel\Private\DM\PrivateChannel.cs" />
+    <Compile Include="Anarchy\REST\Channel\Private\Group\DiscordGroup.cs" />
+    <Compile Include="Anarchy\REST\Channel\Private\Group\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Channel\Private\Group\GroupProperties.cs" />
+    <Compile Include="Anarchy\REST\ContextProperties.cs" />
+    <Compile Include="Anarchy\REST\DiscordClient.cs" />
+    <Compile Include="Anarchy\REST\DiscordConfig.cs" />
+    <Compile Include="Anarchy\REST\Discovery\DiscoveryCategory.cs" />
+    <Compile Include="Anarchy\REST\Discovery\DiscoveryGuild.cs" />
+    <Compile Include="Anarchy\REST\Discovery\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Discovery\GuildQueryOptions.cs" />
+    <Compile Include="Anarchy\REST\Discovery\GuildQueryResult.cs" />
+    <Compile Include="Anarchy\REST\Embed\Author.cs" />
+    <Compile Include="Anarchy\REST\Embed\DiscordEmbed.cs" />
+    <Compile Include="Anarchy\REST\Embed\EmbedError.cs" />
+    <Compile Include="Anarchy\REST\Embed\EmbedException.cs" />
+    <Compile Include="Anarchy\REST\Embed\EmbedMaker.cs" />
+    <Compile Include="Anarchy\REST\Embed\Field.cs" />
+    <Compile Include="Anarchy\REST\Embed\Footer.cs" />
+    <Compile Include="Anarchy\REST\Embed\Image.cs" />
+    <Compile Include="Anarchy\REST\Embed\Video.cs" />
+    <Compile Include="Anarchy\REST\Emoji\Extentions.cs" />
+    <Compile Include="Anarchy\REST\Emoji\Models\DiscordEmoji.cs" />
+    <Compile Include="Anarchy\REST\Emoji\Models\EmojiContainer.cs" />
+    <Compile Include="Anarchy\REST\Emoji\Models\EmojiProperties.cs" />
+    <Compile Include="Anarchy\REST\Emoji\Models\PartialEmoji.cs" />
+    <Compile Include="Anarchy\REST\Emoji\Models\UpdatedEventArgs.cs" />
+    <Compile Include="Anarchy\REST\Gifts\DiscordGift.cs" />
+    <Compile Include="Anarchy\REST\Gifts\DiscordNitroGift.cs" />
+    <Compile Include="Anarchy\REST\Gifts\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Gifts\PurchaseOptions.cs" />
+    <Compile Include="Anarchy\REST\Gifts\RedeemableDiscordGift.cs" />
+    <Compile Include="Anarchy\REST\Guild\AuditLog\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Guild\AuditLog\Models\ActionType.cs" />
+    <Compile Include="Anarchy\REST\Guild\AuditLog\Models\Change.cs" />
+    <Compile Include="Anarchy\REST\Guild\AuditLog\Models\Entry.cs" />
+    <Compile Include="Anarchy\REST\Guild\AuditLog\Models\Filters.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\CommunityExtensions.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\Screening\GuildVerificationForm.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\Screening\GuildVerificationFormField.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\Screening\VerificationFormProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\Screening\VerificationFormResponse.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\WelcomeChannel.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\WelcomeChannelProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\WelcomeScreen.cs" />
+    <Compile Include="Anarchy\REST\Guild\Community\WelcomeScreenProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Guild\Guild\BaseGuild.cs" />
+    <Compile Include="Anarchy\REST\Guild\Guild\DiscordGuild.cs" />
+    <Compile Include="Anarchy\REST\Guild\Guild\MinimalGuild.cs" />
+    <Compile Include="Anarchy\REST\Guild\Guild\PartialGuild.cs" />
+    <Compile Include="Anarchy\REST\Guild\Guild\SystemChannelInformation.cs" />
+    <Compile Include="Anarchy\REST\Guild\Member\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Guild\Member\Models\DiscordBan.cs" />
+    <Compile Include="Anarchy\REST\Guild\Member\Models\GuildMember.cs" />
+    <Compile Include="Anarchy\REST\Guild\Member\Models\GuildMemberProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Member\Models\MemberPruneProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Member\Models\PartialGuildMember.cs" />
+    <Compile Include="Anarchy\REST\Guild\Models\DefaultNotifications.cs" />
+    <Compile Include="Anarchy\REST\Guild\Models\PremiumTier.cs" />
+    <Compile Include="Anarchy\REST\Guild\Models\VerificationLevel.cs" />
+    <Compile Include="Anarchy\REST\Guild\Permissions\DiscordPermission.cs" />
+    <Compile Include="Anarchy\REST\Guild\Permissions\DiscordPermissionOverwrite.cs" />
+    <Compile Include="Anarchy\REST\Guild\Permissions\OverwrittenPermissionState.cs" />
+    <Compile Include="Anarchy\REST\Guild\Permissions\PermissionOverwriteType.cs" />
+    <Compile Include="Anarchy\REST\Guild\Permissions\PermissionUtils.cs" />
+    <Compile Include="Anarchy\REST\Guild\Properties\CreationProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Properties\GuildProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Role\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Guild\Role\Models\DiscordRole.cs" />
+    <Compile Include="Anarchy\REST\Guild\Role\Models\MinimalRole.cs" />
+    <Compile Include="Anarchy\REST\Guild\Role\Models\RolePositionUpdate.cs" />
+    <Compile Include="Anarchy\REST\Guild\Role\Models\RoleProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Settings\ChannelSettingsProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Settings\ClientGuildSettings.cs" />
+    <Compile Include="Anarchy\REST\Guild\Settings\ClientNotificationLevel.cs" />
+    <Compile Include="Anarchy\REST\Guild\Settings\DiscordChannelSettings.cs" />
+    <Compile Include="Anarchy\REST\Guild\Settings\GuildMuteConfig.cs" />
+    <Compile Include="Anarchy\REST\Guild\Settings\GuildSettingsProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Templates\DiscordGuildTemplate.cs" />
+    <Compile Include="Anarchy\REST\Guild\Templates\DiscordTemplateGuild.cs" />
+    <Compile Include="Anarchy\REST\Guild\Templates\GuildTemplateExtensions.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\Default\DiscordDefaultWebhook.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\Default\DiscordWebhookProfile.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\Default\WebhookMessageProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\DiscordWebhook.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\DiscordWebhookProperties.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\DiscordWebhookType.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\Following\CrosspostChannel.cs" />
+    <Compile Include="Anarchy\REST\Guild\Webhook\Following\DiscordCrosspostWebhook.cs" />
+    <Compile Include="Anarchy\REST\HTTP\DiscordError.cs" />
+    <Compile Include="Anarchy\REST\HTTP\DiscordHttpClient.cs" />
+    <Compile Include="Anarchy\REST\HTTP\DiscordHttpError.cs" />
+    <Compile Include="Anarchy\REST\HTTP\DiscordHttpResponse.cs" />
+    <Compile Include="Anarchy\REST\HTTP\DiscordHttpUtil.cs" />
+    <Compile Include="Anarchy\REST\HTTP\DiscordReleaseChannel.cs" />
+    <Compile Include="Anarchy\REST\HTTP\Exceptions\DiscordConnectionException.cs" />
+    <Compile Include="Anarchy\REST\HTTP\Exceptions\DiscordFieldError.cs" />
+    <Compile Include="Anarchy\REST\HTTP\Exceptions\DiscordHttpException.cs" />
+    <Compile Include="Anarchy\REST\HTTP\Exceptions\FieldErrorDictionary.cs" />
+    <Compile Include="Anarchy\REST\HTTP\Exceptions\InvalidTokenException.cs" />
+    <Compile Include="Anarchy\REST\HTTP\Exceptions\RateLimitException.cs" />
+    <Compile Include="Anarchy\REST\Interactions\InteractionCallbackType.cs" />
+    <Compile Include="Anarchy\REST\Interactions\InteractionExtensions.cs" />
+    <Compile Include="Anarchy\REST\Interactions\InteractionResponse.cs" />
+    <Compile Include="Anarchy\REST\Interactions\InteractionResponseProperties.cs" />
+    <Compile Include="Anarchy\REST\Interactions\SlashCommands\ApplicationCommand.cs" />
+    <Compile Include="Anarchy\REST\Interactions\SlashCommands\ApplicationCommandOption.cs" />
+    <Compile Include="Anarchy\REST\Interactions\SlashCommands\ApplicationCommandProperties.cs" />
+    <Compile Include="Anarchy\REST\Interactions\SlashCommands\CommandOptionChoice.cs" />
+    <Compile Include="Anarchy\REST\Interactions\SlashCommands\CommandOptionType.cs" />
+    <Compile Include="Anarchy\REST\Interactions\SlashCommands\SlashCommandExtensions.cs" />
+    <Compile Include="Anarchy\REST\Invite\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Invite\Models\DiscordInvite.cs" />
+    <Compile Include="Anarchy\REST\Invite\Models\GuildInvite.cs" />
+    <Compile Include="Anarchy\REST\Invite\Models\InviteGuild.cs" />
+    <Compile Include="Anarchy\REST\Invite\Models\InviteProperties.cs" />
+    <Compile Include="Anarchy\REST\Invite\Models\InviteType.cs" />
+    <Compile Include="Anarchy\REST\LockedDiscordConfig.cs" />
+    <Compile Include="Anarchy\REST\Message\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Components\Input\ButtonComponent.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Components\Input\MessageButtonStyle.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Components\Input\MessageInputComponent.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Components\Input\SelectMenuComponent.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Components\Input\SelectMenuOption.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Components\MessageComponent.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Components\MessageComponentType.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Components\RowComponent.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\DeletedMessage.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\DiscordAttachment.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\DiscordMessage.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\MessageAuthor.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\MessageFlags.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\MessageReference.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\MessageType.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Properties\MessageAttachmentFilter.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Properties\MessageEditProperties.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Properties\MessageFilters.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Properties\MessageProperties.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Stickers\DiscordSticker.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\Stickers\StickerFormatType.cs" />
+    <Compile Include="Anarchy\REST\Message\Message\UserTyping.cs" />
+    <Compile Include="Anarchy\REST\Message\Reaction\MessageReaction.cs" />
+    <Compile Include="Anarchy\REST\Message\Reaction\ReactionQuery.cs" />
+    <Compile Include="Anarchy\REST\Message\Reaction\Update.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Client\DiscordOAuth2Authorization.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Client\DiscordOAuth2Client.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Client\OAuth2Exception.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Client\OAuth2GuildJoinProperties.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Client\OAuth2HttpError.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Extensions.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Models\ApplicationBot.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Models\AuthorizedApp.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Models\DiscordApplicationProperties.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Models\DiscordBotAuthProperties.cs" />
+    <Compile Include="Anarchy\REST\OAuth2\Models\OAuth2Application.cs" />
+    <Compile Include="Anarchy\REST\Relationships\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Relationships\Models\DiscordRelationship.cs" />
+    <Compile Include="Anarchy\REST\Relationships\Models\RelationshipType.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Nitro\DiscordBoostSlot.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Nitro\DiscordGuildSubscription.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Nitro\DiscordNitroSubType.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Nitro\DiscordNitroSubTypes.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Nitro\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Subscriptions\AdditionalSubscriptionPlan.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Subscriptions\DiscordActiveSubscription.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Subscriptions\DiscordSubscription.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Subscriptions\DiscordSubscriptionStatus.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Subscriptions\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Subscriptions\Subscriptions\SubscriptionPlan.cs" />
+    <Compile Include="Anarchy\REST\SuperProperties.cs" />
+    <Compile Include="Anarchy\REST\User\Connections\ClientConnectedAccount.cs" />
+    <Compile Include="Anarchy\REST\User\Connections\ConnectedAccount.cs" />
+    <Compile Include="Anarchy\REST\User\Connections\ConnectedAccountType.cs" />
+    <Compile Include="Anarchy\REST\User\Connections\ConnectionProperties.cs" />
+    <Compile Include="Anarchy\REST\User\Connections\Extensions.cs" />
+    <Compile Include="Anarchy\REST\User\Extensions.cs" />
+    <Compile Include="Anarchy\REST\User\Profile\DiscordBadge.cs" />
+    <Compile Include="Anarchy\REST\User\Profile\DiscordProfile.cs" />
+    <Compile Include="Anarchy\REST\User\Profile\Hypesquad.cs" />
+    <Compile Include="Anarchy\REST\User\Profile\MutualGuild.cs" />
+    <Compile Include="Anarchy\REST\User\Profile\UserProfileUpdate.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\CustomStatus.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\DiscordGuildFolder.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\DiscordGuildFolderUpdate.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\DiscordTheme.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\DiscordUserSettings.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\ExplicitContentFilter.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\FriendRequestFlags.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\StickerAnimationAvailability.cs" />
+    <Compile Include="Anarchy\REST\User\Settings\UserSettingsProperties.cs" />
+    <Compile Include="Anarchy\REST\User\User\DiscordClientUser.cs" />
+    <Compile Include="Anarchy\REST\User\User\DiscordLanguage.cs" />
+    <Compile Include="Anarchy\REST\User\User\DiscordNitroType.cs" />
+    <Compile Include="Anarchy\REST\User\User\DiscordReportReason.cs" />
+    <Compile Include="Anarchy\REST\User\User\DiscordUser.cs" />
+    <Compile Include="Anarchy\REST\User\User\DiscordUserType.cs" />
+    <Compile Include="Anarchy\REST\User\User\UserReportIdentification.cs" />
+    <Compile Include="Anarchy\REST\Voice\Extensions.cs" />
+    <Compile Include="Anarchy\REST\Voice\VoiceRegion.cs" />
+    <Compile Include="Anarchy\WebSockets\DiscordWebSocket.cs" />
+    <Compile Include="Anarchy\WebSockets\DiscordWebSocketCloseEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\DiscordWebSocketMessage.cs" />
+    <Compile Include="Anarchy\WebSockets\DiscordWebSocketRequest.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\ChannelEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\GatewayChannelExtensions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\Private\CallUpdateEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\Private\ChannelRecipientEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\Private\DiscordCall.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\Private\GatewayPrivateChannelExtensions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\Private\RingingEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\Unread\ChannelUnreadMessages.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\Unread\GuildUnreadMessages.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Channel\Unread\UnreadMessagesEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\DiscordSocketClient.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\DiscordSocketConfig.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Emojis\GatewayEmojiExtensions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\General\GatewayCloseCode.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\General\GatewayConnectionState.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\General\LogoutEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\General\Opcode.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Gifts\DiscordEntitlement.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Gifts\EntitlementEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Gifts\GiftCodeCreatedEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Gifts\GiftCodeUpdatedEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Extensions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\BanUpdateEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\List\DiscordMemberListUpdate.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\List\MemberListGroup.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\List\MemberListItem.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\List\MemberListUpdateOperation.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\MemberEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\MemberRemovedEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\Query\GuildMemberList.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\Query\GuildMemberQuery.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\Query\GuildMembersEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Member\Query\MemberListQueryOptions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Models\GuildEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Models\GuildSubscriptionProperties.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Models\GuildUnavailableEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Models\SocketGuild.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Models\SocketGuildEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Guild\Models\UnavailableGuild.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\DiscordInteraction.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\DiscordInteractionData.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\DiscordInteractionEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\DiscordInteractionType.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\Forms\ComponentFormButton.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\Forms\ComponentFormInput.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\Forms\ComponentFormSelectMenu.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\Forms\DiscordComponentForm.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\Forms\FormInteractionEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\Forms\FormSelectMenuEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\ResolvedInteractionData.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Interaction\SlashCommandArgument.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Invite\InviteCreatedEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Invite\InviteDeletedEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\LockedSocketConfig.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\DiscordMediaServer.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Extensions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Go Live\GoLiveCreate.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Go Live\GoLiveDelete.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Go Live\GoLiveStreamKey.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Go Live\GoLiveUpdate.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Go Live\StartStream.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Go Live\StreamUpdate.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\DiscordVoiceState.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\DiscordVoiceStateContainer.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\VoiceChannelSpeakingEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\VoiceClientDictionary.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\VoiceConnectEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\VoiceDisconnectEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\VoiceStateDictionary.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\VoiceStateEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Media\Voice\VoiceStateProperties.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Message\MessageDeletedEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Message\MessageEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Message\ReactionEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Message\UserTypingEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\ActivityType.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\Properties\ActivityProperties.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\Properties\GameActivityProperties.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\Properties\StreamActivityProperties.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\TimestampProperties.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\User\CustomStatusActivity.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\User\DiscordActivity.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\User\DiscordGameActivity.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Activity\User\DiscordListeningActivity.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Extensions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Presence\ActiveSessionPlatforms.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Presence\DiscordPresence.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Presence\PresenceProperties.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Presence\Presence\UpdatedEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Role\DeletedRole.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Role\GatewayRoleExtensions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Role\RoleDeletedEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Role\RoleEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Role\RoleUpdate.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\Auth\Identification.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\Auth\LoginEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\Auth\Resume.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\DiscordGatewayIntent.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\DiscordSession.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\DiscordSessionClientInfo.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\DiscordSessionsEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\DiscordShard.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\Extensions.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Session\GatewayIntentBundle.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\Subscriptions\NitroBoostEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\User\DiscordSettingsEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\User\RelationshipEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\User\RemovedRelationshipEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\User\RequiredActionEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\User\UserEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Gateway\User\UserStatus.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\CodecType.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\MediaCodec.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\AudioApplication.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\OpusApplication.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\OpusConverter.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\OpusCtl.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\OpusDecoder.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\OpusEncoder.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\OpusError.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\OpusException.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\Opus\OpusSignal.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Codecs\VideoMediaCodec.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Livestreaming\DiscordLivestreamClient.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Livestreaming\DiscordLivestreamError.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Livestreaming\DiscordLivestreamSession.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Livestreaming\LivestreamDisconnectEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Livestreaming\StreamKey.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Livestreaming\StreamSSRC.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Auth\DiscordMediaIdentify.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Auth\DiscordMediaReady.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Auth\DiscordSessionDescription.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\DiscordMediaCloseCode.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\DiscordMediaConnection.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\MediaConnectionState.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\MediaPacketEventArgs.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Payloads\DiscordMediaOpcode.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Payloads\DiscordSSRC.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Payloads\MediaCodecSelection.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Payloads\MediaProtocolData.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Payloads\MediaProtocolSelection.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Media\Payloads\SSRCUpdate.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\RTP\RTPPacketHeader.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\RTP\Sodium.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\RTP\SodiumException.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\DiscordVoiceClient.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\DiscordVoiceInput.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\DiscordVoiceUtils.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\Speaking\DiscordSpeakingFlags.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\Speaking\DiscordSpeakingRequest.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\Speaking\DiscordSpeakingState.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\Speaking\DiscordVoicePacket.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\Speaking\IncomingVoiceStream.cs" />
+    <Compile Include="Anarchy\WebSockets\Media\Voice\VoiceConnectionProperties.cs" />
+    <Compile Include="API.cs" />
+    <Compile Include="AudioTrack.cs" />
+    <Compile Include="Commands\Artist.cs" />
+    <Compile Include="Commands\Autoplay.cs" />
+    <Compile Include="Commands\FastForward.cs" />
+    <Compile Include="Commands\GetGenres.cs" />
+    <Compile Include="Commands\GoToCommand.cs" />
+    <Compile Include="Commands\Help.cs" />
+    <Compile Include="Commands\InfoCommand.cs" />
+    <Compile Include="Commands\Join.cs" />
+    <Compile Include="Commands\Leave.cs" />
+    <Compile Include="Commands\LoopCommand.cs" />
+    <Compile Include="Commands\OwnerCommands\AddAdmin.cs" />
+    <Compile Include="Commands\OwnerCommands\AddWhitelist.cs" />
+    <Compile Include="Commands\OwnerCommands\ChangeName.cs" />
+    <Compile Include="Commands\OwnerCommands\ChangePrefix.cs" />
+    <Compile Include="Commands\OwnerCommands\ChangeVoiceTTS.cs" />
+    <Compile Include="Commands\OwnerCommands\DjRole.cs" />
+    <Compile Include="Commands\OwnerCommands\Follow.cs" />
+    <Compile Include="Commands\OwnerCommands\NoMute.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\Camp.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\Copy.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\Earrape.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\GetProxiesCommand.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\GetProxyCommand.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\JoinServer.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\PlayFollow.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\Silence.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\SpamChannel.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\SpamDM.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\StopCopy.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\StopSpam.cs" />
+    <Compile Include="Commands\OwnerCommands\RaidCommands\StopSpamDm.cs" />
+    <Compile Include="Commands\OwnerCommands\RemoveAdmin.cs" />
+    <Compile Include="Commands\OwnerCommands\RemoveWhitelist.cs" />
+    <Compile Include="Commands\OwnerCommands\Save.cs" />
+    <Compile Include="Commands\OwnerCommands\SendEmbed.cs" />
+    <Compile Include="Commands\PauseCommand.cs" />
+    <Compile Include="Commands\Play.cs" />
+    <Compile Include="Commands\Queue.cs" />
+    <Compile Include="Commands\remove.cs" />
+    <Compile Include="Commands\ResumeCommand.cs" />
+    <Compile Include="Commands\Seek.cs" />
+    <Compile Include="Commands\sendTTS.cs" />
+    <Compile Include="Commands\Skip.cs" />
+    <Compile Include="Commands\Speed.cs" />
+    <Compile Include="Commands\Stop.cs" />
+    <Compile Include="Commands\VolumeCommand.cs" />
+    <Compile Include="Proxy.cs" />
+    <Compile Include="Settings1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Spotify.cs" />
+    <Compile Include="TrackQueue.cs" />
+    <Compile Include="Whitelist.cs" />
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Core\RelayCommand.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="MVVM\View\MusicBot.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\More.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Proxies.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Raid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\tokens.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Theme\ExitButtonTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Theme\LoginButtonTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Theme\MenuButtonTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Theme\TextBoxTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\ObservableObject.cs" />
+    <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\MoreModel.cs" />
+    <Compile Include="MVVM\ViewModel\MusicBotModel.cs" />
+    <Compile Include="MVVM\ViewModel\ProxiesModel.cs" />
+    <Compile Include="MVVM\ViewModel\RaidModel.cs" />
+    <Compile Include="MVVM\ViewModel\TokensModel.cs" />
+    <Compile Include="MVVM\View\MusicBot.xaml.cs">
+      <DependentUpon>MusicBot.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\More.xaml.cs">
+      <DependentUpon>More.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Proxies.xaml.cs">
+      <DependentUpon>Proxies.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Raid.xaml.cs">
+      <DependentUpon>Raid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\tokens.xaml.cs">
+      <DependentUpon>tokens.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Anarchy.Puppeteer\Anarchy.Puppeteer.csproj" />
+    <None Include="Anarchy.Puppeteer\App.config" />
+    <None Include="Anarchy.Puppeteer\packages.config" />
+    <None Include="Anarchy\Anarchy.csproj" />
+    <None Include="Anarchy\packages.config" />
+    <None Include="libOpenCvSharpExtern.so" />
+    <None Include="OpenCvSharp.Blob.dll.config" />
+    <None Include="OpenCvSharp.CPlusPlus.dll.config" />
+    <None Include="OpenCvSharp.dll.config" />
+    <None Include="OpenCvSharp.MachineLearning.dll.config" />
+    <None Include="packages.config" />
+    <None Include="packages\DotNetZip.1.15.0\.signature.p7s" />
+    <None Include="packages\DotNetZip.1.15.0\DotNetZip.1.15.0.nupkg" />
+    <None Include="Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
+    </None>
+    <Resource Include="Fonts\Poppins-Regular.ttf" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Anarchy.Puppeteer\bin\Debug\" />
+    <Folder Include="Anarchy.Puppeteer\bin\Release\" />
+    <Folder Include="MVVM\Model\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\gummy-reading-room.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\gummy-programming.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Anarchy\bin\Debug\Anarchy.dll" />
+    <Content Include="Anarchy\bin\Debug\Anarchy.pdb" />
+    <Content Include="Anarchy\bin\Debug\Leaf.xNet.dll" />
+    <Resource Include="propic.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icon-bot-removebg-preview.ico" />
+    <Content Include="chromedriver.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ffmpeg.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OpenCvSharpExtern.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="packages\DotNetZip.1.15.0\lib\net40\DotNetZip.dll" />
+    <Content Include="packages\DotNetZip.1.15.0\lib\net40\DotNetZip.pdb" />
+    <Resource Include="packages\DotNetZip.1.15.0\lib\net40\DotNetZip.xml" />
+    <Content Include="packages\DotNetZip.1.15.0\lib\netstandard2.0\DotNetZip.dll" />
+    <Content Include="packages\DotNetZip.1.15.0\lib\netstandard2.0\DotNetZip.pdb" />
+    <Resource Include="packages\DotNetZip.1.15.0\lib\netstandard2.0\DotNetZip.xml" />
+    <Resource Include="Anarchy\bin\Debug\Leaf.xNet.xml" />
+    <Content Include="Anarchy\bin\Debug\Newtonsoft.Json.dll" />
+    <Resource Include="Anarchy\bin\Debug\Newtonsoft.Json.xml" />
+    <Content Include="Anarchy\bin\Debug\websocket-sharp.dll" />
+    <Content Include="Anarchy\bin\Release\Anarchy.dll" />
+    <Content Include="Anarchy\bin\Release\Leaf.xNet.dll" />
+    <Content Include="Anarchy\bin\Release\Newtonsoft.Json.dll" />
+    <Content Include="Anarchy\bin\Release\websocket-sharp.dll" />
+    <Resource Include="Anarchy\WebSockets\Media\Codecs\Opus\H264Encoder.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="packages\Microsoft.CognitiveServices.Speech.1.18.0\build\net461\Microsoft.CognitiveServices.Speech.targets" Condition="Exists('packages\Microsoft.CognitiveServices.Speech.1.18.0\build\net461\Microsoft.CognitiveServices.Speech.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Microsoft.CognitiveServices.Speech.1.18.0\build\net461\Microsoft.CognitiveServices.Speech.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CognitiveServices.Speech.1.18.0\build\net461\Microsoft.CognitiveServices.Speech.targets'))" />
+    <Error Condition="!Exists('packages\OpusDotNet.opus.win-x64.1.3.1\build\OpusDotNet.opus.win-x64.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\OpusDotNet.opus.win-x64.1.3.1\build\OpusDotNet.opus.win-x64.props'))" />
+  </Target>
+</Project>
