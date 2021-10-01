@@ -62,7 +62,7 @@
                          Height="25" Width="150" Margin="0,0,0,0" x:Name="ImageIn"/>
                 </Grid>
                 
-                <TextBlock Text="Dj Role ID" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" x:Name="DjRoleLabel"/>
+                <TextBlock Text="Dj Role ID" Margin="10,-25,0,5" FontSize="15" Foreground="AntiqueWhite" x:Name="DjRoleLabel"/>
                 <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
                          Height="25" Width="185" Margin="0,0,0,0" x:Name="DjRoleIn"/>
 
