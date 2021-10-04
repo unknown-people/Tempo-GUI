@@ -365,19 +365,7 @@ namespace Music_user_bot
         {
             var manifest = App.YouTubeClient.Videos.Streams.GetManifestAsync(videoId).Result;
 
-            AudioOnlyStreamInfo bestStream = null;
-            foreach (var stream in manifest.GetAudioOnlyStreams().OrderBy(s => s.Bitrate))
-            {
-                if (bestStream == null || stream.Bitrate > bestStream.Bitrate)
-                {
-                    bestStream = stream;
-
-                    if (stream.Bitrate.BitsPerSecond > channelBitrate)
-                        break;
-                }
-            }
-
-            return bestStream.Url;
+            return manifest.GetAudioOnlyStreams().OrderBy(s => s.Bitrate).Last().Url;
         }
         private string GetVideoUrl(string videoId, uint channelBitrate)
         {

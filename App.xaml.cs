@@ -386,10 +386,14 @@ namespace TempoWithGUI
         }
         public static void SaveSettings()
         {
-            string exe_name = strExeFilePath.Substring(strWorkPath.Length + 1).Split('.')[0];
+            //string exe_name = strExeFilePath.Substring(strWorkPath.Length + 1).Split('.')[0];
+            string exe_name = "TempoWithGUI";
 
             XDocument xmlFile = XDocument.Load(strExeFilePath + ".config");
+
+            bool imageExists = false;
             bool ownerIdExists = false;
+
             foreach (XElement setting in xmlFile.Elements("configuration").Elements("userSettings").Elements($"{exe_name}.Settings").Elements("setting"))
             {
                 switch (setting.Attribute("name").Value)
@@ -428,16 +432,26 @@ namespace TempoWithGUI
                         setting.Element("value").Value = Settings.Default.OwnerId.ToString();
                         ownerIdExists = true;
                         break;
+                    case "Image":
+                        setting.Element("value").Value = Settings.Default.Image.ToString();
+                        imageExists = true;
+                        break;
                 };
             }
+            XElement xe = xmlFile.XPathSelectElement($"/userSettings/{exe_name}.Settings[1]");
+
             if (!ownerIdExists)
             {
-                XElement xe = xmlFile.XPathSelectElement($"/userSettings/{exe_name}.Settings[1]");
                 XElement ownerId = new XElement("OwnerId");
                 ownerId.Add(new XElement("value", Settings.Default.OwnerId));
                 xe.Add(ownerId);
             }
-
+            if (!imageExists)
+            {
+                XElement image = new XElement("Image");
+                image.Add(new XElement("value", Settings.Default.Image));
+                xe.Add(image);
+            }
             File.Delete(strWorkPath + @"\Tempo.exe.config");
             xmlFile.Save(strWorkPath + @"\Tempo.exe.config");
         }
