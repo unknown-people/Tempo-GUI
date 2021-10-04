@@ -14,7 +14,7 @@
     <Window.DataContext>
         <viewModel:MainViewModel/>
     </Window.DataContext>
-    <Border Background="#2C061B" CornerRadius="20">
+    <Border Background="#0F0D0F" CornerRadius="20" MouseDown="Window_MouseDown">
         <Grid MouseDown="Window_MouseDown">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200">
@@ -26,10 +26,21 @@
                 </RowDefinition>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="Tempo" VerticalAlignment="Center" HorizontalAlignment="Left" 
-                   Foreground="White" FontSize="22" FontFamily="/Fonts/#Poppins"
-                   Margin="20,0,0,0">
-            </TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="115"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Tempo" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                   Foreground="AntiqueWhite" FontSize="22" FontFamily="/Fonts/#Poppins"
+                   Margin="20,0,0,0" Grid.Column="0">
+                </TextBlock>
+                <Image Source="propic.png" HorizontalAlignment="Left" VerticalAlignment="Center"
+                   Stretch="Fill" Grid.Column="1"
+                       Height="28" Width="30"
+                       Margin="0,0,0,2"/>
+            </Grid>
+
             <StackPanel Grid.Row="1">
                 <RadioButton Content="Music Bot" Height="50" Foreground="White"
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
@@ -48,11 +59,13 @@
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
                              Command="{Binding MoreCommand}"/>
             </StackPanel>
+            <!--
             <TextBlock Text="THE ONLY BOT YOU'LL EVER NEED" Grid.Column="1"
                        Foreground="White"
                        FontSize="30" VerticalAlignment="Center"
                        HorizontalAlignment="Center" Margin="132,13,-360,13"/>
-            <ContentControl Grid.Row="1" Grid.Column="1" Margin="10,10,-481,-49"
+            -->
+            <ContentControl Grid.Row="1" Grid.Column="1" Margin="10,0,-481,-49"
                             Content="{Binding CurrentView}"/>
             <Button Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="685,10,-480,0" VerticalAlignment="Top" Width="20" Height="20"
                     FontSize="11" FontStretch="Expanded" VerticalContentAlignment="Center"

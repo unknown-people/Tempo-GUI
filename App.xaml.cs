@@ -142,6 +142,9 @@ namespace TempoWithGUI
                 ownerName = clientNew.GetUser(Whitelist.ownerID).Username + "#" + discriminator;
             }
 
+            if (!Directory.Exists(strWorkPath + "\\tokens"))
+                Directory.CreateDirectory(strWorkPath + "\\tokens");
+
             MainWindow window = new MainWindow();
 
             window.Show();

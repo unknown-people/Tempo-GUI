@@ -62,6 +62,7 @@ namespace Discord.Media
                 RedirectStandardOutput = true,
                 CreateNoWindow = true
             });
+
             process.PriorityClass = ProcessPriorityClass.High;
             process.PriorityBoostEnabled = true;
             return process.StandardOutput.BaseStream;
@@ -105,10 +106,10 @@ namespace Discord.Media
         }
         public static byte[] GetAudio(string path, float offset, int duration, int volume, float speed = 1.0f)
         {
-            var stream = GetAudioStream(path, offset, duration, volume, speed);
-            using (var br = new BinaryReader(stream))
+            using (var memStream = new MemoryStream())
             {
-                return br.ReadBytes(192000 * duration);
+                GetAudioStream(path, offset, duration, volume, speed).CopyTo(memStream);
+                return memStream.ToArray();
             }
         }
         public static byte[] GetTTS(string path)

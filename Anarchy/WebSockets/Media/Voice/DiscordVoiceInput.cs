@@ -27,7 +27,7 @@ namespace Discord.Media
         public static string path;
         public static float current_time;
         public static int current_time_tracker;
-        public static int buffer_duration = 5;
+        public static int buffer_duration = 8;
 
         public uint Bitrate
         {

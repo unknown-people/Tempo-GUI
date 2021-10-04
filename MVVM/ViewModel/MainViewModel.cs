@@ -48,26 +48,21 @@ namespace TempoWithGUI.MVVM.ViewModel
             {
                 CurrentView = MusicBotVm;
             });
-            MusicBotBtn = new RelayCommand(o =>
-            {
-                
-            });
             RaidCommand = new RelayCommand(o =>
             {
-                CurrentView = RaidVm;
+                CurrentView = new RaidModel();
             });
-            RaidBtn = RaidCommand;
             ProxiesCommand = new RelayCommand(o =>
             {
-                CurrentView = ProxiesVm;
+                CurrentView = new ProxiesModel();
             });
             TokensCommand = new RelayCommand(o =>
             {
-                CurrentView = TokensVm;
+                CurrentView = new TokensModel();
             });
             MoreCommand = new RelayCommand(o =>
             {
-                CurrentView = MoreVm;
+                CurrentView = new MoreModel();
             });
 
         }

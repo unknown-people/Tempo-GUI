@@ -180,12 +180,12 @@ namespace TempoWithGUI.MVVM.View
             client.OnLeftVoiceChannel += App.Client_OnLeftVoiceChannel;
             client.Login(Settings.Default.Token);
 
-            this.StartBtn.IsEnabled = false;
-            this.StartBtn.Cursor = Cursors.Hand;
-            this.StatusLight.Fill = Brushes.Green;
             Settings.Default.Save();
             Settings.Default.Reload();
             App.SaveSettings();
+            this.StartBtn.IsEnabled = false;
+            this.StartBtn.Cursor = Cursors.Hand;
+            this.StatusLight.Fill = Brushes.Green;
         }
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {

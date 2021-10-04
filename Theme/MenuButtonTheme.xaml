@@ -6,7 +6,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{TemplateBinding Background}">
-                            <TextBlock Text="{TemplateBinding Property=Content}" VerticalAlignment="Center" Margin="50,0,0,0" FontFamily="/Fonts/#Poppins"/>
+                            <TextBlock Text="{TemplateBinding Property=Content}" Foreground="AntiqueWhite" VerticalAlignment="Center" Margin="50,0,0,0" FontFamily="/Fonts/#Poppins"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -16,7 +16,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="#210011"/>
+                <Setter Property="Background" Value="#141114"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -37,7 +37,7 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="#210011"/>
+                <Setter Property="Background" Value="#141114"/>
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -18,13 +18,13 @@
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Login" FontSize="36" FontFamily="Fonts/#Poppins"
-                       VerticalAlignment="Center" Margin="20, 10, 0, 0"
+                       VerticalAlignment="Center" Margin="20, 0, 0, 0"
                        Foreground="AntiqueWhite"/>
                 <Canvas Grid.Column="1" HorizontalAlignment="Left"
                         VerticalAlignment="Center">
                     <Ellipse Canvas.Left="0" Canvas.Bottom="0" 
                              Canvas.Top="0"
-                             Width="12" Height="12" Fill="Red"
+                             Width="12" Height="12" Fill="Red" Margin="0,-3,0,0"
                              x:Name="StatusLight"/>
                 </Canvas>
             </Grid>
@@ -36,7 +36,7 @@
             </StackPanel>
         </Grid>
 
-        <Border BorderThickness="0" CornerRadius="20" Background="MediumVioletRed"
+        <Border BorderThickness="0" CornerRadius="20" Background="#19161A"
                 Height="5" Width="600" Margin="10" HorizontalAlignment="Left"/>
         <Grid Height="360">
             <Grid.ColumnDefinitions>

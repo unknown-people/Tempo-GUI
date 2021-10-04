@@ -9,9 +9,9 @@
                     <Border Name="border" 
                         BorderThickness="1"
                         Padding="4,2" 
-                        BorderBrush="#AC5773" 
+                        BorderBrush="#7A7580" 
                         CornerRadius="5" 
-                        Background="#AC5773">
+                        Background="#7A7580">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
