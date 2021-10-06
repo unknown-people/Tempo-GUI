@@ -4,9 +4,166 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TempoWithGUI.MVVM.View"
+             xmlns:viewModel="clr-namespace:TempoWithGUI.MVVM.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="450" d:DesignWidth="710">
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}">
+            <Style.Setters>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{TemplateBinding Background}">
+                                <TextBlock Text="{TemplateBinding Property=Content}" VerticalAlignment="Center" FontFamily="/Fonts/#Poppins"
+                                       HorizontalAlignment="Center" Foreground="AntiqueWhite"
+                                           Padding="10"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#141114"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <viewModel:RaidModel/>
+    </UserControl.DataContext>
+    <StackPanel>
+        <Grid Height="450">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Border Width="100" Height="100" CornerRadius="10" Margin="100,0,0,0" Cursor="Hand" x:Name="GuildBtn"
+                    Grid.Column="0" Grid.Row="0">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding GuildRaid}" CommandParameter="{Binding ElementName=GuildBtn}"/>
+                </Border.InputBindings>
+
+                <TextBlock Text="Guild" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Width="100" Height="100" CornerRadius="10" Cursor="Hand" x:Name="DmBtn"
+                    Grid.Column="1" Grid.Row="0">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding DMRaid}" CommandParameter="{Binding ElementName=DmBtn}"/>
+                </Border.InputBindings>
+                <TextBlock Text="DM" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Width="100" Height="100" CornerRadius="10" Margin="0,0,100,0" Cursor="Hand" x:Name="ReactionBtn"
+                    Grid.Column="2" Grid.Row="0">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding ReactionRaid}" CommandParameter="{Binding ElementName=ReactionBtn}"/>
+                </Border.InputBindings>
+                <TextBlock Text="Reaction" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Width="100" Height="100" CornerRadius="10" Margin="100,0,0,0" Cursor="Hand" x:Name="FriendBtn"
+                    Grid.Column="0" Grid.Row="1">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding FriendRaid}" CommandParameter="{Binding ElementName=FriendBtn}"/>
+                </Border.InputBindings>
+                <TextBlock Text="Friend" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Width="100" Height="100" CornerRadius="10" Cursor="Hand" x:Name="VoiceBtn"
+                    Grid.Column="1" Grid.Row="1">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding VoiceRaid}" CommandParameter="{Binding ElementName=VoiceBtn}"/>
+                </Border.InputBindings>
+                <TextBlock Text="Voice" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Width="100" Height="100" CornerRadius="10" Margin="0,0,100,0" Cursor="Hand" x:Name="WebhookBtn"
+                    Grid.Column="2" Grid.Row="1">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding WebhookRaid}" CommandParameter="{Binding ElementName=WebhookBtn}"/>
+                </Border.InputBindings>
+                <TextBlock Text="Webhook" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Width="100" Height="100" CornerRadius="10" Margin="100,0,0,0" Cursor="Hand" x:Name="MassDMBtn"
+                    Grid.Column="0" Grid.Row="2">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding MassDMRaid}" CommandParameter="{Binding ElementName=MassDMBtn}"/>
+                </Border.InputBindings>
+                <TextBlock Text="Mass DM" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Width="100" Height="100" CornerRadius="10" Cursor="Hand" x:Name="TokenBtn"
+                    Grid.Column="1" Grid.Row="2">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding TokenRaid}" CommandParameter="{Binding ElementName=TokenBtn}"/>
+                </Border.InputBindings>
+                <TextBlock Text="Token" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+            <Border Width="100" Height="100" CornerRadius="10" Margin="0,0,100,0" Cursor="Hand" x:Name="CallBtn"
+                    Grid.Column="2" Grid.Row="2">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding CallRaid}" CommandParameter="{Binding ElementName=CallBtn}"/>
+                </Border.InputBindings>
+                <TextBlock Text="Call" Foreground="White" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="Transparent" Offset="0.0"/>
+                        <GradientStop Color="#E79FB7" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Grid>
+    </StackPanel>
 </UserControl>

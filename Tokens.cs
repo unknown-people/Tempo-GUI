@@ -18,8 +18,10 @@ namespace TempoWithGUI
         public string password { get; set; }
         [JsonProperty("creation")]
         public string creation { get; set; }
+        [JsonProperty("country")]
+        public string country { get; set; }
     }
-    class DiscordToken
+    public class DiscordToken
     {
         public bool _active;
         public bool Active

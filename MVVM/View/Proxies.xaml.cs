@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TempoWithGUI.Core;
 
 namespace TempoWithGUI.MVVM.View
 {
@@ -20,9 +24,137 @@ namespace TempoWithGUI.MVVM.View
     /// </summary>
     public partial class Proxies : UserControl
     {
+        public static bool freeProxies { get; set; } = false;
+        public static bool paidProxies { get; set; } = true;
+
         public Proxies()
         {
             InitializeComponent();
+
+            if (freeProxies)
+            {
+                paidRadio.IsChecked = false;
+                freeRadio.IsChecked = true;
+            }
+            else
+            {
+                paidRadio.IsChecked = true;
+                freeRadio.IsChecked = false;
+            }
+
+            if (Directory.Exists(App.strWorkPath + "\\proxies"))
+                Directory.CreateDirectory(App.strWorkPath + "\\proxies");
+
+            if (!File.Exists(App.strWorkPath + "\\proxies\\http_proxies.txt"))
+                File.Create(App.strWorkPath + "\\proxies\\http_proxies.txt");
+            if (!File.Exists(App.strWorkPath + "\\proxies\\user_proxies.txt"))
+                File.Create(App.strWorkPath + "\\proxies\\user_proxies.txt");
+            while (true)
+            {
+                try
+                {
+                    SetProxies();
+                    break;
+                }
+                catch (IOException) { Thread.Sleep(100); }
+            }
+        }
+        private void SetProxies()
+        {
+            if (freeProxies)
+            {
+                while (true)
+                {
+                    try
+                    {
+                        using (StreamReader stream = new StreamReader(App.strWorkPath + "\\proxies\\http_proxies.txt", true))
+                        {
+                            ProxiesIn.Text = stream.ReadToEnd();
+                        }
+                        break;
+                    }
+                    catch { }
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    try
+                    {
+                        using (StreamReader stream = new StreamReader(App.strWorkPath + "\\proxies\\user_proxies.txt", true))
+                        {
+                            ProxiesIn.Text = stream.ReadToEnd();
+                        }
+                        break;
+                    }
+                    catch { }
+                }
+            }
+        }
+        private void SaveProxies()
+        {
+            if (freeProxies)
+            {
+                using (StreamWriter stream = new StreamWriter(App.strWorkPath + "\\proxies\\http_proxies1.txt"))
+                {
+                    stream.Write(ProxiesIn.Text);
+                }
+                File.Delete(App.strWorkPath + "\\proxies\\http_proxies.txt");
+                File.Move(App.strWorkPath + "\\proxies\\http_proxies1.txt", App.strWorkPath + "\\proxies\\http_proxies.txt");
+            }
+            else
+            {
+                using (StreamWriter stream = new StreamWriter(App.strWorkPath + "\\proxies\\user_proxies1.txt"))
+                {
+                    stream.Write(ProxiesIn.Text);
+                }
+                File.Delete(App.strWorkPath + "\\proxies\\user_proxies.txt");
+                File.Move(App.strWorkPath + "\\proxies\\user_proxies1.txt", App.strWorkPath + "\\proxies\\user_proxies.txt");
+            }
+        }
+
+        private void PaidRadio_Click(object sender, RoutedEventArgs e)
+        {
+            freeProxies = false;
+            paidProxies = true;
+            SetProxies();
+        }
+
+        private void FreeRadio_click(object sender, RoutedEventArgs e)
+        {
+            freeProxies = true;
+            paidProxies = false;
+            SetProxies();
+        }
+
+        private void BuyBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string url = "https://dashboard.intenseproxy.com/";
+            Process.Start(url);
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            SaveProxies();
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            SetProxies();
+        }
+
+        private void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            string proxy = "user_proxies.txt";
+            if (freeProxies)
+                proxy = "http_proxies.txt";
+            string args = App.strWorkPath + $"\\proxies\\{proxy}";
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "notepad.exe",
+                Arguments = args
+            });
         }
     }
 }

@@ -64,7 +64,6 @@ namespace TempoWithGUI.MVVM.ViewModel
             {
                 CurrentView = new MoreModel();
             });
-
         }
     }
 }

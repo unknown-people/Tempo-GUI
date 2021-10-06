@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TempoWithGUI;
 using WebSocketSharp;
 
 namespace Discord.Media
@@ -81,9 +82,17 @@ namespace Discord.Media
         }
         private void Connection_OnDead(DiscordMediaConnection connection, WebSocketSharp.CloseEventArgs args)
         {
+            /*
             ulong prevChannel = _channelId.Value;
             _channelId = null;
             _client.TriggerVCDisconnect(_guildId, prevChannel, args);
+            */
+            try
+            {
+                _client.Logout();
+            }
+            catch { }
+            _client.Login(Settings.Default.Token);
         }
 
         private void Connection_OnMessage(DiscordMediaConnection connection, DiscordWebSocketMessage<DiscordMediaOpcode> message)

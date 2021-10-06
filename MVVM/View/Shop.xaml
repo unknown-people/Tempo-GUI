@@ -1,0 +1,60 @@
+﻿<Window x:Class="TempoWithGUI.MVVM.View.Shop"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TempoWithGUI.MVVM.View"
+        xmlns:viewModel="clr-namespace:TempoWithGUI.MVVM.ViewModel"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="Shop" Height="400" Width="613"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True">
+    <Window.DataContext>
+        <viewModel:ShopViewModel/>
+    </Window.DataContext>
+    <Border Background="#0F0D0F" CornerRadius="20" MouseDown="Window_MouseDown">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="10*"/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="95"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Shop" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                   Foreground="AntiqueWhite" FontSize="20" FontFamily="/Fonts/#Poppins"
+                   Margin="20,0,0,0" Grid.Column="0">
+                </TextBlock>
+                <Image Source="/Images/propic.png" HorizontalAlignment="Left" VerticalAlignment="Center"
+                   Stretch="Fill" Grid.Column="1"
+                       Height="28" Width="30"
+                       Margin="0,0,0,2"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1">
+                <RadioButton Content="Accounts" Height="50" Foreground="White"
+                             FontSize="13" Style="{StaticResource MenuButtonThemeSmall}"
+                             Command="{Binding AccountsCommand}"
+                             x:Name="MusicButton" IsChecked="True"/>
+                <RadioButton Content="Top Up" Height="50" Foreground="White"
+                             FontSize="13" Style="{StaticResource MenuButtonThemeSmall}"
+                             Command="{Binding TopUpCommand}"/>
+            </StackPanel>
+            <ContentControl Grid.Row="1" Grid.Column="1" Margin="5"
+                            Content="{Binding CurrentView}"/>
+            <Button Content="X" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="11" FontStretch="Expanded" VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center" Margin="10"
+                    Padding="1,-1,0,0" Background="Gray"
+                    x:Name="ExitButton" Style="{StaticResource ExitButtonTheme}" Click="ExitButton_Click"/>
+        </Grid>
+    </Border>
+</Window>

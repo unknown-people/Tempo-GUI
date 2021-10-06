@@ -26,6 +26,7 @@ namespace TempoWithGUI
     /// </summary>
     public partial class App : Application
     {
+        public static string api_key { get; set; } = "3e0c347c-d75-4539-905092-b8dce";
         public static YoutubeClient YouTubeClient { get; private set; } = new YoutubeClient();
 
         public static Dictionary<ulong, TrackQueue> TrackLists = new Dictionary<ulong, TrackQueue>();
@@ -122,26 +123,6 @@ namespace TempoWithGUI
 
             programFiles = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
 
-            var random = new string[] { };
-            botToken = "";
-            if (Settings.Default.isBot)
-                botToken += "Bot ";
-
-            botToken += Settings.Default.Token;
-            Whitelist.ownerID = Settings.Default.OwnerId;
-            if (!Settings.Default.isBot)
-            {
-                DiscordClient clientNew = new DiscordClient(botToken);
-
-                string discriminator = "";
-                for (int i = 0; i < 4 - ((clientNew.GetUser(Whitelist.ownerID).Discriminator)).ToString().Length; i++)
-                {
-                    discriminator += "0";
-                }
-                discriminator += clientNew.GetUser(Whitelist.ownerID).Discriminator;
-                ownerName = clientNew.GetUser(Whitelist.ownerID).Username + "#" + discriminator;
-            }
-
             if (!Directory.Exists(strWorkPath + "\\tokens"))
                 Directory.CreateDirectory(strWorkPath + "\\tokens");
 
@@ -164,39 +145,6 @@ namespace TempoWithGUI
             return false;
         }
 
-        private static void NoMute(DiscordSocketClient client)
-        {
-            var botID = client.User.Id;
-            var channelID = NoMuteCommand.channelId;
-            var guildID = NoMuteCommand.guildId;
-
-            NoMuteCommand noMute = new NoMuteCommand(channelID, guildID);
-
-            var voiceClient = client.GetVoiceClient(guildID);
-
-            DiscordVoiceState voiceState = null;
-
-            try
-            {
-                var voiceStateContainer = client.GetVoiceStates(botID);
-                voiceStateContainer.GuildVoiceStates.TryGetValue(guildID, out voiceState);
-            }
-            catch (KeyNotFoundException)
-            {
-                noMute.Message.Channel.SendMessage("Bot must be connected to a voice channel");
-            }
-
-            if (voiceState != null && voiceState.Muted)
-            {
-                if (noMute.getInviteLink() != null)
-                {
-                    MinimalGuild currentGuild = new MinimalGuild(guildID);
-                    currentGuild.Leave();
-                    client.JoinGuild(guildID);
-                    voiceClient.Connect(channelID);
-                }
-            }
-        }
         public static void Client_OnLeftVoiceChannel(DiscordSocketClient client, VoiceDisconnectEventArgs args)
         {
             TrackQueue.isPaused = true;

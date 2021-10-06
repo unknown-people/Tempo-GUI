@@ -1,0 +1,85 @@
+﻿<Window x:Class="TempoWithGUI.MVVM.View.EditTokenPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TempoWithGUI.MVVM.View"
+        mc:Ignorable="d"
+        Title="Edit Token" Height="250" Width="400"
+        WindowStyle="None" WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#0F0D0F"
+        AllowsTransparency="True" MouseDown="Window_MouseDown">
+    <Window.Resources>
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}">
+            <Style.Setters>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{TemplateBinding Background}">
+                                <TextBlock Text="{TemplateBinding Property=Content}" VerticalAlignment="Center" FontFamily="/Fonts/#Poppins"
+                                       HorizontalAlignment="Center" Foreground="AntiqueWhite"
+                                           Padding="10"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#141114"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Edit Token" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                   Foreground="AntiqueWhite" FontSize="20" FontFamily="/Fonts/#Poppins"
+                   Margin="15,0,0,0"
+                   Grid.Row="0"/>
+        <Button Content="X" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="11" FontStretch="Expanded" VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Padding="1,-1,0,0" Background="Gray"
+                    x:Name="ExitButton" Style="{StaticResource ExitButtonTheme}" Click="ExitButton_Click"/>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Margin="10,0">
+            <TextBlock Text="Token" Margin="5,0,0,0" FontSize="15" Foreground="AntiqueWhite"
+                       FontFamily="/Fonts/#Poppins"/>
+            <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="21" Width="340" Margin="0,0,0,0" x:Name="TokenIn"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Grid.Column="0">
+                    <TextBlock Text="Email" Margin="5" FontSize="15" Foreground="AntiqueWhite"
+                       FontFamily="/Fonts/#Poppins"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="21" Width="150" Margin="0,0,0,0" x:Name="EmailIn"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="1">
+                    <TextBlock Text="Password" Margin="5" FontSize="15" Foreground="AntiqueWhite"
+                       FontFamily="/Fonts/#Poppins"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="21" Width="150" Margin="0,0,0,0" x:Name="PasswordIn"/>
+                </StackPanel>
+            </Grid>
+            <TextBlock Text="Creation Date" Margin="5" FontSize="15" Foreground="AntiqueWhite"
+                       FontFamily="/Fonts/#Poppins"/>
+            <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="21" Width="150" Margin="0,0,0,0" x:Name="CreationIn"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="2">
+            <Button Content="Cancel" Margin="210,0,0,0" Click="ExitButton_Click"/>
+            <Button Content="Confirm" Click="Confirm_Click" x:Name="Confirm_Btn"/>
+        </StackPanel>
+    </Grid>
+</Window>

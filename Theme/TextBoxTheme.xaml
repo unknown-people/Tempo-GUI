@@ -26,6 +26,32 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="{x:Type TextBox}" x:Key="ModernTextBoxBuy">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border CornerRadius="10" Background="#49464d">
+                        <Grid>
+                            <Rectangle StrokeThickness="1"/>
+                            <TextBox Margin="1" Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" Background="Transparent" VerticalContentAlignment="Center" Foreground="#CECECF" x:Name="UsernameIn" Padding="5" BorderThickness="0"/>
+                            <TextBlock IsHitTestVisible="False" Text="Quantity" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" FontSize="11" Foreground="DarkGray" Grid.Column="1">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=UsernameIn}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <Style TargetType="{x:Type TextBox}" x:Key="ModernTextBoxUsername">
         <Setter Property="Template">
             <Setter.Value>

@@ -1,4 +1,5 @@
-﻿using Discord.Gateway;
+﻿using Discord;
+using Discord.Gateway;
 using Music_user_bot;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace TempoWithGUI.MVVM.View
     /// </summary>
     public partial class MusicBotView : UserControl
     {
+        public static bool isLoggedIn { get; set; } = false;
         public MusicBotView()
         {
             InitializeComponent();
@@ -71,6 +73,16 @@ namespace TempoWithGUI.MVVM.View
         }
         public void Start()
         {
+            if (isLoggedIn)
+            {
+                if(TrackQueue.currentSong != null)
+                    TrackQueue.currentSong.CancellationTokenSource.Cancel();
+                App.mainClient.Logout();
+                isLoggedIn = false;
+                StatusLight.Fill = Brushes.Red;
+                StartBtn.Content = "START";
+                return;
+            }
             this.StartBtn.Cursor = Cursors.AppStarting;
             if (UsernameIn.Text != "" && PasswordIn.Text != "")
             {
@@ -163,6 +175,25 @@ namespace TempoWithGUI.MVVM.View
             {
 
             }
+            var random = new string[] { };
+            App.botToken = "";
+            if (Settings.Default.isBot)
+                App.botToken += "Bot ";
+
+            App.botToken += Settings.Default.Token;
+            Whitelist.ownerID = Settings.Default.OwnerId;
+            if (!Settings.Default.isBot)
+            {
+                DiscordClient clientNew = new DiscordClient(App.botToken);
+
+                string discriminator = "";
+                for (int i = 0; i < 4 - ((clientNew.GetUser(Whitelist.ownerID).Discriminator)).ToString().Length; i++)
+                {
+                    discriminator += "0";
+                }
+                discriminator += clientNew.GetUser(Whitelist.ownerID).Discriminator;
+                App.ownerName = clientNew.GetUser(Whitelist.ownerID).Username + "#" + discriminator;
+            }
 
             uint apiVersion = 9;
             if (Settings.Default.isBot)
@@ -179,12 +210,14 @@ namespace TempoWithGUI.MVVM.View
             client.OnJoinedVoiceChannel += App.Client_OnJoinedVoiceChannel;
             client.OnLeftVoiceChannel += App.Client_OnLeftVoiceChannel;
             client.Login(Settings.Default.Token);
+            App.mainClient = client;
 
             Settings.Default.Save();
             Settings.Default.Reload();
             App.SaveSettings();
-            this.StartBtn.IsEnabled = false;
-            this.StartBtn.Cursor = Cursors.Hand;
+            isLoggedIn = true;
+            this.StartBtn.Content = "LOGOUT";
+            this.StartBtn.Cursor = Cursors.Arrow;
             this.StatusLight.Fill = Brushes.Green;
         }
         private void RadioButton_Click(object sender, RoutedEventArgs e)

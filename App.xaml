@@ -28,6 +28,12 @@
             <DataTemplate DataType="{x:Type viewModel:MoreModel}">
                 <view:More/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:AccountsModel}">
+                <view:Accounts/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:ShopViewModel}">
+                <view:Shop/>
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

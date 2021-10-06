@@ -5,9 +5,31 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TempoWithGUI.MVVM.View"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    
+             d:DesignHeight="450" d:DesignWidth="710">
+
     <UserControl.Resources>
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}">
+            <Style.Setters>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{TemplateBinding Background}">
+                                <TextBlock Text="{TemplateBinding Property=Content}" VerticalAlignment="Center" FontFamily="/Fonts/#Poppins"
+                                       HorizontalAlignment="Center" Foreground="AntiqueWhite"
+                                           Padding="10"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#141114"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
             <Setter Property="IsTabStop" Value="false"/>
@@ -109,32 +131,49 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    
+
     <Grid Height="450">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="400"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="530"/>
+            <ColumnDefinition Width="190"/>
         </Grid.ColumnDefinitions>
-        <ListBox x:Name="ListTokens" HorizontalContentAlignment="Center"
-            HorizontalAlignment="Left" VerticalAlignment="Top" Height="370" Width="380"
+        <StackPanel Orientation="Vertical" Grid.Column="0">
+            <ListBox x:Name="ListTokens" HorizontalContentAlignment="Center" Grid.Column="0"
+            HorizontalAlignment="Left" VerticalAlignment="Top" Height="370" Width="510"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0"
-            Background="Transparent" Margin="10">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="300"/>
-                            <ColumnDefinition Width="40"/>
-                        </Grid.ColumnDefinitions>
-
-                        <CheckBox IsChecked="{Binding Active}" Grid.Column="0"
+            Background="Transparent" Margin="10" SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="430"/>
+                                <ColumnDefinition Width="40"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox IsChecked="{Binding Active}" Grid.Column="0"
                                 VerticalAlignment="Center" Background="AntiqueWhite"/>
-                        <Label Content="{Binding Token}" Grid.Column="1" Foreground="AntiqueWhite" VerticalAlignment="Center"/>
-                        <Label Content="{Binding Type}" Grid.Column="2" Foreground="AntiqueWhite" VerticalAlignment="Center"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                            <Label Content="{Binding Token}" Grid.Column="1" Foreground="AntiqueWhite" VerticalAlignment="Center"
+                                   MouseDoubleClick="Label_MouseDoubleClick"/>
+                            <Label Content="{Binding Type}" Grid.Column="2" Foreground="AntiqueWhite" VerticalAlignment="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel Orientation="Horizontal" Margin="10" Height="50">
+                <Button Content="Select All" Click="Select_Click" Margin="105,0,20,0"/>
+                <Button Content="Deselect All" Click="Deselect_Click" Margin="20,0"/>
+                <Button Content="Checker" Click="Checker_Click" Margin="20,0"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Column="1" Height="450" Margin="30">
+            <Button Content="SHOP" Padding="20" Margin="0, 20"
+                    FontSize="15" Click="Shop_Click"/>
+            <Button Content="Add" Padding="20" Margin="0,20"
+                    FontSize="15" Click="Add_Click"/>
+            <Button Content="Remove" Padding="20" Margin="0,20"
+                    FontSize="15" Click="Remove_Click"/>
+            <Button Content="Open File" Padding="20" Margin="0,20"
+                    FontSize="15" Click="OpenFile_Click"/>
+        </StackPanel>
     </Grid>
 </UserControl>
