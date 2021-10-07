@@ -65,6 +65,16 @@ namespace TempoWithGUI.MVVM.View
             {
                 Start();
             }
+            if (isLoggedIn)
+            {
+                StatusLight.Fill = Brushes.Green;
+                StartBtn.Content = "LOGOUT";
+            }
+            else
+            {
+                StatusLight.Fill = Brushes.Red;
+                StartBtn.Content = "START";
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -117,6 +127,22 @@ namespace TempoWithGUI.MVVM.View
             {
                 MessageBox.Show("Please fill all the required input before starting Tempo");
                 return;
+            }
+            if (Settings.Default.WhiteList == null)
+            {
+                Whitelist.white_list = new System.Collections.Specialized.StringCollection();
+            }
+            else
+            {
+                Whitelist.white_list = Settings.Default.WhiteList;
+            }
+            if (Settings.Default.Admins == null)
+            {
+                Admin.admins = new System.Collections.Specialized.StringCollection();
+            }
+            else
+            {
+                Admin.admins = Settings.Default.Admins;
             }
             if (!Settings.Default.isBot)
             {

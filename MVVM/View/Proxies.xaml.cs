@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Music_user_bot;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -49,6 +50,8 @@ namespace TempoWithGUI.MVVM.View
                 File.Create(App.strWorkPath + "\\proxies\\http_proxies.txt");
             if (!File.Exists(App.strWorkPath + "\\proxies\\user_proxies.txt"))
                 File.Create(App.strWorkPath + "\\proxies\\user_proxies.txt");
+            if (!File.Exists(App.strWorkPath + "\\proxies\\http_proxies.txt"))
+                File.Create(App.strWorkPath + "\\proxies\\http_proxies.txt");
             while (true)
             {
                 try
@@ -58,6 +61,33 @@ namespace TempoWithGUI.MVVM.View
                 }
                 catch (IOException) { Thread.Sleep(100); }
             }
+            /*
+            Task.Run(() =>
+            {
+                Dispatcher.Invoke(() => CheckProxies());
+                Dispatcher.Invoke(() => SetProxies());
+            });
+            */
+        }
+        private void CheckProxies()
+        {
+            using(StreamWriter writer = new StreamWriter(App.strWorkPath + "\\proxies\\http_proxies1.txt"))
+            {
+                using(StreamReader reader = new StreamReader(App.strWorkPath + "\\proxies\\http_proxies.txt"))
+                {
+                    foreach (string proxy in reader.ReadToEnd().Split('\n'))
+                    {
+                        var proxy_list = proxy.Split(':');
+                        bool valid = Proxy.TestProxy("https://discord.com/api/v9/experiments", new Proxy(proxy_list[0], proxy_list[1]));
+                        if (valid)
+                        {
+                            writer.WriteLine(proxy);
+                        }
+                    }
+                }
+            }
+            File.Delete(App.strWorkPath + "\\proxies\\http_proxies.txt");
+            File.Move(App.strWorkPath + "\\proxies\\http_proxies1.txt", App.strWorkPath + "\\proxies\\http_proxies.txt");
         }
         private void SetProxies()
         {

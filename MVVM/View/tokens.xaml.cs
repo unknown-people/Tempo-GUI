@@ -44,7 +44,7 @@ namespace TempoWithGUI.MVVM.View
                 while (true)
                 {
                     var line = stream.ReadLine();
-                    if (line == null)
+                    if (line == null || line.Trim('\n') == "")
                         break;
                     var token_array = line.Split(':');
                     if(token_array.Length == 3)
@@ -71,17 +71,23 @@ namespace TempoWithGUI.MVVM.View
                     var token_array = line.Split(':');
                     if (token_array.Length == 3)
                     {
-                        email = token_array[1];
-                        password = token_array[2];
+                        if(token_array[0] == token)
+                        {
+                            email = token_array[1];
+                            password = token_array[2];
+                        }
                     }
                     else
                     {
-                        email = token_array[2];
-                        password = token_array[3];
-                        creation = token_array[4];
-                        country = token_array[5];
-                        if (country == "NULL")
-                            country = "";
+                        if(token_array[1] == token)
+                        {
+                            email = token_array[2];
+                            password = token_array[3];
+                            creation = token_array[4];
+                            country = token_array[5];
+                            if (country == "NULL")
+                                country = "";
+                        }
                     }
                 }
             }
@@ -134,7 +140,11 @@ namespace TempoWithGUI.MVVM.View
         private void Remove_Click(object sender, RoutedEventArgs e)
         {
             int line_skip = _tokens.IndexOf((DiscordToken)ListTokens.SelectedItem);
-            _tokens = (List<DiscordToken>)_tokens.Where(n => n.ToString() != ListTokens.SelectedItem.ToString()).ToList();
+            try
+            {
+                _tokens = (List<DiscordToken>)_tokens.Where(n => n.ToString() != ListTokens.SelectedItem.ToString()).ToList();
+            }
+            catch (NullReferenceException){ return; }
             ListTokens.ItemsSource = null;
             ListTokens.ItemsSource = _tokens;
             int i = 0;

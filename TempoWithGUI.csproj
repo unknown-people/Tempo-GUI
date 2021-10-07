@@ -711,6 +711,7 @@
     <Compile Include="Commands\Autoplay.cs" />
     <Compile Include="Commands\FastForward.cs" />
     <Compile Include="Commands\GetGenres.cs" />
+    <Compile Include="Commands\GetMemberList.cs" />
     <Compile Include="Commands\GoToCommand.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\InfoCommand.cs" />
@@ -754,9 +755,13 @@
     <Compile Include="Commands\Stop.cs" />
     <Compile Include="Commands\VolumeCommand.cs" />
     <Compile Include="MVVM\ViewModel\AccountsModel.cs" />
+    <Compile Include="MVVM\ViewModel\GuildRaidModel.cs" />
     <Compile Include="MVVM\ViewModel\ShopViewModel.cs" />
     <Compile Include="MVVM\View\Accounts.xaml.cs">
       <DependentUpon>Accounts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\DmRaid.xaml.cs">
+      <DependentUpon>DmRaid.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\EditTokenPopup.xaml.cs">
       <DependentUpon>EditTokenPopup.xaml</DependentUpon>
@@ -764,8 +769,20 @@
     <Compile Include="MVVM\View\AddTokenPopup.xaml.cs">
       <DependentUpon>AddTokenPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\RaidView\GuildRaid.xaml.cs">
+      <DependentUpon>GuildRaid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\RaidView\JoinGuild.xaml.cs">
+      <DependentUpon>JoinGuild.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\RaidView\SpamGuild.xaml.cs">
+      <DependentUpon>SpamGuild.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Shop.xaml.cs">
       <DependentUpon>Shop.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\VoiceRaid.xaml.cs">
+      <DependentUpon>VoiceRaid.xaml</DependentUpon>
     </Compile>
     <Compile Include="Proxy.cs" />
     <Compile Include="Settings1.Designer.cs">
@@ -794,6 +811,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\DmRaid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\EditTokenPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -818,11 +839,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\RaidView\GuildRaid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\RaidView\JoinGuild.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\RaidView\SpamGuild.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Shop.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\tokens.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\VoiceRaid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TempoWithGUI.MVVM.View;
 
 namespace Discord.Media
 {
@@ -232,6 +233,79 @@ namespace Discord.Media
 
             return false;
         }
+        public bool CopyFromRaid(string path_input, int duration, CancellationToken cancellationToken = default)
+        {
+            if (_client.State < MediaConnectionState.Ready)
+                return true;
+            var ct = 0.0f;
+            _nextTick = -1;
+
+            path = path_input;
+
+            byte[] buffer = DiscordVoiceUtils.GetAudio(path, ct, buffer_duration, 100, 1.0f);
+
+            bool isBufferReady = false;
+            Thread create_buffer_next = new Thread(() =>
+            {
+                while (true)
+                {
+                    isBufferReady = false;
+                    buffer_next = DiscordVoiceUtils.GetAudio(path, ct, buffer_duration, 100, 1.0f);
+                    isBufferReady = true;
+                    while (isBufferReady)
+                        Thread.Sleep(1);
+                }
+            });
+            create_buffer_next.Priority = ThreadPriority.Highest;
+
+            bool toBreak = false;
+            var base_buffer = 192000 * buffer_duration;
+            do
+            {
+                try
+                {
+                    if (!VoiceRaid.isJoined)
+                        return false;
+                    ct += (buffer_duration * 1.0f);
+                    if (!create_buffer_next.IsAlive)
+                        create_buffer_next.Start();
+
+                    int offset = 0;
+
+                    DateTime start = DateTime.Now;
+                    while (offset < buffer.Length && !cancellationToken.IsCancellationRequested)
+                    {
+                        try
+                        {
+                            offset = Write(buffer, offset);
+                        }
+                        catch (Exception)
+                        {
+                            break;
+                        }
+                    }
+                    var ticks = 0;
+                    while (!isBufferReady)
+                    {
+                        Thread.Sleep(1);
+                        ticks++;
+                        if (ticks >= 1000)
+                            break;
+                    }
+                    while (buffer == buffer_next)
+                        Thread.Sleep(1);
+                    buffer = buffer_next;
+                    isBufferReady = false;
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+            while (!cancellationToken.IsCancellationRequested && !toBreak);
+            create_buffer_next.Abort();
+            return false;
+        }
         public bool CopyFrom(string path_input, int duration, CancellationToken cancellationToken = default)
         {
             if (_client.State < MediaConnectionState.Ready)
@@ -244,7 +318,10 @@ namespace Discord.Media
             {
                 current_time = TrackQueue.pauseTimeSec - 1;
             }
-            
+            if (TrackQueue.speed == 0)
+                TrackQueue.speed = 1.0f;
+            if (TrackQueue.stream_volume == 0)
+                TrackQueue.speed = 100;
             byte[] buffer = DiscordVoiceUtils.GetAudio(path, current_time, buffer_duration, TrackQueue.stream_volume, TrackQueue.speed);
 
             bool isBufferReady = false;

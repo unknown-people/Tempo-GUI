@@ -68,7 +68,7 @@ namespace Music_user_bot
             }
             return true;
         }
-        public static void GetProxies(string url)
+        public static void GetProxies(string url, string path = "")
         {
             if (working_proxies == null)
                 working_proxies = new List<Proxy>() { };
@@ -77,7 +77,6 @@ namespace Music_user_bot
                 Directory.CreateDirectory(App.strWorkPath + @"\proxies");
             }
             proxies_file_path = App.strWorkPath + @"\proxies\" + proxies_txt;
-
             while (true)
             {
                 try
@@ -161,11 +160,16 @@ namespace Music_user_bot
         {
             using (var sr = new StreamReader(file_path))
             {
-                string proxy_string = sr.ReadLine();
-                Proxy proxy = new Proxy(proxy_string.Split(':')[0], proxy_string.Split(':')[1]);
-                if (TestProxy(url, proxy))
+                for(int i = 0; i < 100; i++)
                 {
-                    working_proxies.Add(proxy);
+                    string proxy_string = sr.ReadLine();
+                    if (proxy_string == null)
+                        break;
+                    Proxy proxy = new Proxy(proxy_string.Split(':')[0], proxy_string.Split(':')[1]);
+                    if (TestProxy(url, proxy))
+                    {
+                        working_proxies.Add(proxy);
+                    }
                 }
             }
         }

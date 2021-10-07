@@ -151,7 +151,7 @@ namespace Discord
 
                         request.ClearAllHeaders();
                         request.AddHeader("Accept", "*/*");
-                        request.AddHeader("Accept-Encoding", "gzip, deflate, br");
+                        request.AddHeader("Accept-Encoding", "gzip, deflate");
                         request.AddHeader("Accept-Language", "en-US");
                         request.AddHeader("Authorization", _discordClient.Token);
                         request.AddHeader("Connection", "keep-alive");

@@ -87,10 +87,10 @@
                         <ColumnDefinition Width="145"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Whitelist" Margin="10,0,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0" x:Name="WhitelistLabel"/>
-                    <TextBox Style="{DynamicResource ModernTextBoxMultiLine}" Grid.Column="0" HorizontalAlignment="Left" Padding="5,0,0,0"
+                    <TextBox Style="{DynamicResource ModernTextBoxMultiLine}" Grid.Column="0" HorizontalAlignment="Left" Padding="5,0,0,0" FontSize="11"
                          Height="100" Width="130" Margin="0,0,0,0" x:Name="WhitelistIn"/>
                     <TextBlock Text="Admins" Margin="10,0,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2" x:Name="AdminsLabel"/>
-                    <TextBox Style="{DynamicResource ModernTextBoxMultiLine}" Grid.Column="2" HorizontalAlignment="Left" Padding="15"
+                    <TextBox Style="{DynamicResource ModernTextBoxMultiLine}" Grid.Column="2" HorizontalAlignment="Left" Padding="15" FontSize="11"
                          Height="100" Width="145" Margin="0,0,0,0" x:Name="AdminsIn"/>
                 </Grid>
             </StackPanel>

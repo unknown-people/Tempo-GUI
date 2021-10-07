@@ -43,5 +43,9 @@ namespace TempoWithGUI
                 TrackQueue.currentSong.CancellationTokenSource.Cancel();
             Application.Current.Shutdown();
         }
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
     }
 }

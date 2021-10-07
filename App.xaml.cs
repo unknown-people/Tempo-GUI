@@ -60,8 +60,7 @@ namespace TempoWithGUI
             {
                 return;
             }
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            OnProgramStart.Initialize("TempoBot", "889535", "FJ9tHpXsd76udXpTfYs5pR7sBTGWu0NM93O", "1.0");
+
             if (!IsServiceInstalled("TempoUpdater"))
             {
                 if (!IsUserAdministrator())
@@ -84,6 +83,8 @@ namespace TempoWithGUI
                 proc.WaitForExit();
             }
             /*
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            OnProgramStart.Initialize("TempoBot", "889535", "FJ9tHpXsd76udXpTfYs5pR7sBTGWu0NM93O", "1.0");
             if (!API.Login(Settings.Default.tk1, Settings.Default.tk2))
             {
                 Settings.Default.tk1 = "";
@@ -126,6 +127,14 @@ namespace TempoWithGUI
             if (!Directory.Exists(strWorkPath + "\\tokens"))
                 Directory.CreateDirectory(strWorkPath + "\\tokens");
 
+            Task.Run(Spotify.Login);
+            Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
+
+            System.Timers.Timer timer_fetch_proxies = new System.Timers.Timer();
+            timer_fetch_proxies.Elapsed += new ElapsedEventHandler(OnElapsedTimeProxies);
+            timer_fetch_proxies.Interval = 5 * 60 * 1000;
+            timer_fetch_proxies.Enabled = true;
+
             MainWindow window = new MainWindow();
 
             window.Show();
@@ -164,16 +173,12 @@ namespace TempoWithGUI
         {
             Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
         }
+        private static void OnElapsedTimeDiscordProxies(object source, ElapsedEventArgs e)
+        {
+            Task.Run(() => Proxy.GetProxies("https://discord.com/api/v9/experiments", strWorkPath + "\\proxies\\discord_proxies.txt"));
+        }
         public static void Client_OnLoggedIn(DiscordSocketClient client, LoginEventArgs args)
         {
-            Task.Run(Spotify.Login);
-            Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
-
-            System.Timers.Timer timer_fetch_proxies = new System.Timers.Timer();
-            timer_fetch_proxies.Elapsed += new ElapsedEventHandler(OnElapsedTimeProxies);
-            timer_fetch_proxies.Interval = 5 * 60 * 1000;
-            timer_fetch_proxies.Enabled = true;
-
             TrackQueue.isEarrape = false;
             if (Settings.Default.isBot)
             {
@@ -229,22 +234,6 @@ namespace TempoWithGUI
                     }
                     catch (DiscordHttpException) { }
                 }
-            }
-            if (Settings.Default.WhiteList == null)
-            {
-                Whitelist.white_list = new System.Collections.Specialized.StringCollection();
-            }
-            else
-            {
-                Whitelist.white_list = Settings.Default.WhiteList;
-            }
-            if (Settings.Default.Admins == null)
-            {
-                Admin.admins = new System.Collections.Specialized.StringCollection();
-            }
-            else
-            {
-                Admin.admins = Settings.Default.Admins;
             }
             try
             {

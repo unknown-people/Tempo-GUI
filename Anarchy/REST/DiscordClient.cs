@@ -45,7 +45,7 @@ namespace Discord
 
 
         public LockedDiscordConfig Config { get; protected set; }
-        public ProxyClient Proxy { get; private set; }
+        public ProxyClient Proxy { get; set; }
 
 
         protected DiscordClient()

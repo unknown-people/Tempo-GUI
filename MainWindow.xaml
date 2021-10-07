@@ -72,6 +72,11 @@
                     HorizontalContentAlignment="Center"
                     Padding="1,-1,0,0" Background="Gray"
                     x:Name="ExitButton" Style="{StaticResource ExitButtonTheme}" Click="ExitButton_Click"/>
+            <Button Content="__" Grid.Column="1" HorizontalAlignment="Left" Margin="655,10,-480,0" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="9" FontStretch="Expanded" VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center" FontWeight="Bold"
+                    Padding="1,-1,0,0" Background="Gray"
+                    x:Name="MinimizeButton" Style="{StaticResource MinimizeButtonTheme}" Click="MinimizeButton_Click" Grid.RowSpan="2"/>
         </Grid>
     </Border>
 </Window>

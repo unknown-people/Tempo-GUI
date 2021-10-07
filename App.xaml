@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:TempoWithGUI"
              xmlns:viewModel="clr-namespace:TempoWithGUI.MVVM.ViewModel"
              xmlns:view="clr-namespace:TempoWithGUI.MVVM.View"
+             xmlns:viewRaid="clr-namespace:TempoWithGUI.MVVM.View.RaidView"
              Startup="Application_Startup">
     <Application.Resources>
         <ResourceDictionary>
@@ -33,6 +34,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:ShopViewModel}">
                 <view:Shop/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewRaid:GuildRaid}">
+                <viewRaid:GuildRaid/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
