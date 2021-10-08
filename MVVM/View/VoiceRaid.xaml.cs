@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using TempoWithGUI.MVVM.ViewModel;
+using YoutubeExplode;
 
 namespace TempoWithGUI.MVVM.View
 {
@@ -90,13 +91,35 @@ namespace TempoWithGUI.MVVM.View
                 tokens = 0;
             }
             var path = FileIn.Text;
-            if (!File.Exists(path) && playMusic)
+            if (!path.StartsWith("http"))
             {
-                MessageBox.Show("Please insert a valid file path");
-                StartBtn.Cursor = Cursors.Arrow;
-                return;
+                if (path.StartsWith("https://youtu.be/"))
+                    path = path.Split('/').Last();
+                if (!File.Exists(path) && playMusic)
+                {
+                    MessageBox.Show("Please insert a valid file path");
+                    StartBtn.Cursor = Cursors.Arrow;
+                    return;
+                }
+            }
+            else
+            {
+                var videoId = path;
+                if(path.StartsWith("http"))
+                    videoId = path.Split('?').Last().Split('&')[0].Remove(0, 2);
+                try
+                {
+                    path = TrackQueue.GetAudioUrl(videoId);
+                }
+                catch
+                {
+                    MessageBox.Show("Please insert a valid url/file");
+                    StartBtn.Cursor = Cursors.Arrow;
+                    return;
+                }
             }
             isJoined = true;
+            spamJoin = (bool)SpamCB.IsChecked;
             var max_tokens = TokensIn.Text;
             int max = 0;
             if (!(max_tokens == null || max_tokens.ToString().Trim('\n') == ""))
@@ -114,8 +137,10 @@ namespace TempoWithGUI.MVVM.View
                 using (StreamReader reader = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
                 {
                     var line = reader.ReadLine();
-                    while (line != null && line.Trim('\n') != "")
+                    while (true)
                     {
+                        if (line == null || line.Trim('\n') == "")
+                            break;
                         var token_arr = line.Split(':');
                         if (token_arr.Length == 3)
                         {
@@ -137,8 +162,12 @@ namespace TempoWithGUI.MVVM.View
                         HandleIncomingMediaData = false,
                         Intents = DiscordGatewayIntent.Guilds | DiscordGatewayIntent.GuildMessages | DiscordGatewayIntent.GuildVoiceStates
                     });
-                    client.Login(token);
-                    clients.Add(client);
+                    try
+                    {
+                        client.Login(token);
+                        clients.Add(client);
+                    }
+                    catch { }
                     if (max > 0)
                         if (clients.Count == max)
                             break;
@@ -157,7 +186,7 @@ namespace TempoWithGUI.MVVM.View
                         {
                             var voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
                             voiceClient.Connect(channel_id);
-                            if (playMusic)
+                            if (playMusic && !spamJoin)
                             {
                                 path = path.Replace('\\', '/');
 
@@ -187,6 +216,34 @@ namespace TempoWithGUI.MVVM.View
                         }
                     }
                     Thread.Sleep((int)delay);
+                }
+                if (spamJoin)
+                {
+                    Parallel.ForEach(clients, client =>
+                    {
+                        var voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
+
+                        while (isJoined)
+                        {
+                            bool hasSent = false;
+                            int c = 0;
+                            while (!hasSent && c < 3)
+                            {
+                                try
+                                {
+                                    voiceClient.Connect(channel_id);
+                                    Thread.Sleep((int)delay);
+                                    voiceClient.Disconnect();
+                                    hasSent = true;
+                                }
+                                catch (Exception ex)
+                                {
+                                    c++;
+                                }
+                            }
+                            Thread.Sleep((int)delay);
+                        }
+                    });
                 }
             });
         }

@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Gateway;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +27,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
         public static List<string> emojis = new List<string>() { ":laughing:", ":eyes:", ":weary:", ":sob:", ":hot_face:", ":cold_face:", ":man_detective:",
         ":recycle:", ":transgender_flag:"};
         public static bool spamming { get; set; } = false;
+        public static IReadOnlyList<GuildMember> members { get; set; }
         public SpamGuild()
         {
             InitializeComponent();
@@ -63,6 +65,8 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 tokens = 0;
             }
             bool filterOn = (bool)FilterCB.IsChecked;
+            bool mentionOn = (bool)MentionCB.IsChecked;
+            bool rolesOn = (bool)RolesCB.IsChecked;
 
             delay = (int)delay;
             spamming = true;
@@ -75,6 +79,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                     StartBtn.Cursor = Cursors.Arrow;
                     return;
                 }
+            
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
 
@@ -84,8 +89,10 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 using (StreamReader reader = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
                 {
                     var line = reader.ReadLine();
-                    while(line != null && line != "")
+                    while(true)
                     {
+                        if (line == null || line.Trim('\n') == "")
+                            break;
                         var token_arr = line.Split(':');
                         if (token_arr.Length == 3)
                         {
@@ -101,17 +108,41 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 List<DiscordClient> clients = new List<DiscordClient>();
                 foreach (var token in token_list)
                 {
-                    clients.Add(new DiscordClient(token));
+                    try
+                    {
+                        clients.Add(new DiscordClient(token));
+                    }
+                    catch { }
                     if (max > 0)
                         if (clients.Count >= max)
                             break;
+                }
+                Random random = new Random();
+
+                if (mentionOn)
+                {
+                    if(members == null || members.Count == 0)
+                    {
+                        var client = new DiscordSocketClient(new DiscordSocketConfig() { ApiVersion = 9, HandleIncomingMediaData = false });
+                        client.Login(token_list[0]);
+                        Thread.Sleep(1000);
+                        while (true)
+                        {
+                            try
+                            {
+                                members = client.GetGuildChannelMembers(guildId, channelId);
+                                break;
+                            }
+                            catch { Thread.Sleep(500); }
+                        }
+                        client.Logout();
+                    }
                 }
                 int i = 0;
                 Parallel.ForEach(clients, client =>
                 {
                     while (spamming)
                     {
-                        Random random = new Random();
                         var new_msg = message;
                         if (filterOn)
                         {
@@ -119,6 +150,13 @@ namespace TempoWithGUI.MVVM.View.RaidView
                             for(int t = 0; t < random.Next(5,10); t++)
                             {
                                 new_msg += emojis[random.Next(0, emojis.Count)];
+                            }
+                        }
+                        if (mentionOn)
+                        {
+                            for(int t = 0; t < random.Next(3, 5); t++)
+                            {
+                                new_msg += "<@" + members[random.Next(0, members.Count)].User.Id.ToString() + ">\n";
                             }
                         }
                         bool hasSent = false;

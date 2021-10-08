@@ -404,6 +404,7 @@
     <Compile Include="Anarchy\REST\Guild\Member\Models\GuildMemberProperties.cs" />
     <Compile Include="Anarchy\REST\Guild\Member\Models\MemberPruneProperties.cs" />
     <Compile Include="Anarchy\REST\Guild\Member\Models\PartialGuildMember.cs" />
+    <Compile Include="Anarchy\REST\Guild\Models\RulesResult.cs" />
     <Compile Include="Anarchy\REST\Guild\Models\DefaultNotifications.cs" />
     <Compile Include="Anarchy\REST\Guild\Models\PremiumTier.cs" />
     <Compile Include="Anarchy\REST\Guild\Models\VerificationLevel.cs" />
@@ -711,7 +712,6 @@
     <Compile Include="Commands\Autoplay.cs" />
     <Compile Include="Commands\FastForward.cs" />
     <Compile Include="Commands\GetGenres.cs" />
-    <Compile Include="Commands\GetMemberList.cs" />
     <Compile Include="Commands\GoToCommand.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\InfoCommand.cs" />

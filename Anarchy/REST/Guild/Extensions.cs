@@ -197,6 +197,11 @@ namespace Discord
             return (await client.HttpClient.PostAsync($"/invites/{invCode}"))
                                 .Deserialize<GuildInvite>().SetClient(client);
         }
+        public static async Task<GuildInvite> AcceptRulesAsync(this DiscordClient client, string guildId)
+        {
+            return (await client.HttpClient.PutAsync($"/guilds/{guildId}/requests/@me"))
+                                .Deserialize<GuildInvite>().SetClient(client);
+        }
 
         /// <summary>
         /// Joins a guild

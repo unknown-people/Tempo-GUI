@@ -57,7 +57,7 @@ namespace Discord.Media
             {
                 FileName = "ffmpeg.exe",
                 Arguments = $"-nostats -loglevel -8 -t {(duration * speed).ToString().Replace(',', '.')} -ss {offset.ToString().Replace(',', '.')} " +
-                $"-i \"{path}\" -filter:a \"volume={volume_string}\" -ac 2 -f s16le -ar {(int)(48000 / speed)} pipe:1",
+                $"-i \"{path}\" -filter:a \"volume={volume_string}\" -vn -ac 2 -f s16le -ar {(int)(48000 / speed)} pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 CreateNoWindow = true

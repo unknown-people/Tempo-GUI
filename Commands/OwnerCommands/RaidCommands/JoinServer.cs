@@ -26,20 +26,34 @@ namespace Music_user_bot.Commands
                 SendMessageAsync("You need to use a user token to execute this command!");
                 return;
             }
+            string invite_code = null;
+            ulong guildId = 0;
             try
             {
-                var invite_code = Regex.Replace(invite, "https://discord.gg/", string.Empty, RegexOptions.IgnoreCase);
+                invite_code = Regex.Replace(invite, "https://discord.gg/", string.Empty, RegexOptions.IgnoreCase);
 
-                var guildId = ulong.Parse(GetInviteGuildAsync(invite_code).GetAwaiter().GetResult());
+                guildId = ulong.Parse(GetInviteGuildAsync(invite_code).GetAwaiter().GetResult());
 
                 if (IsInGuild(Client, guildId))
                     SendMessageAsync("You're already in the guild");
 
-                Client.JoinGuild(invite_code);
             }
-            catch (Exception)
+            catch { SendMessageAsync("Couldn't join guild.\n\nUsage: " + CommandHandler.Prefix + "joinserver [invite/code]"); return; }
+            int i = 0;
+            while (true)
             {
-                SendMessageAsync("Couldn't join guild.\n\nUsage: " + CommandHandler.Prefix + "joinserver [invite/code]");
+                if (i > 10)
+                    break;
+                try
+                {
+                    Client.JoinGuild(invite_code);
+                    var ver = Client.GetGuildVerificationForm(guildId, invite_code);
+                }
+                catch (Exception ex)
+                {
+                    SendMessageAsync("Couldn't join guild.\n\nUsage: " + CommandHandler.Prefix + "joinserver [invite/code]");
+                }
+                i++;
             }
         }
         public async Task<string> GetInviteGuildAsync(string inv_code)

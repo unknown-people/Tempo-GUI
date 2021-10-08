@@ -236,7 +236,7 @@ namespace Music_user_bot
 
                     start_time = DateTime.Now;
                     pauseTimeSec = 0;
-                    string url = GetAudioUrl(currentSong.Id, currentChannel.Bitrate);
+                    string url = GetAudioUrl(currentSong.Id);
                     DiscordVoiceInput.current_time = 0;
                     DiscordVoiceInput.current_time_tracker = 0;
 
@@ -361,7 +361,7 @@ namespace Music_user_bot
             }
             return false;
         }
-        private string GetAudioUrl(string videoId, uint channelBitrate)
+        public static string GetAudioUrl(string videoId)
         {
             var manifest = App.YouTubeClient.Videos.Streams.GetManifestAsync(videoId).Result;
 

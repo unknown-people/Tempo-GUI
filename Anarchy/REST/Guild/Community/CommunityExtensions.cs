@@ -31,8 +31,8 @@ namespace Discord
 
         public static async Task<GuildVerificationForm> GetGuildVerificationFormAsync(this DiscordClient client, ulong guildId, string inviteCode)
         {
-            return (await client.HttpClient.GetAsync($"/guilds/{guildId}/member-verification?with_guild=false&invite_code={inviteCode}"))
-                                    .Deserialize<GuildVerificationForm>();
+            var form = await client.HttpClient.GetAsync($"/guilds/{guildId}/member-verification?with_guild=false&invite_code={inviteCode}");
+            return form.Deserialize<GuildVerificationForm>();
         }
 
         public static GuildVerificationForm GetGuildVerificationForm(this DiscordClient client, ulong guildId, string inviteCode)

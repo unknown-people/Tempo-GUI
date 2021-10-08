@@ -2,8 +2,8 @@
 using System.Threading;
 using Newtonsoft.Json;
 using System;
-using System.Text;
 using System.Net.Http;
+using System.Text;
 using Leaf.xNet;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,6 +11,7 @@ using OpenQA.Selenium.Chrome;
 using TempoWithGUI;
 using Music_user_bot;
 using System.Security.Authentication;
+using System.IO;
 
 namespace Discord
 {
@@ -136,6 +137,7 @@ namespace Discord
                 try
                 {
                     DiscordHttpResponse resp;
+
                     if (method == Leaf.xNet.HttpMethod.POST && endpoint.Contains("/invites/"))
                     {
                         HttpRequest request = new HttpRequest()
@@ -144,18 +146,28 @@ namespace Discord
                             EnableMiddleHeaders = false,
                             AllowEmptyHeaderValues = false
                         };
+                        
+                        Random rnd = new Random();
+                        Proxy proxy = null;
+                        if (Proxy.working_proxies.Count > 0)
+                        {
+                            proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count)];
+                            if (proxy._ip != "" && proxy != null)
+                            {
+                                ProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
 
-
-                        if (_discordClient.Proxy != null)
-                            request.Proxy = _discordClient.Proxy;
-
+                                if (proxies != null)
+                                    request.Proxy = proxies;
+                            }
+                        }
+                        
                         request.ClearAllHeaders();
                         request.AddHeader("Accept", "*/*");
                         request.AddHeader("Accept-Encoding", "gzip, deflate");
-                        request.AddHeader("Accept-Language", "en-US");
+                        request.AddHeader("Accept-Language", "it");
                         request.AddHeader("Authorization", _discordClient.Token);
                         request.AddHeader("Connection", "keep-alive");
-                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=en-US");
+                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=it");
                         request.AddHeader("DNT", "1");
                         request.AddHeader("origin", "https://discord.com");
                         request.AddHeader("Referer", "https://discord.com/channels/@me");
@@ -180,6 +192,7 @@ namespace Discord
                         else
                         {
                             client.DefaultRequestHeaders.Add("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
+                            client.DefaultRequestHeaders.Add("Accept-Language", "it");
                             client.DefaultRequestHeaders.Add("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
                         }
 
@@ -210,6 +223,82 @@ namespace Discord
                         var response = msg.Raw(method, endpoint, hasData ? new Leaf.xNet.StringContent(json) : null);
 
                         resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+                    }
+                    if (endpoint.Contains("member-verification?with_guild=false&invite_code"))
+                    {
+                        var ep = endpoint.Split('/');
+                        ulong guild_id = 0;
+                        foreach(string chunk in ep)
+                        {
+                            if(ulong.TryParse(chunk, out guild_id))
+                            {
+                                break;
+                            }
+                        }
+                        endpoint = $"/guilds/{guild_id}/requests/@me";
+                        if (!endpoint.StartsWith("https"))
+                            endpoint = DiscordHttpUtil.BuildBaseUrl(_discordClient.Config.ApiVersion, _discordClient.Config.SuperProperties.ReleaseChannel) + endpoint;
+
+                        HttpRequest request = new HttpRequest()
+                        {
+                            KeepTemporaryHeadersOnRedirect = false,
+                            EnableMiddleHeaders = false,
+                            AllowEmptyHeaderValues = false
+                        };
+
+                        Random rnd = new Random();
+                        Proxy proxy = null;
+                        if (Proxy.working_proxies.Count > 0)
+                        {
+                            proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count)];
+                            if (proxy._ip != "" && proxy != null)
+                            {
+                                ProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+
+                                if (proxies != null)
+                                    request.Proxy = proxies;
+                            }
+                        }
+
+                        var form = JsonConvert.DeserializeObject<GuildVerificationForm>(JsonConvert.SerializeObject(resp.Body));
+                        var time_zone = int.Parse(form.Version.Split('+')[1].Split(':')[0]);
+                        StringBuilder sb = new StringBuilder(form.Version);
+                        int h = int.Parse(sb[11].ToString() + sb[12].ToString());
+                        h = h - 2;
+                        if (h == -1)
+                            h = 23;
+                        if (h == -2)
+                            h = 22;
+                        string buf1 = form.Version.Substring(0, 11) + h.ToString() + form.Version.Substring(13);
+                        form.Version = buf1;
+                        string json_string = "";
+                        try
+                        {
+                            form.Fields[0].Response = true;
+                        }
+                        catch { }
+
+                        json_string = JsonConvert.SerializeObject(form, Formatting.None);
+                        json_string = "{" + json_string.Substring(json_string.Split(',')[0].Length + 1);
+                        var guildId = endpoint.Split('/')[1];
+                        request.ClearAllHeaders();
+                        request.AddHeader("Accept", "*/*");
+                        request.AddHeader("Accept-Encoding", "gzip, deflate");
+                        request.AddHeader("Accept-Language", "it");
+                        request.AddHeader("Authorization", _discordClient.Token);
+                        request.AddHeader("Content-Type", "application/json");
+                        request.AddHeader("Content-Length", json_string.Length.ToString());
+                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=it");
+                        request.AddHeader("origin", "https://discord.com");
+                        request.AddHeader("Referer", $"https://discord.com/channels/{guildId}");
+                        request.AddHeader("TE", "Trailers");
+                        request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
+                        request.AddHeader("X-Debug-Options", "bugReporterEnabled");
+                        request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
+
+                        var response = request.Put(endpoint, json_string, "application/json");
+
+                        var resp1 = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
                     }
 
                     DiscordHttpUtil.ValidateResponse(resp.StatusCode, resp.Body);

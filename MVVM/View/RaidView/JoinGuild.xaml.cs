@@ -38,9 +38,10 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 return;
             StartBtn.Cursor = Cursors.AppStarting;
             var invite = InviteIn.Text;
+            var guildId = GuildIn.Text;
             if (invite.StartsWith("https://discord.gg/"))
                 invite = invite.Remove(0, ("https://discord.gg/").Length);
-            if(invite == null || invite == "")
+            if((invite == null || invite == "") || (guildId == null || guildId == ""))
             {
                 StartBtn.Cursor = Cursors.Arrow;
                 return;
@@ -48,6 +49,12 @@ namespace TempoWithGUI.MVVM.View.RaidView
             if(!float.TryParse(DelayIn.Text, out var delay) || (!int.TryParse(TokensIn.Text, out var tokens))){
                 delay = 250;
                 tokens = 0;
+            }
+            ulong guild_id = 0;
+            if(!ulong.TryParse(guildId, out guild_id))
+            {
+                StartBtn.Cursor = Cursors.Arrow;
+                return;
             }
             joining = true;
             var max_tokens = TokensIn.Text;
@@ -59,6 +66,8 @@ namespace TempoWithGUI.MVVM.View.RaidView
                     StartBtn.Cursor = Cursors.Arrow;
                     return;
                 }
+            bool acceptRules = (bool)RulesCB.IsChecked;
+
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
             Task.Run(() =>
@@ -84,7 +93,11 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 List<DiscordClient> clients = new List<DiscordClient>();
                 foreach (var token in token_list)
                 {
-                    clients.Add(new DiscordClient(token));
+                    try
+                    {
+                        clients.Add(new DiscordClient(token));
+                    }
+                    catch { }
                     if (max > 0)
                         if (clients.Count >= max)
                             break;
@@ -113,6 +126,14 @@ namespace TempoWithGUI.MVVM.View.RaidView
                         try
                         {
                             client.JoinGuild(invite);
+                            if (acceptRules)
+                            {
+                                try
+                                {
+                                    var ver = client.GetGuildVerificationForm(guild_id, invite);
+                                }
+                                catch (Exception ex) { Thread.Sleep((int)delay); }
+                            }
                             hasJoined = true;
                         }
                         catch (Exception ex)

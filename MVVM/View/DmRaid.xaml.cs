@@ -72,6 +72,16 @@ namespace TempoWithGUI.MVVM.View
             bool embedOn = (bool)EmbedCB.IsChecked;
             bool deleteOn = (bool)DeleteCB.IsChecked;
 
+            var max_tokens = TokensIn.Text;
+
+            int max = 0;
+            if (!(max_tokens == null || max_tokens.ToString().Trim('\n') == ""))
+                if (!int.TryParse(max_tokens, out max))
+                {
+                    MessageBox.Show("Please insert a valid value for max tokens");
+                    StartBtn.Cursor = Cursors.Arrow;
+                    return;
+                }
             delay = (int)delay;
             spamming = true;
             StatusLight.Fill = Brushes.Green;
@@ -83,8 +93,10 @@ namespace TempoWithGUI.MVVM.View
                 using (StreamReader reader = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
                 {
                     var line = reader.ReadLine();
-                    while (line != null && line != "")
+                    while (true)
                     {
+                        if (line == null || line == "")
+                            break;
                         var token_arr = line.Split(':');
                         if (token_arr.Length == 3)
                         {
@@ -100,7 +112,14 @@ namespace TempoWithGUI.MVVM.View
                 List<DiscordClient> clients = new List<DiscordClient>();
                 foreach (var token in token_list)
                 {
-                    clients.Add(new DiscordClient(token));
+                    try
+                    {
+                        clients.Add(new DiscordClient(token));
+                    }
+                    catch { }
+                    if (max > 0)
+                        if (clients.Count >= max)
+                            break;
                 }
                 int i = 0;
                 Parallel.ForEach(clients, client =>
