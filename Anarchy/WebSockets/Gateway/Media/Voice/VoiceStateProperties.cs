@@ -70,7 +70,7 @@ namespace Discord.Gateway
 
                 if (GuildProperty.Set)
                 {
-                    if (GuildId.HasValue)
+                    if (GuildId.HasValue && GuildId != 0)
                         states.GuildVoiceStates.TryGetValue(GuildId.Value, out state);
                     else
                         state = states.PrivateChannelVoiceState;
@@ -78,7 +78,7 @@ namespace Discord.Gateway
                     if (state != null && !ChannelProperty.Set)
                         ChannelId = state.Channel == null ? null : (ulong?)state.Channel.Id;
                 }
-                else if (ChannelProperty.Set && ChannelId.HasValue)
+                else if (ChannelProperty.Set)
                 {
                     var channel = client.GetChannel(ChannelId.Value);
 

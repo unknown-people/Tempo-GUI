@@ -46,9 +46,9 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 StartBtn.Cursor = Cursors.Arrow;
                 return;
             }
-            if(!float.TryParse(DelayIn.Text, out var delay) || (!int.TryParse(TokensIn.Text, out var tokens))){
+            if(!float.TryParse(DelayIn.Text, out var delay) || (!int.TryParse(TokensIn.Text, out var tokens_n))){
                 delay = 250;
-                tokens = 0;
+                tokens_n = 0;
             }
             ulong guild_id = 0;
             if(!ulong.TryParse(guildId, out guild_id))
@@ -70,25 +70,13 @@ namespace TempoWithGUI.MVVM.View.RaidView
 
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
-            Task.Run(() =>
+            Thread join = new Thread(() =>
             {
                 var token_list = new List<string>() { };
-                using(StreamReader reader = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
+                foreach(var tk in tokens._tokens)
                 {
-                    var line = reader.ReadLine();
-                    while(line != null)
-                    {
-                        var token_arr = line.Split(':');
-                        if (token_arr.Length == 3)
-                        {
-                            token_list.Add(token_arr[0]);
-                        }
-                        else
-                        {
-                            token_list.Add(token_arr[1]);
-                        }
-                        line = reader.ReadLine();
-                    }
+                    if (tk.Active)
+                        token_list.Add(tk.Token);
                 }
                 List<DiscordClient> clients = new List<DiscordClient>();
                 foreach (var token in token_list)
@@ -130,7 +118,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                             {
                                 try
                                 {
-                                    var ver = client.GetGuildVerificationForm(guild_id, invite);
+                                    client.AcceptRulesAsync(guildId);
                                 }
                                 catch (Exception ex) { Thread.Sleep((int)delay); }
                             }
@@ -155,6 +143,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 }
                 Dispatcher.Invoke(() => Set_Light(false));
             });
+            join.Start();
         }
         private void Stop_Click(object sender, RoutedEventArgs e)
         {

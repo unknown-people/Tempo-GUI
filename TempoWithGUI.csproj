@@ -710,6 +710,7 @@
     <Compile Include="AudioTrack.cs" />
     <Compile Include="Commands\Artist.cs" />
     <Compile Include="Commands\Autoplay.cs" />
+    <Compile Include="Commands\Call.cs" />
     <Compile Include="Commands\FastForward.cs" />
     <Compile Include="Commands\GetGenres.cs" />
     <Compile Include="Commands\GoToCommand.cs" />
@@ -754,11 +755,15 @@
     <Compile Include="Commands\Speed.cs" />
     <Compile Include="Commands\Stop.cs" />
     <Compile Include="Commands\VolumeCommand.cs" />
+    <Compile Include="DiscordAccount.cs" />
     <Compile Include="MVVM\ViewModel\AccountsModel.cs" />
     <Compile Include="MVVM\ViewModel\GuildRaidModel.cs" />
     <Compile Include="MVVM\ViewModel\ShopViewModel.cs" />
     <Compile Include="MVVM\View\Accounts.xaml.cs">
       <DependentUpon>Accounts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\CallRaid.xaml.cs">
+      <DependentUpon>CallRaid.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\DmRaid.xaml.cs">
       <DependentUpon>DmRaid.xaml</DependentUpon>
@@ -768,6 +773,9 @@
     </Compile>
     <Compile Include="MVVM\View\AddTokenPopup.xaml.cs">
       <DependentUpon>AddTokenPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\RaidView\GuildRaid.xaml.cs">
       <DependentUpon>GuildRaid.xaml</DependentUpon>
@@ -811,6 +819,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\CallRaid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\DmRaid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -820,6 +832,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MVVM\View\AddTokenPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

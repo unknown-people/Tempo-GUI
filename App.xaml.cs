@@ -18,6 +18,7 @@ using Music_user_bot;
 using System.ServiceProcess;
 using YoutubeExplode;
 using Auth.GG_Winform_Example;
+using TempoWithGUI.MVVM.View;
 
 namespace TempoWithGUI
 {
@@ -26,7 +27,7 @@ namespace TempoWithGUI
     /// </summary>
     public partial class App : Application
     {
-        public static string api_key { get; set; } = "3e0c347c-d75-4539-905092-b8dce";
+        public static string api_key { get; set; } = null;
         public static YoutubeClient YouTubeClient { get; private set; } = new YoutubeClient();
 
         public static Dictionary<ulong, TrackQueue> TrackLists = new Dictionary<ulong, TrackQueue>();
@@ -82,62 +83,86 @@ namespace TempoWithGUI
                 });
                 proc.WaitForExit();
             }
-            /*
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            OnProgramStart.Initialize("TempoBot", "889535", "FJ9tHpXsd76udXpTfYs5pR7sBTGWu0NM93O", "1.0");
-            if (!API.Login(Settings.Default.tk1, Settings.Default.tk2))
+            if(Settings.Default.tk1 == "" || Settings.Default.tk2 == "")
             {
-                Settings.Default.tk1 = "";
-                Settings.Default.tk2 = "";
-                Settings.Default.Save();
-                Settings.Default.Reload();
-                SaveSettings();
-                return;
+                var login = new Login();
+                login.ShowDialog();
             }
-            */
-            while (true)
+            else
             {
-                ServiceController sc = null;
-                try
+                var key = Login.login(Settings.Default.tk1, Settings.Default.tk2);
+                if (key != null)
                 {
-                    sc = new ServiceController("TempoUpdater");
+                    api_key = key;
+                    while (true)
+                    {
+                        ServiceController sc = null;
+                        try
+                        {
+                            sc = new ServiceController("TempoUpdater");
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            continue;
+                        }
+                        if (sc == null)
+                            break;
+                        switch (sc.Status)
+                        {
+                            case ServiceControllerStatus.Stopped:
+                                sc.Start();
+                                break;
+                            case ServiceControllerStatus.Paused:
+                                sc.Continue();
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    }
+
+                    App.programFiles = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
+
+                    if (!Directory.Exists(App.strWorkPath + "\\tokens"))
+                        Directory.CreateDirectory(App.strWorkPath + "\\tokens");
+
+                    Task.Run(Spotify.Login);
+                    Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
+
+                    System.Timers.Timer timer_fetch_proxies = new System.Timers.Timer();
+                    timer_fetch_proxies.Elapsed += new ElapsedEventHandler(App.OnElapsedTimeProxies);
+                    timer_fetch_proxies.Interval = 5 * 60 * 1000;
+                    timer_fetch_proxies.Enabled = true;
+                    using (StreamReader stream = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt", true))
+                    {
+                        tokens._tokens = new List<DiscordToken>() { };
+                        while (true)
+                        {
+                            var line = stream.ReadLine();
+                            if (line == null || line.Trim('\n') == "")
+                                break;
+                            var token_array = line.Split(':');
+                            if (token_array.Length == 3)
+                                tokens._tokens.Add(new DiscordToken(true, token_array[0], "U"));
+                            else
+                                tokens._tokens.Add(new DiscordToken(true, token_array[1], token_array[0]));
+                        }
+                    }
+                    MainWindow window = new MainWindow();
+
+                    window.Show();
                 }
-                catch (InvalidOperationException)
+                else
                 {
-                    continue;
+                    Settings.Default.tk1 = "";
+                    Settings.Default.tk2 = "";
+                    Settings.Default.Save();
+                    Settings.Default.Reload();
+                    SaveSettings();
+                    Application.Current.Shutdown();
+                    return;
                 }
-                if (sc == null)
-                    break;
-                switch (sc.Status)
-                {
-                    case ServiceControllerStatus.Stopped:
-                        sc.Start();
-                        break;
-                    case ServiceControllerStatus.Paused:
-                        sc.Continue();
-                        break;
-                    default:
-                        break;
-                }
-                break;
             }
-
-            programFiles = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
-
-            if (!Directory.Exists(strWorkPath + "\\tokens"))
-                Directory.CreateDirectory(strWorkPath + "\\tokens");
-
-            Task.Run(Spotify.Login);
-            Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
-
-            System.Timers.Timer timer_fetch_proxies = new System.Timers.Timer();
-            timer_fetch_proxies.Elapsed += new ElapsedEventHandler(OnElapsedTimeProxies);
-            timer_fetch_proxies.Interval = 5 * 60 * 1000;
-            timer_fetch_proxies.Enabled = true;
-
-            MainWindow window = new MainWindow();
-
-            window.Show();
         }
 
         public static bool CanModifyList(DiscordSocketClient client, DiscordMessage message)
@@ -169,7 +194,7 @@ namespace TempoWithGUI
                 TrackQueue.isPaused = false;
             }
         }
-        private static void OnElapsedTimeProxies(object source, ElapsedEventArgs e)
+        public static void OnElapsedTimeProxies(object source, ElapsedEventArgs e)
         {
             Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
         }

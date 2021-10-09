@@ -1,7 +1,7 @@
 ﻿using Discord;
+using Discord.Gateway;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,17 +19,14 @@ using TempoWithGUI.MVVM.ViewModel;
 namespace TempoWithGUI.MVVM.View
 {
     /// <summary>
-    /// Interaction logic for DmRaid.xaml
+    /// Interaction logic for CallRaid.xaml
     /// </summary>
-    public partial class DmRaid : Window
+    public partial class CallRaid : Window
     {
-        public static List<string> emojis = new List<string>() { ":laughing:", ":eyes:", ":weary:", ":sob:", ":hot_face:", ":cold_face:", ":man_detective:",
-        ":recycle:", ":transgender_flag:"};
-        public static bool spamming { get; set; } = false;
-        public DmRaid()
+        public static bool spamming { get; set; }
+        public CallRaid()
         {
             InitializeComponent();
-            Set_Light(spamming);
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -53,12 +50,6 @@ namespace TempoWithGUI.MVVM.View
                 StartBtn.Cursor = Cursors.Arrow;
                 return;
             }
-            var message = MessageIn.Text;
-            if (message == null || message == "")
-            {
-                StartBtn.Cursor = Cursors.Arrow;
-                return;
-            }
             if (!ulong.TryParse(user_id, out userId))
             {
                 MessageBox.Show("Please use a valid user ID");
@@ -68,8 +59,6 @@ namespace TempoWithGUI.MVVM.View
             {
                 delay = 1000;
             }
-            bool embedOn = (bool)EmbedCB.IsChecked;
-            bool deleteOn = (bool)DeleteCB.IsChecked;
 
             var max_tokens = TokensIn.Text;
 
@@ -94,16 +83,23 @@ namespace TempoWithGUI.MVVM.View
                     if (tk.Active)
                         token_list.Add(tk.Token);
                 }
-                List<DiscordClient> clients = new List<DiscordClient>();
+                List<DiscordSocketClient> clients = new List<DiscordSocketClient>();
                 foreach (var token in token_list)
                 {
+                    var client = new DiscordSocketClient(new DiscordSocketConfig()
+                    {
+                        ApiVersion = 9,
+                        HandleIncomingMediaData = false,
+                        Intents = DiscordGatewayIntent.Guilds | DiscordGatewayIntent.GuildMessages | DiscordGatewayIntent.GuildVoiceStates
+                    });
                     try
                     {
-                        clients.Add(new DiscordClient(token));
+                        client.Login(token);
+                        clients.Add(client);
                     }
                     catch { }
                     if (max > 0)
-                        if (clients.Count >= max)
+                        if (clients.Count == max)
                             break;
                 }
                 int i = 0;
@@ -113,30 +109,25 @@ namespace TempoWithGUI.MVVM.View
                     {
                         Random random = new Random();
                         EmbedMaker new_msg = null;
-                        if (embedOn)
-                        {
-                            new_msg = new EmbedMaker() { Title = client.User.Username, TitleUrl = "https://discord.gg/DWP2AMTWdZ", Color = System.Drawing.Color.IndianRed, Description = message };
-                        }
                         bool hasSent = false;
                         int c = 0;
                         while (!hasSent && c < 3)
                         {
                             try
                             {
-                                var dm = client.CreateDM(userId);
-                                DiscordMessage msg = null;
-                                if(embedOn)
-                                    msg = dm.SendMessage(new_msg);
-                                else
-                                    msg = dm.SendMessage(message);
-                                if (deleteOn)
+                                PrivateChannel dm = client.CreateDM(userId);
+
+
+                                var vc = client.GetPrivateVoiceClient();                                
+                                vc.Connect(dm.Id);
+
+                                client.StartCall(dm.Id);
+
+                                while (vc.State != Discord.Media.MediaConnectionState.Ready)
                                 {
-                                    try
-                                    {
-                                        msg.Delete();
-                                    }
-                                    catch { }
+                                    Thread.Sleep(100);
                                 }
+
                                 hasSent = true;
                             }
                             catch (Exception ex)
@@ -146,7 +137,6 @@ namespace TempoWithGUI.MVVM.View
                         }
                         Thread.Sleep((int)delay);
                     }
-
                 });
                 Dispatcher.Invoke(() => StatusLight.Fill = Brushes.Red);
             });

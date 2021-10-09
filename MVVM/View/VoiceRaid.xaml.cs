@@ -85,10 +85,9 @@ namespace TempoWithGUI.MVVM.View
                 StartBtn.Cursor = Cursors.Arrow;
                 return;
             }
-            if (!float.TryParse(DelayIn.Text, out var delay) || (!int.TryParse(TokensIn.Text, out var tokens)))
+            if (!float.TryParse(DelayIn.Text, out var delay))
             {
                 delay = 250;
-                tokens = 0;
             }
             var path = FileIn.Text;
             if (!path.StartsWith("http"))
@@ -131,27 +130,13 @@ namespace TempoWithGUI.MVVM.View
                 }
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
-            Task.Run(() =>
+            Thread spam = new Thread(() =>
             {
                 var token_list = new List<string>() { };
-                using (StreamReader reader = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
+                foreach (var tk in tokens._tokens)
                 {
-                    var line = reader.ReadLine();
-                    while (true)
-                    {
-                        if (line == null || line.Trim('\n') == "")
-                            break;
-                        var token_arr = line.Split(':');
-                        if (token_arr.Length == 3)
-                        {
-                            token_list.Add(token_arr[0]);
-                        }
-                        else
-                        {
-                            token_list.Add(token_arr[1]);
-                        }
-                        line = reader.ReadLine();
-                    }
+                    if (tk.Active)
+                        token_list.Add(tk.Token);
                 }
                 List<DiscordSocketClient> clients = new List<DiscordSocketClient>();
                 foreach (var token in token_list)
@@ -161,7 +146,7 @@ namespace TempoWithGUI.MVVM.View
                         ApiVersion = 9,
                         HandleIncomingMediaData = false,
                         Intents = DiscordGatewayIntent.Guilds | DiscordGatewayIntent.GuildMessages | DiscordGatewayIntent.GuildVoiceStates
-                    });
+                    }, false);
                     try
                     {
                         client.Login(token);
@@ -200,11 +185,30 @@ namespace TempoWithGUI.MVVM.View
                                         try
                                         {
                                             voiceClient.Disconnect();
+                                            break;
                                         }
-                                        catch { Thread.Sleep(500); s++; }
+                                        catch { Thread.Sleep(200); s++; }
                                     }
                                     Dispatcher.Invoke(() => Set_Light(false));
-                                    client.Logout();
+                                    clients.Remove(client);
+                                    client.Dispose();
+                                    isJoined = false;
+                                });
+                            }
+                            else
+                            {
+                                Task.Run(() =>
+                                {
+                                    while(isJoined)
+                                        Thread.Sleep(100);
+                                    try
+                                    {
+                                        voiceClient.Disconnect();
+                                    }
+                                    catch { }
+                                    Dispatcher.Invoke(() => Set_Light(false));
+                                    clients.Remove(client);
+                                    client.Dispose();
                                 });
                             }
                             hasJoined = true;
@@ -246,6 +250,7 @@ namespace TempoWithGUI.MVVM.View
                     });
                 }
             });
+            spam.Start();
         }
         private void Stop_Click(object sender, RoutedEventArgs e)
         {

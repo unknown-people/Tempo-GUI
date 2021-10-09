@@ -129,7 +129,7 @@ namespace Discord.Gateway
         private ulong _appId;
 
 
-        public DiscordSocketClient(DiscordSocketConfig config = null) : base()
+        public DiscordSocketClient(DiscordSocketConfig config = null, bool handleIncomingMessages = true) : base()
         {
             RequestLock = new object();
 
@@ -175,8 +175,10 @@ namespace Discord.Gateway
                 else
                     OnLoggedOut?.Invoke(this, new LogoutEventArgs(err, args.Reason));
             };
-
-            WebSocket.OnMessageReceived += WebSocket_OnMessageReceived;
+            if (handleIncomingMessages)
+                WebSocket.OnMessageReceived += WebSocket_OnMessageReceived;
+            else
+                WebSocket.OnMessageReceived += WebSocket_OnMessageReceivedMinimal;
 
             VoiceClients = new VoiceClientDictionary(this);
 
@@ -270,7 +272,178 @@ namespace Discord.Gateway
                 Task.Run(() => OnUserSpeaking.Invoke(this, new VoiceChannelSpeakingEventArgs(client, stream)));
         }
 
+        private void WebSocket_OnMessageReceivedMinimal(object sender, DiscordWebSocketMessage<GatewayOpcode> message)
+        {
+            Sequence = message.Sequence;
 
+            switch (message.Opcode)
+            {
+                case GatewayOpcode.Event:
+                    /*
+                    Console.WriteLine(message.EventName);
+                    
+                    File.AppendAllText("Debug.log", $"{message.EventName}: {message.Data}\n");
+                    */
+                    switch (message.EventName)
+                    {
+                        case "READY":
+                            LoginEventArgs login = message.Data.ToObject<LoginEventArgs>().SetClient(this);
+
+                            if (login.Application != null) _appId = login.Application.Value<ulong>("id");
+
+                            this.User = login.User;
+                            this.UserSettings = User.Type == DiscordUserType.User ? login.Settings : null;
+                            this.SessionId = login.SessionId;
+
+                            if (Config.Cache && this.User.Type == DiscordUserType.User)
+                            {
+                                PrivateChannels.AddRange(login.PrivateChannels);
+
+                                foreach (var presence in login.Presences)
+                                    Presences[presence.UserId] = presence;
+
+                                foreach (var guild in login.Guilds)
+                                {
+                                    ApplyGuild(GuildCache[guild.Id] = (SocketGuild)guild);
+                                    VoiceClients[guild.Id] = new DiscordVoiceClient(this, guild.Id);
+                                }
+
+                                foreach (var settings in login.ClientGuildSettings)
+                                {
+                                    if (settings.GuildId.HasValue)
+                                        GuildSettings.Add(settings.Guild.Id, settings);
+                                    else
+                                        PrivateChannelSettings = settings.ChannelOverrides.ToList();
+                                }
+                            }
+
+                            LoggedIn = true;
+                            State = GatewayConnectionState.Connected;
+
+                            if (OnLoggedIn != null)
+                                Task.Run(() => OnLoggedIn.Invoke(this, login));
+                            break;
+                        case "USER_UPDATE":
+                            DiscordUser user = message.Data.ToObject<DiscordUser>().SetClient(this);
+
+                            if (user.Id == User.Id)
+                                User.Update(user);
+
+                            if (Config.Cache)
+                            {
+                                lock (PrivateChannels.Lock)
+                                {
+                                    foreach (var dm in PrivateChannels)
+                                    {
+                                        foreach (var recipient in dm.Recipients)
+                                        {
+                                            if (recipient.Id == user.Id)
+                                            {
+                                                recipient.Update(user);
+
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (OnUserUpdated != null)
+                                Task.Run(() => OnUserUpdated.Invoke(this, new UserEventArgs(user)));
+                            break;
+                        case "VOICE_STATE_UPDATE":
+                            try
+                            {
+                                DiscordVoiceState newState = message.Data.ToObject<DiscordVoiceState>().SetClient(this);
+
+                                if (Config.Cache)
+                                {
+                                    if (newState.Guild == null)
+                                        VoiceStates[newState.UserId].PrivateChannelVoiceState = newState;
+                                    else
+                                        VoiceStates[newState.UserId].GuildStates[newState.Guild.Id] = newState;
+
+                                    // we also store voice states within SocketGuilds, so make sure to update those.
+                                    foreach (var guild in this.GetCachedGuilds())
+                                    {
+                                        if (!guild.Unavailable)
+                                        {
+                                            if (newState.Guild == null || guild.Id != newState.Guild.Id)
+                                                guild._voiceStates.RemoveFirst(s => s.UserId == newState.UserId);
+                                            else
+                                            {
+                                                int i = guild._voiceStates.FindIndex(s => s.UserId == newState.UserId);
+
+                                                if (i > -1)
+                                                    guild._voiceStates[i] = newState;
+                                                else
+                                                    guild._voiceStates.Add(newState);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (newState.UserId == User.Id)
+                                {
+                                    if (newState.Guild == null) VoiceClients.Private.SetSessionId(newState.SessionId);
+                                    else VoiceClients[newState.Guild.Id].SetSessionId(newState.SessionId);
+                                }
+
+                                if (OnVoiceStateUpdated != null)
+                                    Task.Run(() => OnVoiceStateUpdated.Invoke(this, new VoiceStateEventArgs(newState)));
+                            }
+                            catch (JsonException) { } // very lazy fix for joined_at sometimes being null
+                            break;
+                        case "VOICE_SERVER_UPDATE":
+                            OnMediaServer?.Invoke(this, message.Data.ToObject<DiscordMediaServer>().SetClient(this));
+                            break;
+                        case "CHANNEL_UPDATE":
+                            if (Config.Cache || OnChannelUpdated != null)
+                            {
+                                var channel = ((JObject)message.Data).ParseDeterministic<DiscordChannel>();
+
+                                if (Config.Cache)
+                                {
+                                    if (channel.Type == ChannelType.DM || channel.Type == ChannelType.Group)
+                                        PrivateChannels.ReplaceFirst(c => c.Id == channel.Id, (PrivateChannel)channel);
+                                    else
+                                    {
+                                        GuildChannel guildChannel = (GuildChannel)channel;
+                                        GuildCache[guildChannel.GuildId].ChannelsConcurrent.ReplaceFirst(c => c.Id == guildChannel.Id, guildChannel);
+                                    }
+                                }
+
+                                if (OnChannelUpdated != null)
+                                    Task.Run(() => OnChannelUpdated.Invoke(this, new ChannelEventArgs(channel)));
+                            }
+                            break;
+                    }
+                    break;
+                case GatewayOpcode.InvalidSession:
+                    LoggedIn = false;
+
+                    this.LoginToGateway();
+                    break;
+                case GatewayOpcode.Connected:
+                    this.LoginToGateway();
+
+                    Task.Run(() =>
+                    {
+                        int interval = message.Data.ToObject<JObject>().GetValue("heartbeat_interval").ToObject<int>() - 1000;
+
+                        try
+                        {
+                            while (true)
+                            {
+                                this.Send(GatewayOpcode.Heartbeat, this.Sequence);
+                                Thread.Sleep(interval);
+                            }
+                        }
+                        catch { }
+                    });
+                    break;
+            }
+        }
         private void WebSocket_OnMessageReceived(object sender, DiscordWebSocketMessage<GatewayOpcode> message)
         {
             Sequence = message.Sequence;
@@ -934,7 +1107,7 @@ namespace Discord.Gateway
 
         public void Dispose()
         {
-            Dispose(false);
+            Dispose(true);
         }
     }
 }

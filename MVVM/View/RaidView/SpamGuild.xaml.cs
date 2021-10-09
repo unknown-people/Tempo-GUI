@@ -43,10 +43,14 @@ namespace TempoWithGUI.MVVM.View.RaidView
             var channel_id = ChannelIn.Text;
             ulong channelId = 0;
             ulong guildId;
-            if ((guild_id == null || guild_id == "") || (channel_id == null || channel_id == ""))
+            if ((guild_id == null || guild_id == ""))
             {
                 StartBtn.Cursor = Cursors.Arrow;
                 return;
+            }
+            if (channel_id == null || channel_id == "")
+            {
+                channel_id = "0";
             }
             var message = MessageIn.Text;
             if(message == null || message == "")
@@ -59,10 +63,9 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 MessageBox.Show("Please use a valid guild/channel ID");
                 return;
             }
-            if (!float.TryParse(DelayIn.Text, out var delay) && (!int.TryParse(TokensIn.Text, out var tokens)))
+            if (!float.TryParse(DelayIn.Text, out var delay))
             {
                 delay = 1000;
-                tokens = 0;
             }
             bool filterOn = (bool)FilterCB.IsChecked;
             bool mentionOn = (bool)MentionCB.IsChecked;
@@ -83,27 +86,13 @@ namespace TempoWithGUI.MVVM.View.RaidView
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
 
-            Task.Run(() =>
+            Thread spam = new Thread(() =>
             {
                 var token_list = new List<string>() { };
-                using (StreamReader reader = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
+                foreach (var tk in tokens._tokens)
                 {
-                    var line = reader.ReadLine();
-                    while(true)
-                    {
-                        if (line == null || line.Trim('\n') == "")
-                            break;
-                        var token_arr = line.Split(':');
-                        if (token_arr.Length == 3)
-                        {
-                            token_list.Add(token_arr[0]);
-                        }
-                        else
-                        {
-                            token_list.Add(token_arr[1]);
-                        }
-                        line = reader.ReadLine();
-                    }
+                    if (tk.Active)
+                        token_list.Add(tk.Token);
                 }
                 List<DiscordClient> clients = new List<DiscordClient>();
                 foreach (var token in token_list)
@@ -118,7 +107,11 @@ namespace TempoWithGUI.MVVM.View.RaidView
                             break;
                 }
                 Random random = new Random();
-
+                IReadOnlyList<GuildChannel> channels = null;
+                if (channelId == 0)
+                {
+                    channels = clients[0].GetGuildChannels(guildId);
+                }
                 if (mentionOn)
                 {
                     if(members == null || members.Count == 0)
@@ -130,7 +123,10 @@ namespace TempoWithGUI.MVVM.View.RaidView
                         {
                             try
                             {
-                                members = client.GetGuildChannelMembers(guildId, channelId);
+                                if (channelId != 0)
+                                    members = client.GetGuildChannelMembers(guildId, channelId);
+                                else
+                                    members = client.GetGuildChannelMembers(guildId, channels[(int)(channels.Count / 2)].Id);
                                 break;
                             }
                             catch { Thread.Sleep(500); }
@@ -138,11 +134,20 @@ namespace TempoWithGUI.MVVM.View.RaidView
                         client.Logout();
                     }
                 }
+
                 int i = 0;
                 Parallel.ForEach(clients, client =>
                 {
                     while (spamming)
                     {
+                        ulong nc = 0;
+                        if(channelId == 0)
+                        {
+                            var channel = channels[random.Next(0, channels.Count)];
+                            while(!channel.IsText)
+                                channel = channels[random.Next(0, channels.Count)];
+                            nc = channel.Id;
+                        }
                         var new_msg = message;
                         if (filterOn)
                         {
@@ -154,6 +159,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                         }
                         if (mentionOn)
                         {
+                            new_msg += "\n";
                             for(int t = 0; t < random.Next(3, 5); t++)
                             {
                                 new_msg += "<@" + members[random.Next(0, members.Count)].User.Id.ToString() + ">\n";
@@ -165,7 +171,10 @@ namespace TempoWithGUI.MVVM.View.RaidView
                         {
                             try
                             {
-                                client.SendMessage(channelId, new_msg);
+                                if (channelId == 0)
+                                    client.SendMessage(nc, new_msg);
+                                else
+                                    client.SendMessage(channelId, new_msg);
                                 hasSent = true;
                             }
                             catch (Exception ex)
@@ -179,6 +188,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 });
                 Dispatcher.Invoke(() => StatusLight.Fill = Brushes.Red);
             });
+            spam.Start();
         }
         private void Stop_Click(object sender, RoutedEventArgs e)
         {

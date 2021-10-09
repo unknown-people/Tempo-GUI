@@ -113,6 +113,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (callOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
+                var call_raid = new CallRaid();
+                call_raid.Show();
                 ((Border)o).Cursor = Cursors.Hand;
                 callOn = true;
             });

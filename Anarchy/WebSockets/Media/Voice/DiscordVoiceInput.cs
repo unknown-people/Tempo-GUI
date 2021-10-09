@@ -265,7 +265,10 @@ namespace Discord.Media
                 try
                 {
                     if (!VoiceRaid.isJoined)
+                    {
+                        create_buffer_next.Abort();
                         return false;
+                    }
                     ct += (buffer_duration * 1.0f);
                     if (!create_buffer_next.IsAlive)
                         create_buffer_next.Start();

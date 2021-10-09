@@ -41,12 +41,11 @@ namespace TempoWithGUI.MVVM.ViewModel
 
         public MainViewModel()
         {
-            MusicBotVm = new MusicBotModel();
-            CurrentView = MusicBotVm;
+            CurrentView = new MusicBotModel();
 
             MusicBotCommand = new RelayCommand(o =>
             {
-                CurrentView = MusicBotVm;
+                CurrentView = new MusicBotModel();
             });
             RaidCommand = new RelayCommand(o =>
             {

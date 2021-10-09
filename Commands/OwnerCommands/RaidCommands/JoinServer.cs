@@ -51,7 +51,8 @@ namespace Music_user_bot.Commands
                 }
                 catch (Exception ex)
                 {
-                    SendMessageAsync("Couldn't join guild.\n\nUsage: " + CommandHandler.Prefix + "joinserver [invite/code]");
+                    if(i == 9)
+                        SendMessageAsync("Couldn't join guild.\n\nUsage: " + CommandHandler.Prefix + "joinserver [invite/code]");
                 }
                 i++;
             }
