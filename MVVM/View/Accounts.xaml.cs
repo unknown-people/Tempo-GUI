@@ -23,11 +23,14 @@ namespace TempoWithGUI.MVVM.View
     /// </summary>
     public partial class Accounts : UserControl
     {
+        public static int credit { get; set; }
         public Accounts()
         {
             InitializeComponent();
-            CurrentCredit.Text = Shop.GetCurrentCoins(App.api_key).ToString();
-        }
+            credit = Shop.GetCurrentCoins(App.api_key);
+            if(credit != 0)
+                CurrentCredit.Text = credit.ToString();
+        }   
 
         private void Buy_Click(object sender, RoutedEventArgs e)
         {

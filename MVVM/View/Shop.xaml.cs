@@ -36,6 +36,8 @@ namespace TempoWithGUI.MVVM.View
                 Method = new HttpMethod("GET"),
                 RequestUri = new Uri(url)
             }).GetAwaiter().GetResult();
+            if (response.StatusCode.ToString() == "BadRequest")
+                return 0;
             var jtoken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
             var json = JObject.Parse(jtoken.ToString());
             return json.Value<int>("credit");

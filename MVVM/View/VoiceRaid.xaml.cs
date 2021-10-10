@@ -179,6 +179,8 @@ namespace TempoWithGUI.MVVM.View
                                     while (voiceClient.Microphone == null)
                                         Thread.Sleep(100);
                                     voiceClient.Microphone.CopyFromRaid(path, 3600);
+                                    while (isJoined)
+                                        Thread.Sleep(100);
                                     int s = 0;
                                     while (s < 5)
                                     {

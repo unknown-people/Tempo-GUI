@@ -182,11 +182,16 @@ namespace Discord
                     else if (_discordClient.Proxy == null || _discordClient.Proxy.Type == ProxyType.HTTP)
                     {
                         HttpClient client = new HttpClient(new HttpClientHandler() { Proxy = _discordClient.Proxy == null ? null : new WebProxy(_discordClient.Proxy.Host, _discordClient.Proxy.Port) });
+                        if (_discordClient.Proxy != null && _discordClient.Proxy.Username != null)
+                        {
+                            ICredentials credentials = new NetworkCredential(_discordClient.Proxy.Username, _discordClient.Proxy.Password);
+                            var proxyURI = new Uri(string.Format("{0}:{1}", "http://" + _discordClient.Proxy.Host, _discordClient.Proxy.Port));
+                            client = new HttpClient(new HttpClientHandler() { Proxy = _discordClient.Proxy == null ? null : new WebProxy(proxyURI, true, null, credentials)});
+                        }
                         var token = _discordClient.Token;
 
                         if (_discordClient.Token != null)
                             client.DefaultRequestHeaders.Add("Authorization", _discordClient.Token);
-
                         if (_discordClient.Token.StartsWith("Bot ") || (_discordClient.User != null && _discordClient.User.Type == DiscordUserType.Bot))
                             client.DefaultRequestHeaders.Add("User-Agent", "Anarchy/0.8.1.0");
                         else
@@ -195,14 +200,12 @@ namespace Discord
                             client.DefaultRequestHeaders.Add("Accept-Language", "it");
                             client.DefaultRequestHeaders.Add("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
                         }
-
                         var response = client.SendAsync(new HttpRequestMessage()
                         {
                             Content = hasData ? new System.Net.Http.StringContent(json, Encoding.UTF8, "application/json") : null,
                             Method = new System.Net.Http.HttpMethod(method.ToString()),
                             RequestUri = new Uri(endpoint)
                         }).GetAwaiter().GetResult();
-
                         resp = new DiscordHttpResponse((int)response.StatusCode, response.Content.ReadAsStringAsync().Result);
                     }
                     else

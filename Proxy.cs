@@ -14,7 +14,10 @@ namespace Music_user_bot
     {
         public string _ip { get; private set; }
         public string _port { get; private set; }
+        public string _username { get; private set; }
+        public string _password { get; private set; }
         public static List<Proxy> working_proxies { get; set; }
+        public static List<Proxy> working_proxies_paid { get; set; }
         public static List<Proxy> ssl_working_proxies { get; set; }
 
         public static string proxies_file_path { get; set; }
@@ -22,11 +25,14 @@ namespace Music_user_bot
 
         public const string proxies_txt = "http_proxies.txt";
         public const string ssl_proxies_txt = "https_proxies.txt";
-        public Proxy(string ip, string port)
+        public Proxy(string ip, string port, string username = null, string password = null)
         {
             _ip = ip;
             _port = port;
+            _username = username;
+            _password = password;
         }
+
         public static List<bool> TestProxies(string url, List<Proxy> proxies)
         {
             var test_results = new List<bool>() { };
@@ -72,7 +78,9 @@ namespace Music_user_bot
         {
             if (working_proxies == null)
                 working_proxies = new List<Proxy>() { };
-            if(!Directory.Exists(App.strWorkPath + @"\proxies"))
+            if (working_proxies_paid == null)
+                working_proxies_paid = new List<Proxy>() { };
+            if (!Directory.Exists(App.strWorkPath + @"\proxies"))
             {
                 Directory.CreateDirectory(App.strWorkPath + @"\proxies");
             }

@@ -97,6 +97,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (massdmOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
+                var massDm = new MassDM();
+                massDm.Show();
                 ((Border)o).Cursor = Cursors.Hand;
                 massdmOn = true;
             });

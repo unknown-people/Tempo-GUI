@@ -59,12 +59,9 @@ namespace Discord.Media
                 Arguments = $"-nostats -loglevel -8 -t {(duration * speed).ToString().Replace(',', '.')} -ss {offset.ToString().Replace(',', '.')} " +
                 $"-i \"{path}\" -filter:a \"volume={volume_string}\" -vn -ac 2 -f s16le -ar {(int)(48000 / speed)} pipe:1",
                 UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true
+                RedirectStandardOutput = true
             });
 
-            process.PriorityClass = ProcessPriorityClass.High;
-            process.PriorityBoostEnabled = true;
             return process.StandardOutput.BaseStream;
         }
         public static byte[] GetAudio(string path)

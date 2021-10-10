@@ -116,9 +116,34 @@ namespace TempoWithGUI.MVVM.View
                         {
                             ProxiesIn.Text = stream.ReadToEnd();
                         }
+                        Task.Run(() => GetPaidTokens());
                         break;
                     }
                     catch { }
+                }
+            }
+        }
+        public static void GetPaidTokens()
+        {
+            if (Proxy.working_proxies_paid == null)
+                Proxy.working_proxies_paid = new List<Proxy>() { };
+            using (StreamReader stream = new StreamReader(App.strWorkPath + "\\proxies\\user_proxies.txt", true))
+            {
+                while (true)
+                {
+                    var line = stream.ReadLine();
+                    if (line == null)
+                        break;
+                    line = line.Trim('\n').Trim(' ');
+                    var proxy_list = line.Split(':');
+                    if (proxy_list.Length == 2)
+                    {
+                        Proxy.working_proxies_paid.Add(new Proxy(proxy_list[0], proxy_list[1]));
+                    }
+                    else if (proxy_list.Length == 4)
+                    {
+                        Proxy.working_proxies_paid.Add(new Proxy(proxy_list[0], proxy_list[1], proxy_list[2], proxy_list[3]));
+                    }
                 }
             }
         }

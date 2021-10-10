@@ -1,10 +1,12 @@
 ﻿using Discord;
 using Leaf.xNet;
 using Music_user_bot;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,17 +33,24 @@ namespace TempoWithGUI.MVVM.View.RaidView
             InitializeComponent();
             Set_Light(joining);
         }
-
         private void Start_Click(object sender, RoutedEventArgs e)
         {
+            bool acceptRules = (bool)RulesCB.IsChecked;
+            bool reaction_accept = (bool)ReactionCB.IsChecked;
             if (joining)
                 return;
             StartBtn.Cursor = Cursors.AppStarting;
             var invite = InviteIn.Text;
-            var guildId = GuildIn.Text;
             if (invite.StartsWith("https://discord.gg/"))
-                invite = invite.Remove(0, ("https://discord.gg/").Length);
-            if((invite == null || invite == "") || (guildId == null || guildId == ""))
+                invite = invite.Remove(0, "https://discord.gg/".Length);
+            var guildId = Get_GuildID(invite);
+            var channelId = ChannelIn.Text;
+            if (invite == null || invite == "")
+            {
+                StartBtn.Cursor = Cursors.Arrow;
+                return;
+            }
+            if((channelId == null || channelId == "") && reaction_accept)
             {
                 StartBtn.Cursor = Cursors.Arrow;
                 return;
@@ -51,7 +60,13 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 tokens_n = 0;
             }
             ulong guild_id = 0;
+            ulong channel_id = 0;
             if(!ulong.TryParse(guildId, out guild_id))
+            {
+                StartBtn.Cursor = Cursors.Arrow;
+                return;
+            }
+            if (!ulong.TryParse(channelId, out channel_id) && reaction_accept)
             {
                 StartBtn.Cursor = Cursors.Arrow;
                 return;
@@ -66,7 +81,6 @@ namespace TempoWithGUI.MVVM.View.RaidView
                     StartBtn.Cursor = Cursors.Arrow;
                     return;
                 }
-            bool acceptRules = (bool)RulesCB.IsChecked;
 
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
@@ -118,21 +132,57 @@ namespace TempoWithGUI.MVVM.View.RaidView
                             {
                                 try
                                 {
-                                    client.AcceptRulesAsync(guildId);
+                                    var accepted = client.GetGuildVerificationForm(guild_id,invite);
                                 }
                                 catch (Exception ex) { Thread.Sleep((int)delay); }
+                            }
+                            if (reaction_accept)
+                            {
+                                try
+                                {
+                                    var messages = client.GetChannelMessages(channel_id, new MessageFilters()
+                                    {
+                                        Limit = 100
+                                    });
+                                    foreach(var message in messages)
+                                    {
+                                        var reactions = message.Reactions;
+                                        foreach(var reaction in reactions)
+                                        {
+                                            message.AddReaction(reaction.Emoji.Name, reaction.Emoji.Id);
+                                        }
+                                    }
+                                }
+                                catch(Exception ex) { }
                             }
                             hasJoined = true;
                         }
                         catch (Exception ex)
                         {
-                            if (Proxy.working_proxies.Count > 0)
+                            while (true)
                             {
-                                proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count - 1)];
-                                if (proxy._ip != "" && proxy != null)
+                                try
                                 {
-                                    HttpProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
-                                    client.Proxy = proxies;
+                                    Proxy.working_proxies.Remove(proxy);
+                                    if (Proxy.working_proxies.Count > 0)
+                                    {
+                                        proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count - 1)];
+                                        if (proxy._ip != "" && proxy != null)
+                                        {
+                                            HttpProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+                                            client.Proxy = proxies;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Proxy.GetProxies("https://discord.com");
+                                        client.Proxy = null;
+                                    }
+                                    break;
+                                }
+                                catch
+                                {
+                                    Thread.Sleep(100);
                                 }
                             }
                             c++;
@@ -144,6 +194,27 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 Dispatcher.Invoke(() => Set_Light(false));
             });
             join.Start();
+        }
+        public string Get_GuildID(string invite)
+        {
+            string request_url = $"https://discord.com/api/v9/invites/{invite}";
+            HttpClient client = new HttpClient();
+            var response = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("GET"),
+                RequestUri = new Uri(request_url)
+            }).GetAwaiter().GetResult();
+            var jtoken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(jtoken.ToString());
+            try
+            {
+                string guild_id = json["guild"].Value<string>("id");
+                return guild_id;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
@@ -159,6 +230,20 @@ namespace TempoWithGUI.MVVM.View.RaidView
             else
             {
                 StatusLight.Fill = Brushes.Red;
+            }
+        }
+
+        private void ReactionCB_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)ReactionCB.IsChecked)
+            {
+                ChannelIn.Visibility = Visibility.Visible;
+                ChannelLabel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ChannelIn.Visibility = Visibility.Collapsed;
+                ChannelLabel.Visibility = Visibility.Collapsed;
             }
         }
     }

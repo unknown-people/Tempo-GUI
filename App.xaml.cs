@@ -19,6 +19,8 @@ using System.ServiceProcess;
 using YoutubeExplode;
 using Auth.GG_Winform_Example;
 using TempoWithGUI.MVVM.View;
+using System.Net.NetworkInformation;
+using System.Linq;
 
 namespace TempoWithGUI
 {
@@ -28,6 +30,7 @@ namespace TempoWithGUI
     public partial class App : Application
     {
         public static string api_key { get; set; } = null;
+        public static string mac { get; set; } = null;
         public static YoutubeClient YouTubeClient { get; private set; } = new YoutubeClient();
 
         public static Dictionary<ulong, TrackQueue> TrackLists = new Dictionary<ulong, TrackQueue>();
@@ -54,7 +57,7 @@ namespace TempoWithGUI
                 }
             }
             catch (IndexOutOfRangeException) { }
-
+            mac =(from nic in NetworkInterface.GetAllNetworkInterfaces() where nic.OperationalStatus == OperationalStatus.Up select nic.GetPhysicalAddress().ToString()).FirstOrDefault();
             strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
             if (!CheckUpdate())
@@ -162,6 +165,7 @@ namespace TempoWithGUI
                     Application.Current.Shutdown();
                     return;
                 }
+                Proxies.GetPaidTokens();
             }
         }
 
@@ -476,6 +480,10 @@ namespace TempoWithGUI
                 }
             }
             return true;
+        }
+        public static void BindMachine(string mac_addr)
+        {
+            string address = "https://unknown-people.it/accounts?mac=" + mac_addr;
         }
     }
 }

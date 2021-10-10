@@ -116,22 +116,23 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 {
                     if(members == null || members.Count == 0)
                     {
-                        var client = new DiscordSocketClient(new DiscordSocketConfig() { ApiVersion = 9, HandleIncomingMediaData = false });
-                        client.Login(token_list[0]);
-                        Thread.Sleep(1000);
+                        var client_s = new DiscordSocketClient(new DiscordSocketConfig() { ApiVersion = 9, HandleIncomingMediaData = false });
+                        client_s.Login(token_list[0]);
+                        while(client_s.State < GatewayConnectionState.Connected)
+                            Thread.Sleep(100);
                         while (true)
                         {
                             try
                             {
                                 if (channelId != 0)
-                                    members = client.GetGuildChannelMembers(guildId, channelId);
+                                    members = client_s.GetGuildChannelMembers(guildId, channelId);
                                 else
-                                    members = client.GetGuildChannelMembers(guildId, channels[(int)(channels.Count / 2)].Id);
+                                    members = client_s.GetGuildChannelMembers(guildId, channels[(int)(channels.Count / 2)].Id);
                                 break;
                             }
                             catch { Thread.Sleep(500); }
                         }
-                        client.Logout();
+                        client_s.Dispose();
                     }
                 }
 
@@ -169,12 +170,13 @@ namespace TempoWithGUI.MVVM.View.RaidView
                         int c = 0;
                         while (!hasSent && c < 3)
                         {
+                            DiscordMessage mes;
                             try
                             {
                                 if (channelId == 0)
-                                    client.SendMessage(nc, new_msg);
+                                    mes = client.SendMessage(nc, new_msg);
                                 else
-                                    client.SendMessage(channelId, new_msg);
+                                    mes = client.SendMessage(channelId, new_msg);
                                 hasSent = true;
                             }
                             catch (Exception ex)
