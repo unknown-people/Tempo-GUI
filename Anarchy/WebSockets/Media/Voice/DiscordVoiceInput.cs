@@ -290,13 +290,11 @@ namespace Discord.Media
                     var ticks = 0;
                     while (!isBufferReady)
                     {
-                        Thread.Sleep(1);
+                        Thread.Sleep(10);
                         ticks++;
                         if (ticks >= 1000)
                             break;
                     }
-                    while (buffer == buffer_next)
-                        Thread.Sleep(1);
                     buffer = buffer_next;
                     isBufferReady = false;
                 }
