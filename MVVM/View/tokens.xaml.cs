@@ -27,6 +27,7 @@ namespace TempoWithGUI.MVVM.View
     {
         public static bool boughtTokens { get; set; } = false;
         public static List<DiscordToken> _tokens;
+        public static bool checking { get; set; }
         public tokens()
         {
             InitializeComponent();
@@ -55,7 +56,7 @@ namespace TempoWithGUI.MVVM.View
             }
             ListTokens.ItemsSource = _tokens;
         }
-        private string[] GetTokenInfo(string token)
+        public static string[] GetTokenInfo(string token)
         {
             string email = "";
             string password = "";
@@ -125,7 +126,11 @@ namespace TempoWithGUI.MVVM.View
 
         private void Checker_Click(object sender, RoutedEventArgs e)
         {
-
+            if (checking)
+                return;
+            checking = true;
+            var checker = new Checker();
+            checker.Show();
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)

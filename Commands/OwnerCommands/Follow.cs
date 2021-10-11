@@ -50,6 +50,8 @@ namespace Music_user_bot.Commands
                 {
                     try
                     {
+                        while (Client.State < GatewayConnectionState.Connected)
+                            Thread.Sleep(100);
                         var voiceClient = Client.GetVoiceClient(Message.Guild.Id);
                         var targetConnected = Client.GetVoiceStates(userId).GuildVoiceStates.TryGetValue(Message.Guild.Id, out var theirState);
                         var channel = (VoiceChannel)Client.GetChannel(theirState.Channel.Id);
@@ -66,9 +68,16 @@ namespace Music_user_bot.Commands
                             voiceClient.Connect(channel.Id, new Discord.Media.VoiceConnectionProperties {Muted = isMuted, Deafened= false});
                             already_searched = false;
                         }
-                        if (voiceClient.Channel.Id != channel.Id || !targetConnected)
+                        if (voiceClient.Channel.Id != channel.Id)
                         {
-                            voiceClient.Disconnect();
+                            bool isMuted = false;
+                            if (TrackQueue.isSilent)
+                                isMuted = true;
+                            try
+                            {
+                                voiceClient.Connect(channel.Id, new Discord.Media.VoiceConnectionProperties { Muted = isMuted, Deafened = false });
+                            }
+                            catch(Exception ex) { }
                             already_searched = false;
                             continue;
                         }
@@ -98,7 +107,7 @@ namespace Music_user_bot.Commands
                             }
                         }
                     }
-                    catch (Exception)
+                    catch (Exception exc)
                     {
                         continue;
                     }

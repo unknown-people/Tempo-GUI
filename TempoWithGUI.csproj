@@ -766,6 +766,9 @@
     <Compile Include="MVVM\View\CallRaid.xaml.cs">
       <DependentUpon>CallRaid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Checker.xaml.cs">
+      <DependentUpon>Checker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\ComingSoonWindow.xaml.cs">
       <DependentUpon>ComingSoonWindow.xaml</DependentUpon>
     </Compile>
@@ -830,6 +833,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\CallRaid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Checker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

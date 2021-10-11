@@ -114,7 +114,7 @@ namespace Discord.Media
             var stream = GetAudioStream(path, offset, duration, volume, speed);
             using (var br = new BinaryReader(stream))
             {
-                return br.ReadBytes(192000 * duration);
+                return br.ReadBytes(192000 * 5);
             }
         }
         public static byte[] GetTTS(string path)

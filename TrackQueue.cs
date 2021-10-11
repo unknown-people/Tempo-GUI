@@ -290,7 +290,7 @@ namespace Music_user_bot
                         pauseTime = DateTime.Now;
                         while (isPaused)
                         {
-                            await Task.Delay(10);
+                            Thread.Sleep(10);
                         }
                         pauseTimeSec += (int)(pauseTime - start_time).TotalSeconds;
                         start_time = DateTime.Now;
@@ -321,8 +321,10 @@ namespace Music_user_bot
             });
             //info_message.Priority = ThreadPriority.Highest;
             //info_message.Start();
-            track_queue.Priority = ThreadPriority.Highest;
+            track_queue.IsBackground = true;
+
             track_queue.Start();
+            track_queue.Priority = ThreadPriority.Highest;
         }
         public static TimeSpan StringToTimeSpan(string input)
         {

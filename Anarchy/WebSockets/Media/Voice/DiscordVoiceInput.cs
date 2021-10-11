@@ -376,7 +376,7 @@ namespace Discord.Media
                         {
                             offset = Write(buffer, offset);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             break;
                         }
@@ -384,9 +384,9 @@ namespace Discord.Media
                     var ticks = 0;
                     while (!isBufferReady)
                     {
-                        Thread.Sleep(10);
+                        Thread.Sleep(1);
                         ticks++;
-                        if (ticks >= 1000)
+                        if (ticks >= 500)
                             break;
                     }
                     buffer = buffer_next;

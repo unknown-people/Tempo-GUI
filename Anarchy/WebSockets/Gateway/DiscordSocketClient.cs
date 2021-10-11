@@ -203,10 +203,14 @@ namespace Discord.Gateway
         }
 
 
-        public void Login(string token)
+        public bool Login(string token)
         {
-            if (Token != token)
-                Token = token;
+            try
+            {
+                if (Token != token)
+                    Token = token;
+            }
+            catch (Exception ex) { return false; }
             
             if (User.Type == DiscordUserType.Bot && Config.ApiVersion >= 8 && !Config.Intents.HasValue)
                 throw new ArgumentNullException("Gateway intents must be provided as of API v8");
@@ -215,6 +219,7 @@ namespace Discord.Gateway
 
             WebSocket.SetProxy(Proxy);
             WebSocket.Connect();
+            return true;
         }
 
 
