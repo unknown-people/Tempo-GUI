@@ -170,8 +170,15 @@ namespace TempoWithGUI.MVVM.View
                     }
                     if (client.State == GatewayConnectionState.Connected)
                     {
-                        voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
-                        voiceClient.Connect(channel_id);
+                        try
+                        {
+                            voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
+                            voiceClient.Connect(channel_id);
+                        }
+                        catch(Exception ex)
+                        {
+
+                        }
                     }
                     
                 });
