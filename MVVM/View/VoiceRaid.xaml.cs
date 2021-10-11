@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Gateway;
+using Discord.Media;
 using Leaf.xNet;
 using Music_user_bot;
 using System;
@@ -158,6 +159,22 @@ namespace TempoWithGUI.MVVM.View
                             break;
                 }
                 int i = 0;
+                DiscordVoiceClient voiceClient;
+                Parallel.ForEach(clients, client =>
+                {
+                    int c = 0;
+                    while(c<3 && client.State < GatewayConnectionState.Connected)
+                    {
+                        Thread.Sleep(1000);
+                        c++;
+                    }
+                    if (client.State == GatewayConnectionState.Connected)
+                    {
+                        voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
+                        voiceClient.Connect(channel_id);
+                    }
+                    
+                });
                 foreach (var client in clients)
                 {
                     if (!isJoined)
@@ -169,8 +186,7 @@ namespace TempoWithGUI.MVVM.View
                     {
                         try
                         {
-                            var voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
-                            voiceClient.Connect(channel_id);
+                            voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
                             if (playMusic && !spamJoin)
                             {
                                 path = path.Replace('\\', '/');
@@ -227,7 +243,7 @@ namespace TempoWithGUI.MVVM.View
                 {
                     foreach(var client in clients)
                     {
-                        var voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
+                        voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
 
                         while (isJoined)
                         {
