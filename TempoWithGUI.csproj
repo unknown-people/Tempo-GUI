@@ -756,6 +756,7 @@
     <Compile Include="Commands\Stop.cs" />
     <Compile Include="Commands\VolumeCommand.cs" />
     <Compile Include="DiscordAccount.cs" />
+    <Compile Include="FFmpeg.cs" />
     <Compile Include="MVVM\ViewModel\AccountsModel.cs" />
     <Compile Include="MVVM\ViewModel\GuildRaidModel.cs" />
     <Compile Include="MVVM\ViewModel\ShopViewModel.cs" />

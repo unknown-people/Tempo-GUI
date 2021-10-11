@@ -25,8 +25,8 @@ namespace TempoWithGUI.MVVM.View
     /// </summary>
     public partial class Proxies : UserControl
     {
-        public static bool freeProxies { get; set; } = false;
-        public static bool paidProxies { get; set; } = true;
+        public static bool freeProxies { get; set; } = true;
+        public static bool paidProxies { get; set; } = false;
 
         public Proxies()
         {
@@ -50,8 +50,6 @@ namespace TempoWithGUI.MVVM.View
                 File.Create(App.strWorkPath + "\\proxies\\http_proxies.txt");
             if (!File.Exists(App.strWorkPath + "\\proxies\\user_proxies.txt"))
                 File.Create(App.strWorkPath + "\\proxies\\user_proxies.txt");
-            if (!File.Exists(App.strWorkPath + "\\proxies\\http_proxies.txt"))
-                File.Create(App.strWorkPath + "\\proxies\\http_proxies.txt");
             while (true)
             {
                 try

@@ -21,6 +21,8 @@ using Auth.GG_Winform_Example;
 using TempoWithGUI.MVVM.View;
 using System.Net.NetworkInformation;
 using System.Linq;
+using System.Net.Http;
+using Newtonsoft.Json.Linq;
 
 namespace TempoWithGUI
 {
@@ -165,6 +167,8 @@ namespace TempoWithGUI
                     Application.Current.Shutdown();
                     return;
                 }
+                BindMachine(mac);
+
                 Proxies.GetPaidTokens();
             }
         }
@@ -483,7 +487,46 @@ namespace TempoWithGUI
         }
         public static void BindMachine(string mac_addr)
         {
-            string address = "https://unknown-people.it/accounts?mac=" + mac_addr;
+            string address = "https://unknown-people.it/api/accounts?mac=" + mac_addr;
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + api_key);
+            var response = client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new HttpMethod("PUT"),
+                RequestUri = new Uri(address)
+            }).GetAwaiter().GetResult();
+            if (response.StatusCode == HttpStatusCode.NotAcceptable)
+            {
+                var request_url = $"https://unknown-people.it/api/accounts?username={Settings.Default.tk1}&password={Settings.Default.tk2}";
+                response = client.SendAsync(new HttpRequestMessage()
+                {
+                    Method = new HttpMethod("GET"),
+                    RequestUri = new Uri(request_url)
+                }).GetAwaiter().GetResult();
+                if (response.StatusCode.ToString() == "BadRequest")
+                {
+                    Application.Current.Shutdown();
+                    return;
+                }
+                var jtoken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
+                var json = JObject.Parse(jtoken.ToString());
+                if (json.Value<string>("mac") == mac_addr)
+                    return;
+                else
+                {
+                    MessageBox.Show("You need to purchase another key to use Tempo on multiple machines.\nPlease contact out support team if you need to rebind your account");
+                    Application.Current.Shutdown();
+                    return;
+                }
+            }
+            else if(response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return;
+            }
+            else
+            {
+                Application.Current.Shutdown();
+            }
         }
     }
 }

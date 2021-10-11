@@ -48,6 +48,7 @@ namespace Music_user_bot
         public static bool isAddingTracks { get; set; }
         public static bool isVolumeChanged { get; internal set; }
         public static bool autoplay { get; set; }
+        public FFmpeg ffmpeg { get; set; }
 
         private DiscordSocketClient _client;
         private ulong _guildId;
@@ -320,6 +321,7 @@ namespace Music_user_bot
             });
             //info_message.Priority = ThreadPriority.Highest;
             //info_message.Start();
+            track_queue.Priority = ThreadPriority.Highest;
             track_queue.Start();
         }
         public static TimeSpan StringToTimeSpan(string input)

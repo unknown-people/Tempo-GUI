@@ -85,7 +85,7 @@ namespace TempoWithGUI.MVVM.View
                 delay = 10000;
             }
             bool embedOn = (bool)EmbedCB.IsChecked;
-            bool deleteOn = (bool)DeleteCB.IsChecked;
+            bool proxyOn = (bool)ProxyCB.IsChecked;
 
             var max_tokens = TokensIn.Text;
 
@@ -183,21 +183,25 @@ namespace TempoWithGUI.MVVM.View
                 foreach(var client in clients)
                 {
                     Thread spam1 = new Thread(() => {
-                        Random rnd = new Random();
-                        Proxy proxy = null;
-                        if (Proxy.working_proxies_paid.Count > 0)
+                        if (proxyOn)
                         {
-                            proxy = Proxy.working_proxies_paid[rnd.Next(0, Proxy.working_proxies_paid.Count)];
-                            if (proxy._ip != "" && proxy != null)
+                            Random rnd = new Random();
+                            Proxy proxy = null;
+                            if (Proxy.working_proxies_paid.Count > 0)
                             {
-                                HttpProxyClient proxies = null;
-                                if (proxy._username != null)
-                                    proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port), proxy._username, proxy._password);
-                                else
-                                    proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
-                                client.Proxy = proxies;
+                                proxy = Proxy.working_proxies_paid[rnd.Next(0, Proxy.working_proxies_paid.Count)];
+                                if (proxy._ip != "" && proxy != null)
+                                {
+                                    HttpProxyClient proxies = null;
+                                    if (proxy._username != null)
+                                        proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port), proxy._username, proxy._password);
+                                    else
+                                        proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+                                    client.Proxy = proxies;
+                                }
                             }
                         }
+
                         while (spamming)
                         {
                             GuildMember user = null;
@@ -227,15 +231,7 @@ namespace TempoWithGUI.MVVM.View
                                         msg = dm.SendMessage(message);
                                     if(msg == null)
                                     {
-                                        Thread.Sleep(30000);
-                                    }
-                                    if (deleteOn)
-                                    {
-                                        try
-                                        {
-                                            msg.Delete();
-                                        }
-                                        catch { }
+                                        Thread.Sleep(360000);
                                     }
                                     hasSent = true;
                                 }

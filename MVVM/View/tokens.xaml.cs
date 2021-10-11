@@ -154,9 +154,10 @@ namespace TempoWithGUI.MVVM.View
                 {
                     while (true)
                     {
-                        var line = stream.ReadLine().Trim('\n').Trim(' ').Trim('\t');
+                        var line = stream.ReadLine();
                         if (line == null)
                             break;
+                        line = line.Trim('\n').Trim(' ').Trim('\t');
                         if (i == line_skip)
                             continue;
                         writer.WriteLine(line);

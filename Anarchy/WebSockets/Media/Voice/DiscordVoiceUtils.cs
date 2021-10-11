@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows;
+using TempoWithGUI;
 
 namespace Discord.Media
 {
@@ -38,7 +40,8 @@ namespace Discord.Media
                 FileName = "ffmpeg.exe",
                 Arguments = $"-nostats -loglevel -8 -i \"{path}\" -filter:a \"volume={volume_string}\" -ac 2 -f s16le -ar {(int)(48000 / speed)} pipe:1",
                 UseShellExecute = false,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
             });
 
             return process.StandardOutput.BaseStream;
@@ -47,21 +50,26 @@ namespace Discord.Media
         {
             if (!File.Exists("ffmpeg.exe"))
                 throw new FileNotFoundException("ffmpeg.exe was not found");
+            var ffmpeg_path = (App.strWorkPath + "\\ffmpeg.exe").Replace("\\", "/");
 
             float volume_stream = (float)volume / 100;
             if (TrackQueue.isEarrape)
                 volume_stream = volume;
             string volume_string = volume_stream.ToString().Replace(',', '.');
 
-            var process = Process.Start(new ProcessStartInfo
+            var proc = new ProcessStartInfo
             {
                 FileName = "ffmpeg.exe",
                 Arguments = $"-nostats -loglevel -8 -t {(duration * speed).ToString().Replace(',', '.')} -ss {offset.ToString().Replace(',', '.')} " +
-                $"-i \"{path}\" -filter:a \"volume={volume_string}\" -vn -ac 2 -f s16le -ar {(int)(48000 / speed)} pipe:1",
+                $"-i \"{path}\" -filter:a \"volume={volume_string}\" -ac 2 -f s16le -ar {(int)(48000 / speed)} pipe:1",
                 UseShellExecute = false,
-                RedirectStandardOutput = true
-            });
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
 
+            var process = Process.Start(proc);
+            process.PriorityClass = ProcessPriorityClass.High;
+            process.PriorityBoostEnabled = true;
             return process.StandardOutput.BaseStream;
         }
         public static byte[] GetAudio(string path)
@@ -103,18 +111,18 @@ namespace Discord.Media
         }
         public static byte[] GetAudio(string path, float offset, int duration, int volume, float speed = 1.0f)
         {
-            using (var memStream = new MemoryStream())
+            var stream = GetAudioStream(path, offset, duration, volume, speed);
+            using (var br = new BinaryReader(stream))
             {
-                GetAudioStream(path, offset, duration, volume, speed).CopyTo(memStream);
-                return memStream.ToArray();
+                return br.ReadBytes(192000 * duration);
             }
         }
         public static byte[] GetTTS(string path)
         {
-            using (var memStream = new MemoryStream())
+            var stream = GetAudioStream(path);
+            using (var br = new BinaryReader(stream))
             {
-                GetTTSStream(path).CopyTo(memStream);
-                return memStream.ToArray();
+                return br.ReadBytes(192000 * 20);
             }
         }
         [Obsolete("This method is obsolete. Please use GetAudioStream instead", true)]
