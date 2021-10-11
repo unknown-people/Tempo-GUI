@@ -163,7 +163,7 @@ namespace TempoWithGUI.MVVM.View
                 Parallel.ForEach(clients, client =>
                 {
                     int c = 0;
-                    while(c<3 && client.State < GatewayConnectionState.Connected)
+                    while(c<3 && client.State < GatewayConnectionState.Connected && isJoined)
                     {
                         Thread.Sleep(1000);
                         c++;
@@ -186,23 +186,21 @@ namespace TempoWithGUI.MVVM.View
                     {
                         try
                         {
-                            voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
                             if (playMusic && !spamJoin)
                             {
                                 path = path.Replace('\\', '/');
 
                                 var task = Task.Run(() => {
-                                    while (voiceClient.Microphone == null)
+                                    var voiceClient1 = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
+                                    while (voiceClient1.Microphone == null)
                                         Thread.Sleep(100);
-                                    voiceClient.Microphone.CopyFromRaid(path, 3600);
-                                    while (isJoined)
-                                        Thread.Sleep(100);
+                                    voiceClient1.Microphone.CopyFromRaid(path, 3600);
                                     int s = 0;
                                     while (s < 5)
                                     {
                                         try
                                         {
-                                            voiceClient.Disconnect();
+                                            voiceClient1.Disconnect();
                                             break;
                                         }
                                         catch { Thread.Sleep(200); s++; }
@@ -217,11 +215,12 @@ namespace TempoWithGUI.MVVM.View
                             {
                                 Task.Run(() =>
                                 {
-                                    while(isJoined)
+                                    var voiceClient1 = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
+                                    while (isJoined)
                                         Thread.Sleep(100);
                                     try
                                     {
-                                        voiceClient.Disconnect();
+                                        voiceClient1.Disconnect();
                                     }
                                     catch { }
                                     Dispatcher.Invoke(() => Set_Light(false));

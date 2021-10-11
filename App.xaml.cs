@@ -168,7 +168,13 @@ namespace TempoWithGUI
                     return;
                 }
                 BindMachine(mac);
+                if (Directory.Exists(App.strWorkPath + "\\proxies"))
+                    Directory.CreateDirectory(App.strWorkPath + "\\proxies");
 
+                if (!File.Exists(App.strWorkPath + "\\proxies\\http_proxies.txt"))
+                    File.Create(App.strWorkPath + "\\proxies\\http_proxies.txt");
+                if (!File.Exists(App.strWorkPath + "\\proxies\\user_proxies.txt"))
+                    File.Create(App.strWorkPath + "\\proxies\\user_proxies.txt");
                 Proxies.GetPaidTokens();
             }
         }
