@@ -62,7 +62,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (friendOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                
+                var friend_raid = new FriendRaid();
+                friend_raid.Show();
                 ((Border)o).Cursor = Cursors.Hand;
                 friendOn = true;
             });
@@ -71,6 +72,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (reactionOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
+                var coming_soon = new ComingSoonWindow();
+                coming_soon.Show();
                 ((Border)o).Cursor = Cursors.Hand;
                 reactionOn = true;
             });
@@ -89,6 +92,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (webhookOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
+                var coming_soon = new ComingSoonWindow();
+                coming_soon.Show();
                 ((Border)o).Cursor = Cursors.Hand;
                 webhookOn = true;
             });
@@ -107,6 +112,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (tokenOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
+                var coming_soon = new ComingSoonWindow();
+                coming_soon.Show();
                 ((Border)o).Cursor = Cursors.Hand;
                 tokenOn = true;
             });
@@ -115,8 +122,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (callOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                var call_raid = new CallRaid();
-                call_raid.Show();
+                var coming_soon = new ComingSoonWindow();
+                coming_soon.Show();
                 ((Border)o).Cursor = Cursors.Hand;
                 callOn = true;
             });

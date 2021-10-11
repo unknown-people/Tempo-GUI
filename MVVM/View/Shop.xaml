@@ -46,7 +46,8 @@
                              x:Name="MusicButton" IsChecked="True"/>
                 <RadioButton Content="Top Up" Height="50" Foreground="White"
                              FontSize="13" Style="{StaticResource MenuButtonThemeSmall}"
-                             Command="{Binding TopUpCommand}"/>
+                             Command="{Binding TopUpCommand}" IsEnabled="False"
+                             Visibility="Collapsed"/>
             </StackPanel>
             <ContentControl Grid.Row="1" Grid.Column="1" Margin="5"
                             Content="{Binding CurrentView}"/>

@@ -766,6 +766,9 @@
     <Compile Include="MVVM\View\CallRaid.xaml.cs">
       <DependentUpon>CallRaid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\ComingSoonWindow.xaml.cs">
+      <DependentUpon>ComingSoonWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\DmRaid.xaml.cs">
       <DependentUpon>DmRaid.xaml</DependentUpon>
     </Compile>
@@ -774,6 +777,9 @@
     </Compile>
     <Compile Include="MVVM\View\AddTokenPopup.xaml.cs">
       <DependentUpon>AddTokenPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\FriendRaid.xaml.cs">
+      <DependentUpon>FriendRaid.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
@@ -827,6 +833,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\ComingSoonWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\DmRaid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -836,6 +846,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MVVM\View\AddTokenPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\FriendRaid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

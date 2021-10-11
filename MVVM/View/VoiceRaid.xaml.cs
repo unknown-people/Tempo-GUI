@@ -225,31 +225,31 @@ namespace TempoWithGUI.MVVM.View
                 }
                 if (spamJoin)
                 {
-                    Parallel.ForEach(clients, client =>
+                    foreach(var client in clients)
                     {
                         var voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
 
                         while (isJoined)
                         {
-                            bool hasSent = false;
-                            int c = 0;
-                            while (!hasSent && c < 3)
+                            voiceClient = ((DiscordSocketClient)client).GetVoiceClient(guild_id);
+                            try
                             {
-                                try
-                                {
-                                    voiceClient.Connect(channel_id);
-                                    Thread.Sleep((int)delay);
-                                    voiceClient.Disconnect();
-                                    hasSent = true;
-                                }
-                                catch (Exception ex)
-                                {
-                                    c++;
-                                }
+                                voiceClient.Disconnect();
+
+                                voiceClient.Connect(channel_id);
+
+                                while (voiceClient.State < Discord.Media.MediaConnectionState.Ready)
+                                    Thread.Sleep(100);
+                                break;
                             }
+                            catch (Exception ex)
+                            {  }
                             Thread.Sleep((int)delay);
                         }
-                    });
+                        Dispatcher.Invoke(() => Set_Light(false));
+                        clients.Remove(client);
+                        client.Dispose();
+                    };
                 }
             });
             spam.Start();

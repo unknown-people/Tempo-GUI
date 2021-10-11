@@ -57,7 +57,8 @@
                              Command="{Binding TokensCommand}"/>
                 <RadioButton Content="More" Height="50" Foreground="White"
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
-                             Command="{Binding MoreCommand}"/>
+                             Command="{Binding MoreCommand}" IsEnabled="False"
+                             Visibility="Collapsed"/>
             </StackPanel>
             <!--
             <TextBlock Text="THE ONLY BOT YOU'LL EVER NEED" Grid.Column="1"

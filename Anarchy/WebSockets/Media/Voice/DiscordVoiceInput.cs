@@ -269,7 +269,7 @@ namespace Discord.Media
                         create_buffer_next.Abort();
                         return false;
                     }
-                    ct += (buffer_duration * 1.0f);
+                    ct += buffer_duration * 1.0f;
                     if (!create_buffer_next.IsAlive)
                         create_buffer_next.Start();
 

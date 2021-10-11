@@ -18,7 +18,14 @@ namespace Discord
         {
             return client.GetRelationshipsAsync().GetAwaiter().GetResult();
         }
-
+        public static async Task DeleteFriendRequestAsync(this DiscordClient client, ulong userId)
+        {
+            await client.HttpClient.DeleteAsync("/users/@me/relationships/" + userId);
+        }
+        public static void DeleteFriendRequest(this DiscordClient client, ulong userId)
+        {
+            client.DeleteFriendRequestAsync(userId).GetAwaiter().GetResult();
+        }
 
         public static async Task SendFriendRequestAsync(this DiscordClient client, ulong userId)
         {
