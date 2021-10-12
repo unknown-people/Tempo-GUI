@@ -31,6 +31,16 @@ namespace TempoWithGUI.MVVM.View.RaidView
         public JoinGuild()
         {
             InitializeComponent();
+            if ((bool)ReactionCB.IsChecked)
+            {
+                ChannelLabel.Visibility = Visibility.Collapsed;
+                ChannelIn.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                ChannelLabel.Visibility = Visibility.Visible;
+                ChannelIn.Visibility = Visibility.Visible;
+            }
             Set_Light(joining);
         }
         private void Start_Click(object sender, RoutedEventArgs e)

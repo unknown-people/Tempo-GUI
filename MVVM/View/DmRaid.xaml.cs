@@ -1,4 +1,6 @@
 ﻿using Discord;
+using Leaf.xNet;
+using Music_user_bot;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -94,14 +96,56 @@ namespace TempoWithGUI.MVVM.View
                     if (tk.Active)
                         token_list.Add(tk.Token);
                 }
+
                 List<DiscordClient> clients = new List<DiscordClient>();
                 foreach (var token in token_list)
                 {
+                    Random rnd = new Random();
+                    Proxy proxy = null;
+                    DiscordClient client;
                     try
                     {
-                        clients.Add(new DiscordClient(token));
+                        client = new DiscordClient(token);
                     }
-                    catch { }
+                    catch { continue; }
+                    var c = 0;
+                    while(c < 10)
+                    {
+                        try
+                        {
+                            if (Proxy.working_proxies.Count > 0)
+                            {
+                                proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count)];
+                                if (proxy._ip != "" && proxy != null)
+                                {
+                                    HttpProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+                                    client.Proxy = proxies;
+                                }
+                            }
+                            clients.Add(client);
+                            break;
+                        }
+                        catch
+                        {
+                            Proxy.working_proxies.Remove(proxy);
+                            if (Proxy.working_proxies.Count > 0)
+                            {
+                                proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count - 1)];
+                                if (proxy._ip != "" && proxy != null)
+                                {
+                                    HttpProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+                                    client.Proxy = proxies;
+                                }
+                            }
+                            else
+                            {
+                                Proxy.GetProxies("https://discord.com");
+                                client.Proxy = null;
+                            }
+                            c++;
+                        }
+                    }
+
                     if (max > 0)
                         if (clients.Count >= max)
                             break;

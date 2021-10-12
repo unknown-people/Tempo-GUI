@@ -43,6 +43,7 @@ namespace TempoWithGUI
                 TrackQueue.currentSong.CancellationTokenSource.Cancel();
             if(App.mainClient != null)
                 App.mainClient.Dispose();
+            this.Close();
             Application.Current.Shutdown();
         }
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
