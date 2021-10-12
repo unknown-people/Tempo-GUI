@@ -57,7 +57,7 @@ namespace TempoWithGUI.MVVM.View
             else if (creation == null)
                 creation = "";
 
-            var exec = "U:" + token + ":" + email + ":" + password + ":" + creation + ":NULL";
+            var exec = token + ":" + email + ":" + password + ":" + creation + ":";
             using(StreamReader sr = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
             {
                 using (StreamWriter stream = new StreamWriter(App.strWorkPath + "\\tokens\\tokens.txt", true))
@@ -68,14 +68,14 @@ namespace TempoWithGUI.MVVM.View
                         if(line.Split(':').Length == 3)
                         {
                             if (line.Split(':')[0] == token)
-                                stream.WriteLine(exec);
+                                stream.WriteLine("U:" + exec + "NULL");
                             else
                                 stream.WriteLine(line);
                         }
                         else
                         {
                             if (line.Split(':')[1] == token)
-                                stream.WriteLine(exec);
+                                stream.WriteLine(line.Split(':')[0] + ":" + exec + line.Split(':')[line.Split(':').Length]);
                             else
                                 stream.WriteLine(line);
                         }

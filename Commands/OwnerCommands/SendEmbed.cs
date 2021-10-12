@@ -15,10 +15,7 @@ namespace Music_user_bot.Commands
         public string message { get; set; }
         public override void Execute()
         {
-            if (CanSendEmbed())
-                SendMessageAsync(message);
-            else
-                SendMessageAsync("I do not have permission to send embeds in this channel");
+            SendMessageAsync(message);
         }
     }
 }
