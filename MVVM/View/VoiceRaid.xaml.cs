@@ -109,7 +109,7 @@ namespace TempoWithGUI.MVVM.View
                     videoId = path.Split('?').Last().Split('&')[0].Remove(0, 2);
                 try
                 {
-                    path = TrackQueue.GetAudioUrl(videoId);
+                    //path = TrackQueue.GetAudioUrl(videoId);
                 }
                 catch
                 {

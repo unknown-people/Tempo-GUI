@@ -46,11 +46,10 @@ namespace Discord.Media
 
             return process.StandardOutput.BaseStream;
         }
-        public static Stream GetAudioStream(string path, float offset, int duration, int volume = 100, float speed = 1.0f)
+        public static Process GetAudioStream(string path, float offset, int duration, int volume = 100, float speed = 1.0f)
         {
             if (!File.Exists("ffmpeg.exe"))
                 throw new FileNotFoundException("ffmpeg.exe was not found");
-            var ffmpeg_path = (App.strWorkPath + "\\ffmpeg.exe").Replace("\\", "/");
 
             float volume_stream = (float)volume / 100;
             if (TrackQueue.isEarrape)
@@ -61,7 +60,7 @@ namespace Discord.Media
             {
                 FileName = "ffmpeg.exe",
                 Arguments = $"-nostats -loglevel -8 -t {(duration * speed).ToString().Replace(',', '.')} -ss {offset.ToString().Replace(',', '.')} " +
-                $"-i \"{path}\" -filter:a \"volume={volume_string}\" -ac 2 -f s16le -ar {(int)(48000 / speed)} pipe:1",
+                $"-i \"{path}\" -filter:a \"volume={volume_string}\" -ac 2 -f s16le -ar {(int)(48000 / speed)} -preset veryfast pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 CreateNoWindow = true
@@ -70,7 +69,7 @@ namespace Discord.Media
             var process = Process.Start(proc);
             process.PriorityClass = ProcessPriorityClass.High;
             process.PriorityBoostEnabled = true;
-            return process.StandardOutput.BaseStream;
+            return process;
         }
         public static byte[] GetAudio(string path)
         {
@@ -111,10 +110,12 @@ namespace Discord.Media
         }
         public static byte[] GetAudio(string path, float offset, int duration, int volume, float speed = 1.0f)
         {
-            var stream = GetAudioStream(path, offset, duration, volume, speed);
-            using (var br = new BinaryReader(stream))
+            using (var memStream = new MemoryStream())
             {
-                return br.ReadBytes(192000 * 5);
+                var proc = GetAudioStream(path, offset, duration, volume, speed);
+                proc.StandardOutput.BaseStream.CopyTo(memStream);
+                proc.Dispose();
+                return memStream.ToArray();
             }
         }
         public static byte[] GetTTS(string path)

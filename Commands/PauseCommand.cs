@@ -14,8 +14,15 @@ namespace Music_user_bot.Commands
             }
             else
             {
-                TrackQueue.isPaused = true;
-                SendMessageAsync("Paused current track");
+                if(TrackQueue.currentSong != null)
+                {
+                    TrackQueue.isPaused = true;
+                    SendMessageAsync("Paused current track");
+                }
+                else
+                {
+                    SendMessageAsync("There are no tracks currently playing");
+                }
             }
         }
     }

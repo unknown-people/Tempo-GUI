@@ -236,7 +236,7 @@ namespace Music_user_bot
 
                     start_time = DateTime.Now;
                     pauseTimeSec = 0;
-                    string url = GetAudioUrl(currentSong.Id);
+                    string url = GetAudioUrl(currentSong.Id, currentChannel.Bitrate);
                     DiscordVoiceInput.current_time = 0;
                     DiscordVoiceInput.current_time_tracker = 0;
 
@@ -364,11 +364,31 @@ namespace Music_user_bot
             }
             return false;
         }
+        /*
         public static string GetAudioUrl(string videoId)
         {
             var manifest = App.YouTubeClient.Videos.Streams.GetManifestAsync(videoId).Result;
 
             return manifest.GetAudioOnlyStreams().OrderBy(s => s.Bitrate).Last().Url;
+        }
+        */
+        public static string GetAudioUrl(string videoId, uint channelBitrate)
+        {
+            var manifest = App.YouTubeClient.Videos.Streams.GetManifestAsync(videoId).Result;
+
+            AudioOnlyStreamInfo bestStream = null;
+            foreach (var stream in manifest.GetAudioOnlyStreams().OrderBy(s => s.Bitrate))
+            {
+                if (bestStream == null || stream.Bitrate > bestStream.Bitrate)
+                {
+                    bestStream = stream;
+
+                    if (stream.Bitrate.BitsPerSecond > channelBitrate)
+                        break;
+                }
+            }
+
+            return bestStream.Url;
         }
         private string GetVideoUrl(string videoId, uint channelBitrate)
         {

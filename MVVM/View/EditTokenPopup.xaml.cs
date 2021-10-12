@@ -58,9 +58,10 @@ namespace TempoWithGUI.MVVM.View
                 creation = "";
 
             var exec = token + ":" + email + ":" + password + ":" + creation + ":";
-            using(StreamReader sr = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
+            
+            using (StreamWriter stream = new StreamWriter(App.strWorkPath + "\\tokens\\tokens1.txt", true))
             {
-                using (StreamWriter stream = new StreamWriter(App.strWorkPath + "\\tokens\\tokens.txt", true))
+                using (StreamReader sr = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
                 {
                     var line = sr.ReadLine();
                     while (line != null)
@@ -75,7 +76,7 @@ namespace TempoWithGUI.MVVM.View
                         else
                         {
                             if (line.Split(':')[1] == token)
-                                stream.WriteLine(line.Split(':')[0] + ":" + exec + line.Split(':')[line.Split(':').Length]);
+                                stream.WriteLine(line.Split(':')[0] + ":" + exec + line.Split(':')[line.Split(':').Length - 1]);
                             else
                                 stream.WriteLine(line);
                         }
@@ -83,6 +84,8 @@ namespace TempoWithGUI.MVVM.View
                     }
                 }
             }
+            File.Delete(App.strWorkPath + "\\tokens\\tokens.txt");
+            File.Move(App.strWorkPath + "\\tokens\\tokens1.txt", App.strWorkPath + "\\tokens\\tokens.txt");
             Confirm_Btn.Cursor = Cursors.Arrow;
             this.Close();
         }

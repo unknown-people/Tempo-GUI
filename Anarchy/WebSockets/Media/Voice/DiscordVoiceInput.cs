@@ -22,7 +22,7 @@ namespace Discord.Media
         private DiscordVoiceClient _client;
 
         private uint _bitrate = 64000;
-        private AudioApplication _audioApp = AudioApplication.Mixed;
+        private AudioApplication _audioApp = AudioApplication.Music;
 
         public static byte[] buffer_next;
         public static string path;
@@ -386,7 +386,7 @@ namespace Discord.Media
                     {
                         Thread.Sleep(1);
                         ticks++;
-                        if (ticks >= 500)
+                        if (ticks >= buffer_duration * 1000)
                             break;
                     }
                     buffer = buffer_next;
