@@ -82,17 +82,18 @@ namespace Discord.Media
         }
         private void Connection_OnDead(DiscordMediaConnection connection, WebSocketSharp.CloseEventArgs args)
         {
-            /*
             ulong prevChannel = _channelId.Value;
             _channelId = null;
             _client.TriggerVCDisconnect(_guildId, prevChannel, args);
-            */
-            try
+            if (!args.WasClean)
             {
-                _client.Logout();
+                try
+                {
+                    _client.Logout();
+                }
+                catch { }
+                _client.Login(Settings.Default.Token);
             }
-            catch { }
-            _client.Login(Settings.Default.Token);
         }
 
         private void Connection_OnMessage(DiscordMediaConnection connection, DiscordWebSocketMessage<DiscordMediaOpcode> message)

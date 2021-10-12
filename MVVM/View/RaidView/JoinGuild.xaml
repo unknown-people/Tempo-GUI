@@ -68,11 +68,12 @@
                 <TextBlock Text="Invite link / code" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
                 <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
                          Height="25" Width="300" Margin="0,0,0,0" x:Name="InviteIn"/>
-                <TextBlock Text="Reaction Verification Channel ID" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" x:Name="ChannelLabel"/>
+                <TextBlock Text="Reaction Verification Channel ID" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" x:Name="ChannelLabel"
+                           Visibility="Collapsed"/>
                 <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
-                         Height="25" Width="300" Margin="0,0,0,0" x:Name="ChannelIn"/>
+                         Height="25" Width="300" Margin="0,0,0,0" x:Name="ChannelIn" Visibility="Collapsed"/>
                 <CheckBox Content="Bypass reaction verification" Height="20"
-                          Margin="0,10" x:Name="ReactionCB"
+                          Margin="0,10" x:Name="ReactionCB" IsChecked="False"
                           HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
                           Foreground="AntiqueWhite" Padding="5,0,0,0"
                           FontSize="12" FontFamily="/Fonts/#Poppins" Click="ReactionCB_Click"/>

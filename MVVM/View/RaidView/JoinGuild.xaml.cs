@@ -31,15 +31,16 @@ namespace TempoWithGUI.MVVM.View.RaidView
         public JoinGuild()
         {
             InitializeComponent();
-            if ((bool)ReactionCB.IsChecked)
-            {
-                ChannelLabel.Visibility = Visibility.Collapsed;
-                ChannelIn.Visibility = Visibility.Collapsed;
-            }
-            else
+            var react = ReactionCB.IsChecked;
+            if (react != false)
             {
                 ChannelLabel.Visibility = Visibility.Visible;
                 ChannelIn.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ChannelLabel.Visibility = Visibility.Collapsed;
+                ChannelIn.Visibility = Visibility.Collapsed;
             }
             Set_Light(joining);
         }

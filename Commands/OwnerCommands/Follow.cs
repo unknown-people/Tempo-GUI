@@ -31,6 +31,11 @@ namespace Music_user_bot.Commands
             }
             else
             {
+                if (App.toFollow)
+                {
+                    App.toFollow = false;
+                    Thread.Sleep(500);
+                }
                 App.toFollow = true;
 
                 SendMessageAsync("Now following <@" + userId.ToString() + ">");
@@ -75,9 +80,13 @@ namespace Music_user_bot.Commands
                                 isMuted = true;
                             try
                             {
+                                if (voiceClient.State == Discord.Media.MediaConnectionState.Ready)
+                                    voiceClient.Disconnect();
                                 voiceClient.Connect(channel.Id, new Discord.Media.VoiceConnectionProperties { Muted = isMuted, Deafened = false });
                             }
-                            catch(Exception ex) { }
+                            catch(Exception ex) {
+                                Thread.Sleep(10);
+                            }
                             already_searched = false;
                             continue;
                         }
