@@ -175,8 +175,10 @@
                     <ColumnDefinition Width="240">
                     </ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0, 30"
+                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0, 0,0,30"
                         HorizontalAlignment="Center">
+                    <TextBlock Text="Invalid / Banned tokens" Foreground="AntiqueWhite"
+                               FontSize="20" HorizontalAlignment="Center"/>
                     <ListBox x:Name="ListTokens" HorizontalContentAlignment="Center" Grid.Column="0"
                         HorizontalAlignment="Left" VerticalAlignment="Top" Height="280" Width="380"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0"

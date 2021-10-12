@@ -144,12 +144,14 @@ namespace TempoWithGUI.MVVM.View
 
         private void Remove_Click(object sender, RoutedEventArgs e)
         {
-            int line_skip = _tokens.IndexOf((DiscordToken)ListTokens.SelectedItem);
-            try
+            var selected = ListTokens.SelectedItems;
+            var buff = new List<DiscordToken>() { };
+            foreach(var el in selected)
             {
-                _tokens = (List<DiscordToken>)_tokens.Where(n => n.ToString() != ListTokens.SelectedItem.ToString()).ToList();
+                buff.Add((DiscordToken)el);
             }
-            catch (NullReferenceException){ return; }
+            _tokens = _tokens.Except(buff).ToList();
+
             ListTokens.ItemsSource = null;
             ListTokens.ItemsSource = _tokens;
             int i = 0;
@@ -163,8 +165,17 @@ namespace TempoWithGUI.MVVM.View
                         if (line == null)
                             break;
                         line = line.Trim('\n').Trim(' ').Trim('\t');
-                        if (i == line_skip)
-                            continue;
+                        var line_arr = line.Split(':');
+                        if (line_arr.Length == 3)
+                        {
+                            if (!isInListTokens(line_arr[0]))
+                                continue;
+                        }
+                        else
+                        {
+                            if (!isInListTokens(line_arr[1]))
+                                continue;
+                        }
                         writer.WriteLine(line);
 
                         i++;
@@ -197,6 +208,16 @@ namespace TempoWithGUI.MVVM.View
             var accInfo = new EditTokenPopup(acc[0], acc[1], acc[2], acc[3]);
             accInfo.ShowDialog();
         }
+        private bool isInListTokens(string token)
+        {
+            foreach (var tk in ListTokens.Items)
+            {
+                if (tk.ToString() == token && ((DiscordToken)tk).Active)
+                    return true;
+            }
+            return false;
+        }
+
         /*
 private void CheckBox_Checked(object sender, RoutedEventArgs e)
 {

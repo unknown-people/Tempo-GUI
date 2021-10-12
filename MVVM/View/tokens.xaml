@@ -141,7 +141,7 @@
             <ListBox x:Name="ListTokens" HorizontalContentAlignment="Center" Grid.Column="0"
             HorizontalAlignment="Left" VerticalAlignment="Top" Height="370" Width="510"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0"
-            Background="Transparent" Margin="10" SelectionMode="Single">
+            Background="Transparent" Margin="10" SelectionMode="Multiple">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
