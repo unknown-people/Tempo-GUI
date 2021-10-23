@@ -20,7 +20,7 @@
     <Setting Name="Prefix" Type="System.String" Scope="User">
       <Value Profile="(Default)">+</Value>
     </Setting>
-    <Setting Name="APIkey" Type="System.String" Scope="Application">
+    <Setting Name="APIkey" Type="System.String" Scope="User">
       <Value Profile="(Default)">c11462adeea14bbe81cf8588da74de76</Value>
     </Setting>
     <Setting Name="TTSlang" Type="System.String" Scope="User">

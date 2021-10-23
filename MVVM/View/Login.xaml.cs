@@ -80,12 +80,19 @@ namespace TempoWithGUI.MVVM.View
                     Directory.CreateDirectory(App.strWorkPath + "\\tokens");
 
                 Task.Run(Spotify.Login);
-                Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
+                //Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
+                Task.Run(() => Proxy.GetProxies("https://discord.com"));
 
+                System.Timers.Timer timer_fetch_discord_proxies = new System.Timers.Timer();
+                timer_fetch_discord_proxies.Elapsed += new ElapsedEventHandler(App.OnElapsedTimeDiscordProxies);
+                timer_fetch_discord_proxies.Interval = 5 * 60 * 1000;
+                timer_fetch_discord_proxies.Enabled = true;
+                /*
                 System.Timers.Timer timer_fetch_proxies = new System.Timers.Timer();
                 timer_fetch_proxies.Elapsed += new ElapsedEventHandler(App.OnElapsedTimeProxies);
                 timer_fetch_proxies.Interval = 5 * 60 * 1000;
                 timer_fetch_proxies.Enabled = true;
+                */
                 using (StreamReader stream = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt", true))
                 {
                     tokens._tokens = new List<DiscordToken>() { };
@@ -104,7 +111,7 @@ namespace TempoWithGUI.MVVM.View
                 MainWindow window = new MainWindow();
 
                 window.Show();
-                this.Close();
+                this.Hide();;
             }
             else
             {

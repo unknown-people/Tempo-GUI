@@ -36,7 +36,7 @@ namespace TempoWithGUI.MVVM.View
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             RaidModel.dmOn = false;
-            this.Close();
+            this.Hide();;
         }
         private void Start_Click(object sender, RoutedEventArgs e)
         {

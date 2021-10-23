@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,35 +45,60 @@ namespace TempoWithGUI.MVVM.View
         private int GetTokens(int n = 1)
         {
             int cost = 0;
-            using (StreamWriter stream = new StreamWriter(App.strWorkPath + "\\tokens\\tokens.txt", true))
+            while (true)
             {
-                var q = n.ToString();
-                string url = "https://unknown-people.it/api/discord?quantity=" + q;
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + App.api_key);
-                string token = "";
-                var response_context = client.SendAsync(new HttpRequestMessage()
+                try
                 {
-                    Method = new HttpMethod("GET"),
-                    RequestUri = new Uri(url)
-                }).GetAwaiter().GetResult();
-                for (int i = 0; i < n; i++)
-                {
-                    var jtoken = JToken.Parse(response_context.Content.ReadAsStringAsync().Result);
-                    var json = JObject.Parse(jtoken.ToString());
-                    var tokens = new Tokens();
-                    tokens.token = json[i.ToString()].Value<string>("token");
-                    tokens.email = json[i.ToString()].Value<string>("email");
-                    tokens.password = json[i.ToString()].Value<string>("password");
-                    tokens.creation = json[i.ToString()].Value<string>("creation");
-                    tokens.country = json[i.ToString()].Value<string>("country");
-                    cost = json.Value<int>("cost");
+                    using (StreamWriter stream = new StreamWriter(App.strWorkPath + "\\tokens\\tokens.txt", true))
+                    {
+                        var q = n.ToString();
+                        string url = "https://unknown-people.it/api/discord?quantity=" + q;
+                        if ((bool)ButtonMail.IsChecked)
+                            url += "&onlymail=true";
+                        HttpClient client = new HttpClient();
+                        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + App.api_key);
+                        string token = "";
+                        var response_context = client.SendAsync(new HttpRequestMessage()
+                        {
+                            Method = new HttpMethod("GET"),
+                            RequestUri = new Uri(url)
+                        }).GetAwaiter().GetResult();
+                        for (int i = 0; i < n; i++)
+                        {
+                            try
+                            {
+                                var jtoken = JToken.Parse(response_context.Content.ReadAsStringAsync().Result);
+                                var json = JObject.Parse(jtoken.ToString());
+                                var tokens = new Tokens();
+                                tokens.token = json[i.ToString()].Value<string>("token");
+                                tokens.email = json[i.ToString()].Value<string>("email");
+                                tokens.password = json[i.ToString()].Value<string>("password");
+                                tokens.creation = json[i.ToString()].Value<string>("creation");
+                                if ((bool)ButtonFull.IsChecked)
+                                    tokens.country = json[i.ToString()].Value<string>("country");
+                                else
+                                    tokens.country = "NULL";
+                                cost = json.Value<int>("cost");
 
-                    token = "T:" + tokens.token + ":" + tokens.email + ":" + tokens.password + ":" + tokens.creation + ":" + tokens.country;
-                    stream.WriteLine(token);
+                                token = "T:" + tokens.token + ":" + tokens.email + ":" + tokens.password + ":" + tokens.creation + ":" + tokens.country;
+                                stream.WriteLine(token);
+                            }
+                            catch
+                            {
+                                MessageBox.Show("You do not seem to have enough credit for this transaction");
+                                return 0;
+                            }
+                        }
+                    }
+                    return cost;
                 }
+                catch (InvalidOperationException) { Thread.Sleep(1000); }
             }
-            return cost;
+        }
+
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Music_user_bot
 
             if (canSendEmbed)
             {
-                var embed = new EmbedMaker() { Title = Client.User.Username, TitleUrl = "https://discord.gg/DWP2AMTWdZ", Color = System.Drawing.Color.IndianRed, ThumbnailUrl = Client.User.Avatar.Url };
+                var embed = new EmbedMaker() { Title = Client.User.Username, TitleUrl = "https://discord.gg/bXfjwSeBur", Color = System.Drawing.Color.IndianRed, ThumbnailUrl = Client.User.Avatar.Url };
                 try
                 {
                     int index = 0;

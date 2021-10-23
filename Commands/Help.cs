@@ -52,7 +52,7 @@ namespace Music_user_bot.Commands
                 "voicetts : set or get possible voices for the tts command\n" +
                 "embed : send an embed with the specified message";
             }
-            var embed = new EmbedMaker() { Title = Client.User.Username, TitleUrl = "https://discord.gg/DWP2AMTWdZ", Color = System.Drawing.Color.IndianRed, ThumbnailUrl = Client.User.Avatar.Url, Description = message };
+            var embed = new EmbedMaker() { Title = Client.User.Username, TitleUrl = "https://discord.gg/bXfjwSeBur", Color = System.Drawing.Color.IndianRed, ThumbnailUrl = Client.User.Avatar.Url, Description = message };
 
             dmChannel.SendMessage(embed);
         }

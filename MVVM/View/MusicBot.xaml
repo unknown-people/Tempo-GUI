@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TempoWithGUI.MVVM.View"
+             xmlns:local="clr-namespace:TempoWithGUI.MVVM.View" xmlns:viewmodel="clr-namespace:TempoWithGUI.MVVM.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
@@ -30,9 +30,10 @@
             </Grid>
 
             <StackPanel Orientation="Horizontal" Grid.Column="1">
-                <RadioButton Style="{StaticResource BotButtonTheme}" Width="100" Content="Bot" Click="RadioButton_Click"/>
+                <RadioButton Style="{StaticResource BotButtonTheme}" Width="100" Content="Bot" Click="RadioButton_Click" IsChecked="{Binding IsBot}"
+                             x:Name="ButtonBot"/>
                 <RadioButton Style="{StaticResource BotButtonTheme}" Width="100" Content="User" Click="RadioButton_Click_1"
-                             IsChecked="True"/>
+                             IsChecked="{Binding IsNotBot}" x:Name="ButtonUser"/>
             </StackPanel>
         </Grid>
 

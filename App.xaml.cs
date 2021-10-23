@@ -23,6 +23,7 @@ using System.Net.NetworkInformation;
 using System.Linq;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
+using TempoWithGUI.MVVM.ViewModel;
 
 namespace TempoWithGUI
 {
@@ -31,6 +32,7 @@ namespace TempoWithGUI
     /// </summary>
     public partial class App : Application
     {
+        public static MainViewModel mainView { get; set; }
         public static string api_key { get; set; } = null;
         public static string mac { get; set; } = null;
         public static YoutubeClient YouTubeClient { get; private set; } = new YoutubeClient();
@@ -59,9 +61,19 @@ namespace TempoWithGUI
                 }
             }
             catch (IndexOutOfRangeException) { }
+
             mac =(from nic in NetworkInterface.GetAllNetworkInterfaces() where nic.OperationalStatus == OperationalStatus.Up select nic.GetPhysicalAddress().ToString()).FirstOrDefault();
             strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
+            if (File.Exists(strWorkPath + "\\TempoWithGUI.exe.config"))
+            {
+                File.Delete(strWorkPath + "\\Tempo.exe.config");
+                File.Move(strWorkPath + "\\TempoWithGUI.exe.config", strWorkPath + "\\Tempo.exe.config");
+            }
+            if(!File.Exists(strWorkPath + "\\Tempo.exe.config"))
+            {
+                File.Create(strWorkPath + "\\Tempo.exe.config");
+            }
             if (!CheckUpdate())
             {
                 return;
@@ -71,8 +83,7 @@ namespace TempoWithGUI
             {
                 if (!IsUserAdministrator())
                 {
-                    Console.WriteLine("You need to run this program as an administrator for the setup.");
-                    Console.ReadLine();
+                    MessageBox.Show("You need to run this program as an administrator for the setup.");
                     return;
                 }
                 var proc = Process.Start(new ProcessStartInfo()
@@ -132,12 +143,20 @@ namespace TempoWithGUI
                         Directory.CreateDirectory(App.strWorkPath + "\\tokens");
 
                     Task.Run(Spotify.Login);
+                    Task.Run(() => Proxy.GetProxies("https://discord.com"));
+
+                    System.Timers.Timer timer_fetch_discord_proxies = new System.Timers.Timer();
+                    timer_fetch_discord_proxies.Elapsed += new ElapsedEventHandler(OnElapsedTimeDiscordProxies);
+                    timer_fetch_discord_proxies.Interval = 5 * 60 * 1000;
+                    timer_fetch_discord_proxies.Enabled = true;
+                    /*
                     Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
 
                     System.Timers.Timer timer_fetch_proxies = new System.Timers.Timer();
                     timer_fetch_proxies.Elapsed += new ElapsedEventHandler(App.OnElapsedTimeProxies);
                     timer_fetch_proxies.Interval = 5 * 60 * 1000;
                     timer_fetch_proxies.Enabled = true;
+                    */
                     using (StreamReader stream = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt", true))
                     {
                         tokens._tokens = new List<DiscordToken>() { };
@@ -150,7 +169,16 @@ namespace TempoWithGUI
                             if (token_array.Length == 3)
                                 tokens._tokens.Add(new DiscordToken(true, token_array[0], "U"));
                             else
-                                tokens._tokens.Add(new DiscordToken(true, token_array[1], token_array[0]));
+                            {
+                                if (token_array[0].Length != 1)
+                                {
+                                    tokens._tokens.Add(new DiscordToken(true, token_array[0], "U"));
+                                }
+                                else
+                                {
+                                    tokens._tokens.Add(new DiscordToken(true, token_array[1], token_array[0]));
+                                }
+                            }
                         }
                     }
                     MainWindow window = new MainWindow();
@@ -161,6 +189,7 @@ namespace TempoWithGUI
                 {
                     Settings.Default.tk1 = "";
                     Settings.Default.tk2 = "";
+                    Settings.Default.APIkey = "";
                     Settings.Default.Save();
                     Settings.Default.Reload();
                     SaveSettings();
@@ -212,9 +241,9 @@ namespace TempoWithGUI
         {
             Task.Run(() => Proxy.GetProxies("https://www.youtube.com"));
         }
-        private static void OnElapsedTimeDiscordProxies(object source, ElapsedEventArgs e)
+        public static void OnElapsedTimeDiscordProxies(object source, ElapsedEventArgs e)
         {
-            Task.Run(() => Proxy.GetProxies("https://discord.com/api/v9/experiments", strWorkPath + "\\proxies\\discord_proxies.txt"));
+            Task.Run(() => Proxy.GetProxies("https://discord.com", strWorkPath + "\\proxies\\discord_proxies.txt"));
         }
         public static void Client_OnLoggedIn(DiscordSocketClient client, LoginEventArgs args)
         {
@@ -231,10 +260,12 @@ namespace TempoWithGUI
                     Status = UserStatus.DoNotDisturb,
                     Activity = activity
                 });
+                /*
                 client.User.ChangeProfile(new UserProfileUpdate()
                 {
-                    Biography = "Come check out Tempo bot in our server https://discord.gg/DWP2AMTWdZ !"
+                    Biography = "Come check out Tempo bot in our server https://discord.gg/bXfjwSeBur !"
                 });
+                */
                 return;
             }
             var path = strWorkPath + "\\propic.png";
@@ -248,7 +279,7 @@ namespace TempoWithGUI
                     Username = Settings.Default.Username,
                     Password = Settings.Default.Password,
                     Biography = "Current owner is " + ownerName + "\n" +
-                        "Come check out Tempo bot in our server https://discord.gg/DWP2AMTWdZ !",
+                        "Come check out Tempo bot in our server https://discord.gg/bXfjwSeBur !",
                     Avatar = bitmap
                 });
             }
@@ -521,6 +552,13 @@ namespace TempoWithGUI
                 else
                 {
                     MessageBox.Show("You need to purchase another key to use Tempo on multiple machines.\nPlease contact out support team if you need to rebind your account");
+                    
+                    Settings.Default.tk1 = "";
+                    Settings.Default.tk2 = "";
+                    Settings.Default.APIkey = "";
+                    Settings.Default.Save();
+                    SaveSettings();
+
                     Application.Current.Shutdown();
                     return;
                 }

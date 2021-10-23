@@ -41,7 +41,7 @@ namespace TempoWithGUI.MVVM.View
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             RaidModel.dmOn = false;
-            this.Close();
+            this.Hide();;
         }
         private void Start_Click(object sender, RoutedEventArgs e)
         {
@@ -85,6 +85,8 @@ namespace TempoWithGUI.MVVM.View
                 }
             delay = (int)delay;
             spamming = true;
+            bool proxyOn = (bool)ProxyCB.IsChecked;
+
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
 
@@ -153,13 +155,41 @@ namespace TempoWithGUI.MVVM.View
                 int i = 0;
                 Parallel.ForEach(clients, client =>
                 {
+                    if (proxyOn)
+                    {
+                        Random rnd = new Random();
+                        Proxy proxy = null;
+                        var proxies_list = new List<Proxy>() { };
+                        if (Proxies.freeProxies)
+                        {
+                            proxies_list = Proxy.working_proxies;
+                        }
+                        else
+                        {
+                            proxies_list = Proxy.working_proxies_paid;
+                        }
+
+                        if (proxies_list.Count > 0)
+                        {
+                            proxy = proxies_list[rnd.Next(0, proxies_list.Count)];
+                            if (proxy._ip != "" && proxy != null)
+                            {
+                                HttpProxyClient proxies = null;
+                                if (proxy._username != null)
+                                    proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port), proxy._username, proxy._password);
+                                else
+                                    proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+                                client.Proxy = proxies;
+                            }
+                        }
+                    }
                     while (spamming)
                     {
                         Random random = new Random();
                         EmbedMaker new_msg = null;
                         if (embedOn)
                         {
-                            new_msg = new EmbedMaker() { Title = client.User.Username, TitleUrl = "https://discord.gg/DWP2AMTWdZ", Color = System.Drawing.Color.IndianRed, Description = message };
+                            new_msg = new EmbedMaker() { Title = client.User.Username, TitleUrl = "https://discord.gg/bXfjwSeBur", Color = System.Drawing.Color.IndianRed, Description = message };
                         }
                         bool hasSent = false;
                         int c = 0;

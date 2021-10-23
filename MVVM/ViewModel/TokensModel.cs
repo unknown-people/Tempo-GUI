@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TempoWithGUI.MVVM.ViewModel
 {
-    class TokensModel
+    public class TokensModel
     {
     }
 }

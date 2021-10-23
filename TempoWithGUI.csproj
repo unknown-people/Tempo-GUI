@@ -8,7 +8,7 @@
     <ProjectGuid>{20D95309-16FC-4F92-8088-7E6DB97CE46A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>TempoWithGUI</RootNamespace>
-    <AssemblyName>TempoWithGUI</AssemblyName>
+    <AssemblyName>Tempo</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -146,6 +146,12 @@
     </Reference>
     <Reference Include="Microsoft.Net.Http.Headers, Version=2.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Net.Http.Headers.2.0.2\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\WindowsAPICodePack-Core.1.1.1\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -763,6 +769,7 @@
     <Compile Include="FFmpeg.cs" />
     <Compile Include="MVVM\ViewModel\AccountsModel.cs" />
     <Compile Include="MVVM\ViewModel\GuildRaidModel.cs" />
+    <Compile Include="MVVM\ViewModel\ProfilesModel.cs" />
     <Compile Include="MVVM\ViewModel\ShopViewModel.cs" />
     <Compile Include="MVVM\View\Accounts.xaml.cs">
       <DependentUpon>Accounts.xaml</DependentUpon>
@@ -775,6 +782,12 @@
     </Compile>
     <Compile Include="MVVM\View\ComingSoonWindow.xaml.cs">
       <DependentUpon>ComingSoonWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\CustomMessageBoxConfirm.xaml.cs">
+      <DependentUpon>CustomMessageBoxConfirm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\CustomMessageBoxInfo.xaml.cs">
+      <DependentUpon>CustomMessageBoxInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\DmRaid.xaml.cs">
       <DependentUpon>DmRaid.xaml</DependentUpon>
@@ -794,17 +807,41 @@
     <Compile Include="MVVM\View\MassDM.xaml.cs">
       <DependentUpon>MassDM.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\ProfilesRaid.xaml.cs">
+      <DependentUpon>ProfilesRaid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\ProfilesView\bioProfiles.xaml.cs">
+      <DependentUpon>bioProfiles.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\ProfilesView\imageProfiles.xaml.cs">
+      <DependentUpon>imageProfiles.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\ProfilesView\nameProfiles.xaml.cs">
+      <DependentUpon>nameProfiles.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\RaidView\GuildRaid.xaml.cs">
       <DependentUpon>GuildRaid.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\RaidView\JoinGuild.xaml.cs">
       <DependentUpon>JoinGuild.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\RaidView\LeaveGuild.xaml.cs">
+      <DependentUpon>LeaveGuild.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Log.xaml.cs">
+      <DependentUpon>Log.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\RaidView\NukeGuild.xaml.cs">
+      <DependentUpon>NukeGuild.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\RaidView\SpamGuild.xaml.cs">
       <DependentUpon>SpamGuild.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Shop.xaml.cs">
       <DependentUpon>Shop.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\TokenRaid.xaml.cs">
+      <DependentUpon>TokenRaid.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\VoiceRaid.xaml.cs">
       <DependentUpon>VoiceRaid.xaml</DependentUpon>
@@ -848,6 +885,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\CustomMessageBoxConfirm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\CustomMessageBoxInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\DmRaid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -880,6 +925,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\ProfilesRaid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\ProfilesView\bioProfiles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\ProfilesView\imageProfiles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\ProfilesView\nameProfiles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Proxies.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -896,11 +957,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\RaidView\LeaveGuild.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Log.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\RaidView\NukeGuild.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\RaidView\SpamGuild.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\Shop.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\TokenRaid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

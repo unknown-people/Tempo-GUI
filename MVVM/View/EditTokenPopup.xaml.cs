@@ -37,7 +37,7 @@ namespace TempoWithGUI.MVVM.View
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Hide();;
         }
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
@@ -87,7 +87,7 @@ namespace TempoWithGUI.MVVM.View
             File.Delete(App.strWorkPath + "\\tokens\\tokens.txt");
             File.Move(App.strWorkPath + "\\tokens\\tokens1.txt", App.strWorkPath + "\\tokens\\tokens.txt");
             Confirm_Btn.Cursor = Cursors.Arrow;
-            this.Close();
+            this.Hide();;
         }
     }
 }

@@ -14,6 +14,30 @@
     <Window.DataContext>
         <viewModel:MainViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}">
+            <Style.Setters>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{TemplateBinding Background}">
+                                <TextBlock Text="{TemplateBinding Property=Content}" VerticalAlignment="Center" FontFamily="/Fonts/#Poppins"
+                                       HorizontalAlignment="Left" Foreground="AntiqueWhite" Margin="30,0"
+                                           Padding="10"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#141114"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Border Background="#0F0D0F" CornerRadius="20" MouseDown="Window_MouseDown">
         <Grid MouseDown="Window_MouseDown">
             <Grid.ColumnDefinitions>
@@ -40,26 +64,34 @@
                        Height="28" Width="30"
                        Margin="0,0,0,2"/>
             </Grid>
-
-            <StackPanel Grid.Row="1">
-                <RadioButton Content="Music Bot" Height="50" Foreground="White"
+            <Grid Grid.Row="1" Height="520">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="7*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <RadioButton Content="Music Bot" Height="50" Foreground="White"
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
                              Command="{Binding MusicBotCommand}"
                              x:Name="MusicButton" IsChecked="True"/>
-                <RadioButton Content="Raid" Height="50" Foreground="White"
+                    <RadioButton Content="Raid" Height="50" Foreground="White"
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
                              Command="{Binding RaidCommand}"/>
-                <RadioButton Content="Proxies" Height="50" Foreground="White"
+                    <RadioButton Content="Proxies" Height="50" Foreground="White"
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
                              Command="{Binding ProxiesCommand}"/>
-                <RadioButton Content="Tokens" Height="50" Foreground="White"
+                    <RadioButton Content="Tokens" Height="50" Foreground="White"
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
                              Command="{Binding TokensCommand}"/>
-                <RadioButton Content="More" Height="50" Foreground="White"
+                    <RadioButton Content="More" Height="50" Foreground="White"
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
                              Command="{Binding MoreCommand}" IsEnabled="False"
                              Visibility="Collapsed"/>
-            </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Row="1">
+                    <Button Content="Logs" Name="LogsBtn" Click="Logs_Click"/>
+                </StackPanel>
+            </Grid>
             <!--
             <TextBlock Text="THE ONLY BOT YOU'LL EVER NEED" Grid.Column="1"
                        Foreground="White"

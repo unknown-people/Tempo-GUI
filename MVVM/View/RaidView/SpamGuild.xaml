@@ -63,7 +63,7 @@
                 <ColumnDefinition Width="240">
                 </ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0, 30"
+            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0, 10"
                         HorizontalAlignment="Center">
                 <TextBlock Text="Guild Id" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
                 <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
@@ -86,13 +86,18 @@
                           HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
                           Foreground="AntiqueWhite" Padding="5,0,0,0"
                           FontSize="12" FontFamily="/Fonts/#Poppins"/>
+                <CheckBox Content="Use proxies" Height="20"
+                          Margin="0,10" x:Name="ProxyCB" IsChecked="True"
+                          HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                          Foreground="AntiqueWhite" Padding="5,0,0,0"
+                          FontSize="12" FontFamily="/Fonts/#Poppins"/>
                 <Grid Height="95" Margin="0,-10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="50"/>
                         <ColumnDefinition Width="150"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Delay" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0"/>
+                    <TextBlock Text="Delay (ms)" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0"/>
                     <TextBox Style="{DynamicResource ModernTextBoxOther}" Grid.Column="0" HorizontalAlignment="Left" Padding="5,0,0,0"
                          Height="25" Width="100" Margin="0,0,0,0" x:Name="DelayIn"/>
                     <TextBlock Text="Tokens" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2"/>

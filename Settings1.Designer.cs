@@ -94,12 +94,15 @@ namespace TempoWithGUI {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("c11462adeea14bbe81cf8588da74de76")]
         public string APIkey {
             get {
                 return ((string)(this["APIkey"]));
+            }
+            set {
+                this["APIkey"] = value;
             }
         }
         

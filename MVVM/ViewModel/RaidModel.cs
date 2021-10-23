@@ -12,7 +12,7 @@ using TempoWithGUI.MVVM.View.RaidView;
 
 namespace TempoWithGUI.MVVM.ViewModel
 {
-    class RaidModel : ObservableObject
+    public class RaidModel : ObservableObject
     {
         public RelayCommand GuildRaid { get; set; }
         public RelayCommand DMRaid { get; set; }
@@ -22,7 +22,15 @@ namespace TempoWithGUI.MVVM.ViewModel
         public RelayCommand WebhookRaid { get; set; }
         public RelayCommand MassDMRaid { get; set; }
         public RelayCommand TokenRaid { get; set; }
-        public RelayCommand CallRaid { get; set; }
+        public RelayCommand ProfilesRaid { get; set; }
+
+        public GuildRaid guildRaid { get; set; }
+        public DmRaid dmRaid { get; set; }
+        public FriendRaid friendRaid { get; set; }
+        public VoiceRaid voiceRaid { get; set; }
+        public MassDM massDM { get; set; }
+        public TokenRaid tokenRaid { get; set; }
+        public ProfilesRaid profilesRaid { get; set; }
 
         public static bool guildOn;
         public static bool dmOn;
@@ -32,18 +40,26 @@ namespace TempoWithGUI.MVVM.ViewModel
         public static bool webhookOn;
         public static bool massdmOn;
         public static bool tokenOn;
-        public static bool callOn;
+        public static bool profilesOn;
 
 
         public RaidModel()
         {
+            guildRaid = new GuildRaid();
+            dmRaid = new DmRaid();
+            friendRaid = new FriendRaid();
+            voiceRaid = new VoiceRaid();
+            massDM = new MassDM();
+            tokenRaid = new TokenRaid();
+            profilesRaid = new ProfilesRaid();
+
             GuildRaid = new RelayCommand(o =>
             {
                 if (guildOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                var guild_raid = new GuildRaid();
-                guild_raid.Show();
+                guildRaid.Show();
+                guildRaid.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
                 guildOn = true;
             });
@@ -52,8 +68,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (dmOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                var dm_raid = new DmRaid();
-                dm_raid.Show();
+                dmRaid.Show();
+                dmRaid.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
                 dmOn = true;
             });
@@ -62,8 +78,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (friendOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                var friend_raid = new FriendRaid();
-                friend_raid.Show();
+                friendRaid.Show();
+                friendRaid.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
                 friendOn = true;
             });
@@ -74,6 +90,7 @@ namespace TempoWithGUI.MVVM.ViewModel
                 ((Border)o).Cursor = Cursors.AppStarting;
                 var coming_soon = new ComingSoonWindow();
                 coming_soon.Show();
+                coming_soon.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
                 reactionOn = true;
             });
@@ -82,8 +99,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (voiceOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                var voice_raid = new VoiceRaid();
-                voice_raid.Show();
+                voiceRaid.Show();
+                voiceRaid.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
                 voiceOn = true;
             });
@@ -94,6 +111,7 @@ namespace TempoWithGUI.MVVM.ViewModel
                 ((Border)o).Cursor = Cursors.AppStarting;
                 var coming_soon = new ComingSoonWindow();
                 coming_soon.Show();
+                coming_soon.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
                 webhookOn = true;
             });
@@ -102,8 +120,8 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (massdmOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                var massDm = new MassDM();
-                massDm.Show();
+                massDM.Show();
+                massDM.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
                 massdmOn = true;
             });
@@ -112,20 +130,20 @@ namespace TempoWithGUI.MVVM.ViewModel
                 if (tokenOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                var coming_soon = new ComingSoonWindow();
-                coming_soon.Show();
+                tokenRaid.Show();
+                tokenRaid.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
                 tokenOn = true;
             });
-            CallRaid = new RelayCommand(o =>
+            ProfilesRaid = new RelayCommand(o =>
             {
-                if (callOn)
+                if (profilesOn)
                     return;
                 ((Border)o).Cursor = Cursors.AppStarting;
-                var coming_soon = new ComingSoonWindow();
-                coming_soon.Show();
+                profilesRaid.Show();
+                profilesRaid.Activate();
                 ((Border)o).Cursor = Cursors.Hand;
-                callOn = true;
+                profilesOn = true;
             });
         }
     }

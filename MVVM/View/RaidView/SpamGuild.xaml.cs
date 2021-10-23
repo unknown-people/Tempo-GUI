@@ -1,5 +1,7 @@
 ﻿using Discord;
 using Discord.Gateway;
+using Leaf.xNet;
+using Music_user_bot;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,6 +40,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
         {
             if (spamming)
                 return;
+            members = null;
             StartBtn.Cursor = Cursors.AppStarting;
             var guild_id = GuildIn.Text;
             var channel_id = ChannelIn.Text;
@@ -70,6 +73,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
             bool filterOn = (bool)FilterCB.IsChecked;
             bool mentionOn = (bool)MentionCB.IsChecked;
             bool rolesOn = (bool)RolesCB.IsChecked;
+            bool proxyOn = (bool)ProxyCB.IsChecked;
 
             delay = (int)delay;
             spamming = true;
@@ -139,8 +143,97 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 int i = 0;
                 Parallel.ForEach(clients, client =>
                 {
+                    if (proxyOn)
+                    {
+                        Random rnd = new Random();
+                        Proxy proxy = null;
+                        var proxies_list = Proxy.working_proxies;
+                        if (Proxies.paidProxies)
+                            proxies_list = Proxy.working_proxies_paid;
+                        var original_proxies = proxies_list;
+                        CustomMessageBox popup = null;
+
+                        var tries = 0;
+                        while (tries <= 5)
+                        {
+                            if (proxies_list.Count > 0)
+                            {
+                                proxy = proxies_list[rnd.Next(0, proxies_list.Count)];
+                                if (proxy._ip != "" && proxy != null)
+                                {
+                                    HttpProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+                                    if (Proxies.paidProxies)
+                                        proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port), proxy._username, proxy._password);
+                                    client.Proxy = proxies;
+                                    while (true)
+                                    {
+                                        try
+                                        {
+                                            if (Proxies.paidProxies)
+                                                break;
+                                            var buff = client.GetVoiceRegions();
+                                            break;
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            try
+                                            {
+                                                proxies_list.Remove(proxy);
+                                                if (proxies_list.Count > 0)
+                                                {
+                                                    proxy = proxies_list[rnd.Next(0, proxies_list.Count - 1)];
+                                                    if (proxy._ip != "" && proxy != null)
+                                                    {
+                                                        proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+                                                        client.Proxy = proxies;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    //Proxy.GetProxies("https://discord.com");
+                                                    client.Proxy = null;
+                                                }
+                                                break;
+                                            }
+                                            catch { }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                            else
+                            {
+                                if (Proxy.gettingProxies)
+                                {
+                                    proxies_list = Proxy.working_proxies;
+                                    if (Proxies.paidProxies)
+                                        proxies_list = Proxy.working_proxies_paid;
+                                    proxies_list = proxies_list.Except(original_proxies).ToList();
+                                    original_proxies = proxies_list;
+
+                                    tries++;
+                                    Thread.Sleep(2000);
+                                }
+                                else
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        if (popup != null)
+                                            return;
+                                        popup = new CustomMessageBox("There are no more free proxies available. Try again in a few minutes");
+                                        popup.ShowDialog();
+                                        Set_Light(false);
+                                    });
+                                    spamming = false;
+                                    return;
+                                }
+                            }
+                        }
+                    }
                     while (spamming)
                     {
+                        if (!IsInGuild(client, guildId))
+                            break;
                         ulong nc = 0;
                         if(channelId == 0)
                         {
@@ -163,12 +256,20 @@ namespace TempoWithGUI.MVVM.View.RaidView
                             new_msg += "\n";
                             for(int t = 0; t < random.Next(3, 5); t++)
                             {
-                                new_msg += "<@" + members[random.Next(0, members.Count)].User.Id.ToString() + ">\n";
+                                while (true)
+                                {
+                                    try
+                                    {
+                                        new_msg += "<@" + members[random.Next(0, members.Count)].User.Id.ToString() + ">\n";
+                                        break;
+                                    }
+                                    catch { }
+                                }
                             }
                         }
                         bool hasSent = false;
                         int c = 0;
-                        while (!hasSent && c < 3)
+                        while (!hasSent && c < 1)
                         {
                             DiscordMessage mes;
                             try
@@ -182,13 +283,22 @@ namespace TempoWithGUI.MVVM.View.RaidView
                             catch (Exception ex)
                             {
                                 c++;
+                                Thread.Sleep(5000);
                             }
+                        }
+                        if(c >= 1)
+                        {
+                            break;
                         }
                         Thread.Sleep((int)delay);
                     }
-
                 });
-                Dispatcher.Invoke(() => StatusLight.Fill = Brushes.Red);
+                
+                Dispatcher.Invoke(() =>
+                {
+                    if (StatusLight.Fill == Brushes.Green)
+                        StatusLight.Fill = Brushes.Red;
+                });
             });
             spam.Start();
         }
@@ -206,6 +316,22 @@ namespace TempoWithGUI.MVVM.View.RaidView
             else
             {
                 StatusLight.Fill = Brushes.Red;
+            }
+        }
+        public bool IsInGuild(DiscordClient Client, ulong guildId)
+        {
+            try
+            {
+                foreach (var guild in Client.GetGuilds())
+                {
+                    if (guildId == guild.Id)
+                        return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return true;
             }
         }
     }

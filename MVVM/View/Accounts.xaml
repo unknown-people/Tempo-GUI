@@ -62,7 +62,7 @@
         </StackPanel>
         <Grid Height="150">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="0.5*"/>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1.5*"/>
             </Grid.ColumnDefinitions>
@@ -71,6 +71,12 @@
                          x:Name="QuantityIn"/>
                 <Button Content="BUY" Style="{StaticResource LoginButtonTheme}"
                         Height="30" FontSize="18" FontFamily="/Fonts/#Poppins" Click="Buy_Click"/>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Vertical">
+                <RadioButton Style="{StaticResource BotButtonTheme}" Width="140" Height="30" Content="Full verified" Click="RadioButton_Click" IsChecked="True"
+                             x:Name="ButtonFull" Margin="20"/>
+                <RadioButton Style="{StaticResource BotButtonTheme}" Width="140" Height="30" Content="Mail verified" Click="RadioButton_Click"
+                             IsChecked="False" x:Name="ButtonMail" Margin="3"/>
             </StackPanel>
             <Border Width="150" Height="40" CornerRadius="10" Grid.Column="2" HorizontalAlignment="Right"
                     VerticalAlignment="Bottom" Margin="0,0,-20,-10">

@@ -58,7 +58,7 @@ namespace TempoWithGUI.MVVM.View
             StatusLight.Fill = Brushes.Red;
             isJoined = false;
             RaidModel.voiceOn = false;
-            this.Close();
+            this.Hide();;
         }
         private void Start_Click(object sender, RoutedEventArgs e)
         {

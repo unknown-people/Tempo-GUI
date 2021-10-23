@@ -19,7 +19,7 @@ namespace Music_user_bot
         public static List<Proxy> working_proxies { get; set; }
         public static List<Proxy> working_proxies_paid { get; set; }
         public static List<Proxy> ssl_working_proxies { get; set; }
-
+        public static bool gettingProxies { get; set; }
         public static string proxies_file_path { get; set; }
         public static string ssl_proxies_file_path { get; set; }
 
@@ -58,17 +58,33 @@ namespace Music_user_bot
         }
         public static bool TestProxy(string url, Proxy proxy)
         {
+            if(url == "https://discord.com")
+            {
+                url = "https://discord.com/api/v9/experiments";
+            }
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 
             request.Proxy = new WebProxy(proxy._ip, int.Parse(proxy._port));
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36";
+            if(url == "https://discord.com/api/v9/experiments")
+                request.Host = "discord.com";
             request.Timeout = 2000;
+            request.ReadWriteTimeout = 2000;
+            request.ContinueTimeout = 350;
 
             try
             {
-                WebResponse response = request.GetResponse();
+                var task = Task.Run(() => {
+                    try
+                    {
+                        WebResponse response = request.GetResponse();
+                    }
+                    catch (Exception ex) { }
+                });
+                if (!task.Wait(TimeSpan.FromSeconds(2)))
+                    throw new Exception("Timed out");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -76,6 +92,9 @@ namespace Music_user_bot
         }
         public static void GetProxies(string url, string path = "")
         {
+            while (gettingProxies)
+                Thread.Sleep(1000);
+            gettingProxies = true;
             if (working_proxies == null)
                 working_proxies = new List<Proxy>() { };
             if (working_proxies_paid == null)
@@ -108,33 +127,7 @@ namespace Music_user_bot
                 }
             }
             FilterProxies(proxies_file_path, url);
-
-        }
-        public static void GetSSLProxies(string url)
-        {
-            if (ssl_working_proxies == null)
-                ssl_working_proxies = new List<Proxy>() { };
-            if (!Directory.Exists(App.strWorkPath + @"\proxies"))
-            {
-                Directory.CreateDirectory(App.strWorkPath + @"\proxies");
-            }
-            ssl_proxies_file_path = App.strWorkPath + @"\proxies\" + ssl_proxies_txt;
-
-            while (true)
-            {
-                try
-                {
-                    File.Delete(ssl_proxies_file_path);
-                    break;
-                }
-                catch { Thread.Sleep(100); }
-            }
-
-            using (var client = new WebClient())
-            {
-                client.DownloadFile("https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=10000&country=all&ssl=yes&anonymity=all&simplified=true", ssl_proxies_file_path);
-            }
-            FilterSSLProxies(ssl_proxies_file_path, url);
+            gettingProxies = false;
         }
         public static void FilterProxies(string url)
         {
@@ -166,19 +159,27 @@ namespace Music_user_bot
         }
         public static void FilterProxies(string file_path, string url)
         {
-            using (var sr = new StreamReader(file_path))
+            while (true)
             {
-                for(int i = 0; i < 100; i++)
+                try
                 {
-                    string proxy_string = sr.ReadLine();
-                    if (proxy_string == null)
-                        break;
-                    Proxy proxy = new Proxy(proxy_string.Split(':')[0], proxy_string.Split(':')[1]);
-                    if (TestProxy(url, proxy))
+                    using (var sr = new StreamReader(file_path))
                     {
-                        working_proxies.Add(proxy);
+                        for (int i = 0; i < 100; i++)
+                        {
+                            string proxy_string = sr.ReadLine();
+                            if (proxy_string == null)
+                                break;
+                            Proxy proxy = new Proxy(proxy_string.Split(':')[0], proxy_string.Split(':')[1]);
+                            if (TestProxy(url, proxy))
+                            {
+                                working_proxies.Add(proxy);
+                            }
+                        }
                     }
+                    break;
                 }
+                catch { Thread.Sleep(100); }
             }
         }
         public static void FilterSSLProxies(string file_path, string url)

@@ -140,27 +140,26 @@ namespace Discord
 
                     if (method == Leaf.xNet.HttpMethod.POST && endpoint.Contains("/invites/"))
                     {
+                        if(_discordClient.Proxy != null) {
+                            HttpRequest.GlobalProxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port);
+                            if (_discordClient.Proxy.Username != null && _discordClient.Proxy.Username != "")
+                                HttpRequest.GlobalProxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port, _discordClient.Proxy.Username, _discordClient.Proxy.Password);
+                        }
+                        else
+                        {
+                            HttpRequest.GlobalProxy = null;
+                        }
                         HttpRequest request = new HttpRequest()
                         {
                             KeepTemporaryHeadersOnRedirect = false,
                             EnableMiddleHeaders = false,
                             AllowEmptyHeaderValues = false
                         };
-                        
-                        Random rnd = new Random();
-                        Proxy proxy = null;
-                        if (Proxy.working_proxies.Count > 0)
-                        {
-                            proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count)];
-                            if (proxy._ip != "" && proxy != null)
-                            {
-                                ProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
-
-                                if (proxies != null)
-                                    request.Proxy = proxies;
-                            }
-                        }
-                        
+                        /*
+                        request.Proxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port);
+                        if (_discordClient.Proxy.Username != null && _discordClient.Proxy.Username != "")
+                            request.Proxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port, _discordClient.Proxy.Username, _discordClient.Proxy.Password);
+                        */
                         request.ClearAllHeaders();
                         request.AddHeader("Accept", "*/*");
                         request.AddHeader("Accept-Encoding", "gzip, deflate");
@@ -223,11 +222,28 @@ namespace Discord
                         if (_discordClient.User == null || _discordClient.User.Type == DiscordUserType.User) msg.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
                         if (_discordClient.Proxy != null) msg.Proxy = _discordClient.Proxy;
 
+                        if (endpoint.Contains("https://discord.com/api/v9/channels/") && endpoint.Contains("messages") && method == Leaf.xNet.HttpMethod.POST)
+                        {
+                            var ep = endpoint.Split('/');
+                            ulong guild_id = 0;
+                            foreach (string chunk in ep)
+                            {
+                                if (ulong.TryParse(chunk, out guild_id))
+                                {
+                                    break;
+                                }
+                            }
+                            msg.AddHeader("origin", "https://discord.com");
+                            msg.AddHeader("Accept", "*/*");
+                            msg.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=it");
+                            msg.AddHeader(HttpHeader.Referer, "https://discord.com/channels/@me/" + guild_id);
+                        }
+
                         var response = msg.Raw(method, endpoint, hasData ? new Leaf.xNet.StringContent(json) : null);
 
                         resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
                     }
-                    if (endpoint.Contains("member-verification?with_guild=false&invite_code"))
+                    if (endpoint.Contains("member-verification?") && method == Leaf.xNet.HttpMethod.GET)
                     {
                         var ep = endpoint.Split('/');
                         ulong guild_id = 0;
@@ -272,7 +288,18 @@ namespace Discord
                             h = 23;
                         if (h == -2)
                             h = 22;
-                        string buf1 = form.Version.Substring(0, 11) + h.ToString() + form.Version.Substring(13);
+                        //sb.Replace("+02:00", "000+00:00");
+                        //form.Version = sb.ToString();
+                        var hString = h.ToString();
+                        if(hString.Length < 2)
+                        {
+                            while(hString.Length < 2)
+                            {
+                                hString = "0" + hString;
+                            }
+                        }
+                        string buf1 = form.Version.Substring(0, 11) + hString + form.Version.Substring(13);
+
                         form.Version = buf1;
                         string json_string = "";
                         try
@@ -280,20 +307,21 @@ namespace Discord
                             form.Fields[0].Response = true;
                         }
                         catch { }
-
+                        form.Description = null;
+                        var desc = "{\"description\":null,";
                         json_string = JsonConvert.SerializeObject(form, Formatting.None);
-                        json_string = "{" + json_string.Substring(json_string.Split(',')[0].Length + 1);
+                        json_string = "{" + json_string.Substring(desc.Length);
                         var guildId = endpoint.Split('/')[1];
                         request.ClearAllHeaders();
                         request.AddHeader("Accept", "*/*");
                         request.AddHeader("Accept-Encoding", "gzip, deflate");
                         request.AddHeader("Accept-Language", "it");
                         request.AddHeader("Authorization", _discordClient.Token);
-                        request.AddHeader("Content-Type", "application/json");
-                        request.AddHeader("Content-Length", json_string.Length.ToString());
+                        //request.AddHeader("Content-Type", "application/json");
+                        request.AddHeader("Content-Length", (json_string.Length).ToString());
                         request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=it");
                         request.AddHeader("origin", "https://discord.com");
-                        request.AddHeader("Referer", $"https://discord.com/channels/{guildId}");
+                        request.AddHeader("Referer", $"https://discord.com/channels/{guild_id}");
                         request.AddHeader("TE", "Trailers");
                         request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
                         request.AddHeader("X-Debug-Options", "bugReporterEnabled");
@@ -301,7 +329,7 @@ namespace Discord
 
                         var response = request.Put(endpoint, json_string, "application/json");
 
-                        var resp1 = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+                        //var resp1 = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
                     }
 
                     DiscordHttpUtil.ValidateResponse(resp.StatusCode, resp.Body);

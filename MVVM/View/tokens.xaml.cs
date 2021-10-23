@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TempoWithGUI.Core;
+using TempoWithGUI.MVVM.View.RaidView;
 
 namespace TempoWithGUI.MVVM.View
 {
@@ -26,22 +27,23 @@ namespace TempoWithGUI.MVVM.View
     public partial class tokens : UserControl
     {
         public static bool boughtTokens { get; set; } = false;
-        public static List<DiscordToken> _tokens;
+        public static List<DiscordToken> _tokens { get; set; } = null;
         public static bool checking { get; set; }
         public tokens()
         {
             InitializeComponent();
             if (!File.Exists(App.strWorkPath + "\\tokens\\tokens.txt"))
                 File.Create(App.strWorkPath + "\\tokens\\tokens.txt");
-            _tokens = new List<DiscordToken>();
+            if(_tokens == null)
+                _tokens = new List<DiscordToken>();
 
             SetTokens();
         }
-        private void SetTokens()
+        public void SetTokens()
         {
+            var buff = new List<DiscordToken>() { };
             using (StreamReader stream = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt", true))
             {
-                _tokens = new List<DiscordToken>() { };
                 while (true)
                 {
                     var line = stream.ReadLine();
@@ -49,11 +51,41 @@ namespace TempoWithGUI.MVVM.View
                         break;
                     var token_array = line.Split(':');
                     if(token_array.Length == 3)
-                        _tokens.Add(new DiscordToken(true, token_array[0], "U"));
-                    else 
-                        _tokens.Add(new DiscordToken(true, token_array[1], token_array[0]));
+                        buff.Add(new DiscordToken(true, token_array[0], "U"));
+                    else
+                    {
+                        if(token_array[0].Length != 1)
+                        {
+                            buff.Add(new DiscordToken(true, token_array[0], "U"));
+                        }
+                        else
+                        {
+                            buff.Add(new DiscordToken(true, token_array[1], token_array[0]));
+                        }
+                    } 
                 }
             }
+            var i = 0;
+            foreach(var tk in _tokens)
+            {
+                try
+                {
+                    if (tk.Active)
+                    {
+                        buff[i].Active = true;
+                    }
+                    else
+                    {
+                        buff[i].Active = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.mainView.logPrint($"Couldn't set tokens: {ex.Message}");
+                }
+                i++;
+            }
+            _tokens = buff;
             ListTokens.ItemsSource = _tokens;
         }
         public static string[] GetTokenInfo(string token)
@@ -80,14 +112,40 @@ namespace TempoWithGUI.MVVM.View
                     }
                     else
                     {
-                        if(token_array[1] == token)
+                        if(token_array.Length == 6)
                         {
-                            email = token_array[2];
-                            password = token_array[3];
-                            creation = token_array[4];
-                            country = token_array[5];
-                            if (country == "NULL")
-                                country = "";
+                            if (token_array[1] == token)
+                            {
+                                email = token_array[2];
+                                password = token_array[3];
+                                creation = token_array[4];
+                                country = token_array[5];
+                                if (country == "NULL")
+                                    country = "";
+                            }
+                        }
+                        else if(token_array.Length == 5)
+                        {
+                            if (token_array[0] == token)
+                            {
+                                email = token_array[1];
+                                password = token_array[2];
+                                creation = token_array[3];
+                                country = token_array[4];
+                                if (country == "NULL")
+                                    country = "";
+                            }
+                        }
+                        else if (token_array.Length == 4)
+                        {
+                            if (token_array[0] == token)
+                            {
+                                email = token_array[1];
+                                password = token_array[2];
+                                creation = token_array[3];
+                                if (country == "NULL")
+                                    country = "";
+                            }
                         }
                     }
                 }

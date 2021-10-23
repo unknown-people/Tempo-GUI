@@ -15,9 +15,16 @@ namespace TempoWithGUI.MVVM.ViewModel
     {
         public RelayCommand JoinCommand { get; set; }
         public RelayCommand SpamCommand { get; set; }
+        public RelayCommand LeaveCommand { get; set; }
+        public RelayCommand NukeCommand { get; set; }
 
         private object _currentView;
 
+        //Views
+        public JoinGuild joinGuild { get; set; }
+        public SpamGuild spamGuild { get; set; }
+        public LeaveGuild leaveGuild { get; set; }
+        public NukeGuild nukeGuild { get; set; }
         public object CurrentView
         {
             get { return _currentView; }
@@ -29,16 +36,28 @@ namespace TempoWithGUI.MVVM.ViewModel
         }
         public GuildRaidModel()
         {
-            var main = new JoinGuild();
-            CurrentView = main;
+            joinGuild = new JoinGuild();
+            spamGuild = new SpamGuild();
+            leaveGuild = new LeaveGuild();
+            nukeGuild = new NukeGuild();
+
+            CurrentView = joinGuild;
 
             JoinCommand = new RelayCommand(o =>
             {
-                CurrentView = new JoinGuild();
+                CurrentView = joinGuild;
             });
             SpamCommand = new RelayCommand(o =>
             {
-                CurrentView = new SpamGuild();
+                CurrentView = spamGuild;
+            });
+            LeaveCommand = new RelayCommand(o =>
+            {
+                CurrentView = leaveGuild;
+            });
+            NukeCommand = new RelayCommand(o =>
+            {
+                CurrentView = nukeGuild;
             });
         }
     }

@@ -186,7 +186,7 @@ namespace Discord.Media
             }
 
             _channelId = channelId;
-            if (_client.User == null)
+            while (_client.User == null)
                 Thread.Sleep(1);
             _client.ChangeVoiceState(state);
         }

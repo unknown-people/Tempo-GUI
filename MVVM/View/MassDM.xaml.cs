@@ -43,13 +43,15 @@ namespace TempoWithGUI.MVVM.View
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             RaidModel.massdmOn = false;
-            this.Close();
+            this.Hide();
         }
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             if (spamming)
                 return;
-            if (Proxies.freeProxies)
+            bool proxyOn = (bool)ProxyCB.IsChecked;
+
+            if (Proxies.freeProxies && proxyOn)
             {
                 MessageBox.Show("Mass DM spam is currently not supported with free proxies");
                 StartBtn.Cursor = Cursors.Arrow;
@@ -85,23 +87,26 @@ namespace TempoWithGUI.MVVM.View
                 delay = 10000;
             }
             bool embedOn = (bool)EmbedCB.IsChecked;
-            bool proxyOn = (bool)ProxyCB.IsChecked;
 
             var max_tokens = TokensIn.Text;
 
             int max = 0;
-            if (!(max_tokens == null || max_tokens.ToString().Trim('\n') == ""))
+            if (!(max_tokens == null || max_tokens.ToString() == ""))
+            {
                 if (!int.TryParse(max_tokens, out max))
                 {
                     MessageBox.Show("Please insert a valid value for max tokens");
                     StartBtn.Cursor = Cursors.Arrow;
                     return;
                 }
+            }
+
             delay = (int)delay;
             spamming = true;
+            int sent = 0;
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
-
+            MainViewModel.log.Show();
             Thread spam = new Thread(() =>
             {
                 var token_list = new List<string>() { };
@@ -123,6 +128,8 @@ namespace TempoWithGUI.MVVM.View
                             break;
                 }
                 Random random = new Random();
+                var rnd = new Random();
+                Proxy proxy = null;
                 IReadOnlyList<GuildChannel> channels = null;
                 if (channelId == 0)
                 {
@@ -136,8 +143,6 @@ namespace TempoWithGUI.MVVM.View
                     {
                         try
                         {
-                            Random rnd = new Random();
-                            Proxy proxy = null;
                             if (Proxy.working_proxies.Count > 0)
                             {
                                 if (Proxy.working_proxies.Count == 1)
@@ -180,13 +185,16 @@ namespace TempoWithGUI.MVVM.View
                     client_s.Dispose();
                 }
                 int i = 0;
-                foreach(var client in clients)
+                var proxies_list = Proxy.working_proxies;
+                if (Proxies.paidProxies)
+                    proxies_list = Proxy.working_proxies_paid;
+                var original_proxies = proxies_list;
+                CustomMessageBox popup = null;
+                foreach (var client in clients)
                 {
                     Thread spam1 = new Thread(() => {
                         if (proxyOn)
                         {
-                            Random rnd = new Random();
-                            Proxy proxy = null;
                             if (Proxy.working_proxies_paid.Count > 0)
                             {
                                 proxy = Proxy.working_proxies_paid[rnd.Next(0, Proxy.working_proxies_paid.Count)];
@@ -215,7 +223,7 @@ namespace TempoWithGUI.MVVM.View
                             EmbedMaker new_msg = null;
                             if (embedOn)
                             {
-                                new_msg = new EmbedMaker() { Title = client.User.Username, TitleUrl = "https://discord.gg/DWP2AMTWdZ", Color = System.Drawing.Color.IndianRed, Description = message };
+                                new_msg = new EmbedMaker() { Title = client.User.Username, TitleUrl = "https://discord.gg/bXfjwSeBur", Color = System.Drawing.Color.IndianRed, Description = message };
                             }
                             bool hasSent = false;
                             int c = 0;
@@ -231,7 +239,19 @@ namespace TempoWithGUI.MVVM.View
                                         msg = dm.SendMessage(message);
                                     if(msg == null)
                                     {
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            App.mainView.logPrint($"Token {client.Token} has been rate limited, waiting 5 minutes.");
+                                        });
                                         Thread.Sleep(360000);
+                                    }
+                                    else
+                                    {
+                                        sent++;
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            App.mainView.logPrint($"Sent message to user {userId}. Sent {sent} messages");
+                                        });
                                     }
                                     hasSent = true;
                                 }

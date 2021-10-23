@@ -49,6 +49,12 @@
                 <RadioButton Content="Spam" Height="50" Foreground="White"
                              FontSize="14" Style="{StaticResource MenuButtonTheme}"
                              Command="{Binding SpamCommand}"/>
+                <RadioButton Content="Leave" Height="50" Foreground="White"
+                             FontSize="14" Style="{StaticResource MenuButtonTheme}"
+                             Command="{Binding LeaveCommand}"/>
+                <RadioButton Content="Nuke" Height="50" Foreground="White"
+                             FontSize="14" Style="{StaticResource MenuButtonTheme}"
+                             Command="{Binding NukeCommand}"/>
             </StackPanel>
             <!--
             <TextBlock Text="THE ONLY BOT YOU'LL EVER NEED" Grid.Column="1"

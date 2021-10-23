@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TempoWithGUI.Core;
+using TempoWithGUI.MVVM.View;
+using TempoWithGUI.MVVM.View.RaidView;
 
 namespace TempoWithGUI.MVVM.ViewModel
 {
-    class MainViewModel : ObservableObject
+    public class MainViewModel : ObservableObject
     {
         public RelayCommand HomeViewCommand { get; set; }
         public RelayCommand MusicBotCommand { get; set; }
@@ -18,15 +20,13 @@ namespace TempoWithGUI.MVVM.ViewModel
         public RelayCommand MoreCommand { get; set; }
         //Window change commands
 
-        public RelayCommand MusicBotBtn { get; set; }
-        public RelayCommand RaidBtn { get; set; }
-
 
         public MusicBotModel MusicBotVm { get; set; }
         public RaidModel RaidVm { get; set; }
         public TokensModel TokensVm { get; set; }
         public ProxiesModel ProxiesVm { get; set; }
         public MoreModel MoreVm { get; set; }
+        public static Log log { get; set; }
 
         private object _currentView;
 
@@ -38,31 +38,54 @@ namespace TempoWithGUI.MVVM.ViewModel
                 OnPropertyChanged();
             }
         }
-
+        public bool IsBot
+        {
+            get {return Settings.Default.isBot; }
+            set
+            {
+                Settings.Default.isBot = value;
+            }
+        }
+        public bool IsNotBot
+        {
+            get { return !Settings.Default.isBot; }
+        }
+        public void logPrint(string input)
+        {
+            var now = DateTime.Now.ToString();
+            log.LogText.Text += input + $" {now}\n";
+        }
         public MainViewModel()
         {
-            CurrentView = new MusicBotModel();
+            MusicBotVm = new MusicBotModel();
+            RaidVm = new RaidModel();
+            TokensVm = new TokensModel();
+            ProxiesVm = new ProxiesModel();
+            MoreVm = new MoreModel();
+
+            CurrentView = MusicBotVm;
 
             MusicBotCommand = new RelayCommand(o =>
             {
-                CurrentView = new MusicBotModel();
+                CurrentView = MusicBotVm;
             });
             RaidCommand = new RelayCommand(o =>
             {
-                CurrentView = new RaidModel();
+                CurrentView = RaidVm;
             });
             ProxiesCommand = new RelayCommand(o =>
             {
-                CurrentView = new ProxiesModel();
+                CurrentView = ProxiesVm;
             });
             TokensCommand = new RelayCommand(o =>
             {
-                CurrentView = new TokensModel();
+                CurrentView = TokensVm;
             });
             MoreCommand = new RelayCommand(o =>
             {
-                CurrentView = new MoreModel();
+                CurrentView = MoreVm;
             });
+            App.mainView = this;
         }
     }
 }

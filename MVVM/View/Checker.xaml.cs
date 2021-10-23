@@ -38,7 +38,7 @@ namespace TempoWithGUI.MVVM.View
         {
             tokens.checking = false;
             checking = false;
-            this.Close();
+            this.Hide();;
         }
         private void Label_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

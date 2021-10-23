@@ -96,7 +96,7 @@
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="150"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Delay" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0"/>
+                        <TextBlock Text="Delay (ms)" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0"/>
                         <TextBox Style="{DynamicResource ModernTextBoxOther}" Grid.Column="0" HorizontalAlignment="Left" Padding="5,0,0,0"
                          Height="25" Width="100" Margin="0,0,0,0" x:Name="DelayIn"/>
                         <TextBlock Text="Tokens" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2"/>

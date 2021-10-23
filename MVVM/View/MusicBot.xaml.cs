@@ -24,6 +24,7 @@ namespace TempoWithGUI.MVVM.View
     /// </summary>
     public partial class MusicBotView : UserControl
     {
+        public bool isBot { get; set; } = Settings.Default.isBot;
         public static bool isLoggedIn { get; set; } = false;
         public MusicBotView()
         {
@@ -40,16 +41,21 @@ namespace TempoWithGUI.MVVM.View
                 this.PrefixIn.Text = Settings.Default.Prefix;
             if (Settings.Default.Image != "")
                 this.ImageIn.Text = Settings.Default.Image;
+            if (Settings.Default.Dj_role.ToString() != "0" && Settings.Default.Dj_role.ToString() != "")
+                this.DjRoleIn.Text = Settings.Default.Dj_role.ToString();
 
-            if (Settings.Default.isBot)
+            if (isBot)
             {
                 this.WhitelistIn.Visibility = Visibility.Collapsed;
                 this.AdminsIn.Visibility = Visibility.Collapsed;
                 this.WhitelistLabel.Visibility = Visibility.Collapsed;
                 this.AdminsLabel.Visibility = Visibility.Collapsed;
+                this.PasswordIn.Visibility = Visibility.Collapsed;
 
                 this.DjRoleLabel.Visibility = Visibility.Visible;
                 this.DjRoleIn.Visibility = Visibility.Visible;
+                this.ButtonUser.IsChecked = false;
+                this.ButtonBot.IsChecked = true;
             }
             else
             {
@@ -57,9 +63,12 @@ namespace TempoWithGUI.MVVM.View
                 this.AdminsIn.Visibility = Visibility.Visible;
                 this.WhitelistLabel.Visibility = Visibility.Visible;
                 this.AdminsLabel.Visibility = Visibility.Visible;
+                this.PasswordIn.Visibility = Visibility.Visible;
 
                 this.DjRoleIn.Visibility = Visibility.Collapsed;
                 this.DjRoleLabel.Visibility = Visibility.Collapsed;
+                this.ButtonBot.IsChecked = false;
+                this.ButtonUser.IsChecked = true;
             }
             if (!App.ask_settings)
             {
@@ -204,7 +213,14 @@ namespace TempoWithGUI.MVVM.View
             var random = new string[] { };
             App.botToken = "";
             if (Settings.Default.isBot)
+            {
                 App.botToken += "Bot ";
+                ulong djrole = 0;
+                if(ulong.TryParse(this.DjRoleIn.Text, out djrole))
+                {
+                    Settings.Default.Dj_role = djrole;
+                }
+            }
 
             App.botToken += Settings.Default.Token;
             Whitelist.ownerID = Settings.Default.OwnerId;
@@ -213,7 +229,7 @@ namespace TempoWithGUI.MVVM.View
                 DiscordClient clientNew = new DiscordClient(App.botToken);
 
                 string discriminator = "";
-                for (int i = 0; i < 4 - ((clientNew.GetUser(Whitelist.ownerID).Discriminator)).ToString().Length; i++)
+                for (int i = 0; i < 4 - clientNew.GetUser(Whitelist.ownerID).Discriminator.ToString().Length; i++)
                 {
                     discriminator += "0";
                 }
@@ -235,7 +251,7 @@ namespace TempoWithGUI.MVVM.View
             client.OnLoggedIn += App.Client_OnLoggedIn;
             client.OnJoinedVoiceChannel += App.Client_OnJoinedVoiceChannel;
             client.OnLeftVoiceChannel += App.Client_OnLeftVoiceChannel;
-            client.Login(Settings.Default.Token);
+            client.Login(App.botToken);
             App.mainClient = client;
 
             Settings.Default.Save();
@@ -249,9 +265,12 @@ namespace TempoWithGUI.MVVM.View
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
             Settings.Default.isBot = true;
+            isBot = true;
+            Settings.Default.Save();
             this.WhitelistIn.IsEnabled = false;
             this.AdminsIn.IsEnabled = false;
 
+            this.PasswordIn.Visibility = Visibility.Collapsed;
             this.WhitelistIn.Visibility = Visibility.Collapsed;
             this.AdminsIn.Visibility = Visibility.Collapsed;
             this.WhitelistLabel.Visibility = Visibility.Collapsed;
@@ -264,9 +283,12 @@ namespace TempoWithGUI.MVVM.View
         private void RadioButton_Click_1(object sender, RoutedEventArgs e)
         {
             Settings.Default.isBot = false;
+            isBot = false;
+            Settings.Default.Save();
             this.WhitelistIn.IsEnabled = true;
             this.AdminsIn.IsEnabled = true;
 
+            this.PasswordIn.Visibility = Visibility.Visible;
             this.WhitelistIn.Visibility = Visibility.Visible;
             this.AdminsIn.Visibility = Visibility.Visible;
             this.WhitelistLabel.Visibility = Visibility.Visible;

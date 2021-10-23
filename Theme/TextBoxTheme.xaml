@@ -147,4 +147,33 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="{x:Type TextBox}" x:Key="ModernTextBoxMultiLineLog">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border CornerRadius="0" Background="#49464d">
+                        <Grid>
+                            <Rectangle StrokeThickness="1"/>
+                            <TextBox Margin="1" Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" Background="Transparent" VerticalContentAlignment="Top" Foreground="#CECECF" x:Name="SearchBox" Padding="5" BorderThickness="0"
+                                       TextWrapping="Wrap"
+                                       AcceptsReturn="True"
+                                       VerticalScrollBarVisibility="Hidden"/>
+                            <TextBlock IsHitTestVisible="False" Text="" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="0,0,0,0" FontSize="10" Foreground="DarkGray" Grid.Column="1">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

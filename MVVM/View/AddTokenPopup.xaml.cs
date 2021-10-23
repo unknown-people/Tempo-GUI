@@ -33,7 +33,7 @@ namespace TempoWithGUI.MVVM.View
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            this.Hide();;
         }
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
@@ -57,7 +57,7 @@ namespace TempoWithGUI.MVVM.View
             {
                 stream.WriteLine(exec);
             }
-            this.Close();
+            this.Hide();;
         }
     }
 }

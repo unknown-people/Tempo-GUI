@@ -19,6 +19,8 @@ using System.Security.AccessControl;
 using Music_user_bot;
 using System.ServiceProcess;
 using YoutubeExplode;
+using TempoWithGUI.MVVM.ViewModel;
+using TempoWithGUI.MVVM.View;
 
 namespace TempoWithGUI
 {
@@ -30,6 +32,8 @@ namespace TempoWithGUI
         public MainWindow()
         {
             InitializeComponent();
+            if (MainViewModel.log == null)
+                MainViewModel.log = new Log();
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -43,12 +47,18 @@ namespace TempoWithGUI
                 TrackQueue.currentSong.CancellationTokenSource.Cancel();
             if(App.mainClient != null)
                 App.mainClient.Dispose();
-            this.Close();
+            this.Hide();;
             Application.Current.Shutdown();
         }
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
+        }
+
+        private void Logs_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.log.Show();
+            MainViewModel.log.Activate();
         }
     }
 }

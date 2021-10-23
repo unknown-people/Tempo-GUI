@@ -24,7 +24,7 @@ namespace Music_user_bot.Commands
                 if (voiceClient.State < MediaConnectionState.Ready || voiceClient.Channel == null || voiceClient.Channel.Id != channel.Id)
                     voiceClient.Connect(channel.Id, new VoiceConnectionProperties() { Muted = isMuted, Deafened = false });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 SendMessageAsync("You need to be in a voice channel for me to join you :tired_face:");
             }

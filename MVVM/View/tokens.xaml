@@ -132,7 +132,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Height="450">
+    <Grid Height="550">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="530"/>
             <ColumnDefinition Width="190"/>

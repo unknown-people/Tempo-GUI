@@ -29,7 +29,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
             JoinGuild.joining = false;
             SpamGuild.spamming = false;
             RaidModel.guildOn = false;
-            this.Close();
+            this.Hide();
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
