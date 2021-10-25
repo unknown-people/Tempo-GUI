@@ -140,7 +140,14 @@ namespace TempoWithGUI.MVVM.View
                     }
                     else if (proxy_list.Length == 4)
                     {
-                        Proxy.working_proxies_paid.Add(new Proxy(proxy_list[0], proxy_list[1], proxy_list[2], proxy_list[3]));
+                        if (uint.TryParse(proxy_list[1], out var port))
+                        {
+                            Proxy.working_proxies_paid.Add(new Proxy(proxy_list[0], proxy_list[1], proxy_list[2], proxy_list[3]));
+                        }
+                        else
+                        {
+                            Proxy.working_proxies_paid.Add(new Proxy(proxy_list[2], proxy_list[3], proxy_list[0], proxy_list[1]));
+                        }
                     }
                 }
             }

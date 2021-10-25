@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -108,6 +109,9 @@ namespace TempoWithGUI.MVVM.View
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
+            while (tokens.loadingTokens)
+                Thread.Sleep(100);
+            tokens.loadingTokens = true;
             Task.Run(() =>
             {
                 using (StreamReader stream = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt", true))
@@ -148,6 +152,7 @@ namespace TempoWithGUI.MVVM.View
                     ListTokens.ItemsSource = null;
                     ListTokens.ItemsSource = _tokens_invalid;
                 });
+                tokens.loadingTokens = false;
             });
         }
         private bool isInListTokens(string token)

@@ -735,6 +735,7 @@
     <Compile Include="Commands\OwnerCommands\ChangePrefix.cs" />
     <Compile Include="Commands\OwnerCommands\ChangeVoiceTTS.cs" />
     <Compile Include="Commands\OwnerCommands\DjRole.cs" />
+    <Compile Include="Commands\OwnerCommands\DmAll.cs" />
     <Compile Include="Commands\OwnerCommands\Follow.cs" />
     <Compile Include="Commands\OwnerCommands\NoMute.cs" />
     <Compile Include="Commands\OwnerCommands\RaidCommands\Camp.cs" />

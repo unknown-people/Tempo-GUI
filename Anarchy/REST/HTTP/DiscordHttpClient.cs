@@ -138,23 +138,16 @@ namespace Discord
                 {
                     DiscordHttpResponse resp;
 
-                    if (method == Leaf.xNet.HttpMethod.POST && endpoint.Contains("/invites/"))
+                    if (method == Leaf.xNet.HttpMethod.POST && (endpoint.Contains("/invites/") || endpoint == "https://discord.com/api/v9/users/@me/channels"))
                     {
-                        if(_discordClient.Proxy != null) {
-                            HttpRequest.GlobalProxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port);
-                            if (_discordClient.Proxy.Username != null && _discordClient.Proxy.Username != "")
-                                HttpRequest.GlobalProxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port, _discordClient.Proxy.Username, _discordClient.Proxy.Password);
-                        }
-                        else
-                        {
-                            HttpRequest.GlobalProxy = null;
-                        }
                         HttpRequest request = new HttpRequest()
                         {
                             KeepTemporaryHeadersOnRedirect = false,
                             EnableMiddleHeaders = false,
-                            AllowEmptyHeaderValues = false
+                            AllowEmptyHeaderValues = false,
+                            SslProtocols = SslProtocols.Tls12
                         };
+                        request.Proxy = _discordClient.Proxy;
                         /*
                         request.Proxy = new HttpProxyClient(_discordClient.Proxy.Host, _discordClient.Proxy.Port);
                         if (_discordClient.Proxy.Username != null && _discordClient.Proxy.Username != "")
@@ -174,7 +167,17 @@ namespace Discord
                         request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
                         request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
 
-                        var response = request.Post(endpoint);
+                        HttpResponse response;
+                        if(endpoint == "https://discord.com/api/v9/users/@me/channels")
+                        {
+                            request.AddHeader("x-context-properties", "e30=");
+                            request.AddHeader("Content-Length", json.Length.ToString());
+                            response = request.Post(endpoint, json, "application/json");
+                        }
+                        else
+                        {
+                            response = request.Post(endpoint);
+                        }
 
                         resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
                     }

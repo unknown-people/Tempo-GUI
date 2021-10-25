@@ -218,6 +218,8 @@ namespace TempoWithGUI.MVVM.View
                                 c++;
                             }
                         }
+                        if (c >= 3)
+                            break;
                         Thread.Sleep((int)delay);
                     }
 

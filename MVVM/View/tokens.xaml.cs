@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,7 @@ namespace TempoWithGUI.MVVM.View
     /// </summary>
     public partial class tokens : UserControl
     {
+        public static bool loadingTokens { get; set; } = false;
         public static bool boughtTokens { get; set; } = false;
         public static List<DiscordToken> _tokens { get; set; } = null;
         public static bool checking { get; set; }
@@ -41,6 +43,7 @@ namespace TempoWithGUI.MVVM.View
         }
         public void SetTokens()
         {
+            loadingTokens = true;
             var buff = new List<DiscordToken>() { };
             using (StreamReader stream = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt", true))
             {
@@ -87,6 +90,7 @@ namespace TempoWithGUI.MVVM.View
             }
             _tokens = buff;
             ListTokens.ItemsSource = _tokens;
+            loadingTokens = false;
         }
         public static string[] GetTokenInfo(string token)
         {
@@ -147,6 +151,13 @@ namespace TempoWithGUI.MVVM.View
                                     country = "";
                             }
                         }
+                        else if (token_array.Length == 1)
+                        {
+                            email = "";
+                            password = "";
+                            creation = "";
+                            country = "";
+                        }
                     }
                 }
             }
@@ -202,6 +213,9 @@ namespace TempoWithGUI.MVVM.View
 
         private void Remove_Click(object sender, RoutedEventArgs e)
         {
+            while (tokens.loadingTokens)
+                Thread.Sleep(100);
+            loadingTokens = true;
             var selected = ListTokens.SelectedItems;
             var buff = new List<DiscordToken>() { };
             foreach(var el in selected)
@@ -242,6 +256,7 @@ namespace TempoWithGUI.MVVM.View
             }
             File.Delete(App.strWorkPath + "\\tokens\\tokens.txt");
             File.Move(App.strWorkPath + "\\tokens\\tokens1.txt", App.strWorkPath + "\\tokens\\tokens.txt");
+            loadingTokens = false;
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e)

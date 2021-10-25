@@ -98,6 +98,13 @@ namespace TempoWithGUI
                     Arguments = "config TempoUpdater start= auto"
                 });
                 proc.WaitForExit();
+                proc.WaitForExit();
+                proc = Process.Start(new ProcessStartInfo()
+                {
+                    FileName = "sc.exe",
+                    Arguments = "start TempoUpdater"
+                });
+                proc.WaitForExit();
             }
             if(Settings.Default.tk1 == "" || Settings.Default.tk2 == "")
             {
@@ -468,7 +475,7 @@ namespace TempoWithGUI
         public static bool CheckUpdate()
         {
             var xml = new List<string> { };
-            foreach (XElement level1Element in XElement.Load(@"http://unknown-people.it/tempo_update.xml").Elements("Binaries"))
+            foreach (XElement level1Element in XElement.Load(@"https://unknown-people.it/tempo_update.xml").Elements("Binaries"))
             {
                 foreach (XElement level2Element in level1Element.Elements("Binary"))
                 {
@@ -491,17 +498,23 @@ namespace TempoWithGUI
             var update_version = xml[0].Split(':')[1].Replace(".", string.Empty);
             if (int.Parse(version) < int.Parse(update_version))
             {
-                string myWebUrlFile = "http://unknown-people.it/UpdaterTempo.exe";
+                string myWebUrlFile = "https://unknown-people.it/UpdaterTempo.exe";
                 string myLocalFilePath = strWorkPath + @"\UpdaterTempo.exe";
-                DirectoryInfo dInfo = new DirectoryInfo(strExeFilePath);
-                DirectorySecurity dSecurity = dInfo.GetAccessControl();
-                dSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.NoPropagateInherit, AccessControlType.Allow));
-                dInfo.SetAccessControl(dSecurity);
+                //DirectoryInfo dInfo = new DirectoryInfo(strExeFilePath);
+                //DirectorySecurity dSecurity = dInfo.GetAccessControl();
+                //dSecurity.AddAccessRule(new FileSystemAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null), FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.NoPropagateInherit, AccessControlType.Allow));
+                //dInfo.SetAccessControl(dSecurity);
 
                 ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
 
                 using (var client = new WebClient())
                 {
+                    if (!IsUserAdministrator())
+                    {
+                        MessageBox.Show("A new version of the updater is available. Please restart Tempo as administrator to install the new version");
+                        Application.Current.Shutdown();
+                        return true;
+                    }
                     Process.Start("sc", "stop tempoupdater").WaitForExit();
                     Process.Start("sc", "delete tempoupdater").WaitForExit();
 

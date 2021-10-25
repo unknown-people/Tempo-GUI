@@ -6,7 +6,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Token" Type="System.String" Scope="User">
-      <Value Profile="(Default)">ODkyMTk1ODU4NzgxNzMyODY0.YVJYQA.-Kl-1kTLOo89GlyFfJPBUIWy6gk</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="OwnerId" Type="System.UInt64" Scope="User">
       <Value Profile="(Default)">765627843614736385</Value>
@@ -30,10 +30,10 @@
       <Value Profile="(Default)">it-IT-DiegoNeural</Value>
     </Setting>
     <Setting Name="tk1" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Bombo</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="tk2" Type="System.String" Scope="User">
-      <Value Profile="(Default)">1234AbCd0</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Admins" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />

@@ -36,7 +36,7 @@ namespace TempoWithGUI {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("ODkyMTk1ODU4NzgxNzMyODY0.YVJYQA.-Kl-1kTLOo89GlyFfJPBUIWy6gk")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Token {
             get {
                 return ((string)(this["Token"]));
@@ -132,7 +132,7 @@ namespace TempoWithGUI {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Bombo")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string tk1 {
             get {
                 return ((string)(this["tk1"]));
@@ -144,7 +144,7 @@ namespace TempoWithGUI {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1234AbCd0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string tk2 {
             get {
                 return ((string)(this["tk2"]));

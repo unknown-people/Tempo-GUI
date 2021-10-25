@@ -28,6 +28,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
     /// </summary>
     public partial class JoinGuild : UserControl
     {
+        public static uint verifyingCount { get; set; } = 0;
         public static bool joining { get; set; } = false;
         public JoinGuild()
         {
@@ -120,10 +121,17 @@ namespace TempoWithGUI.MVVM.View.RaidView
             MainViewModel.log.Show();
             Thread joiner = new Thread(() =>
             {
+                var joined_time = DateTime.Now;
                 while (joining)
                 {
-                    if (joined == token_list.Count)
-                        joining = false;
+                    while (tokens.loadingTokens)
+                        Thread.Sleep(500);
+                    try
+                    {
+                        if (joined == token_list.Count)
+                            joining = false;
+                    }
+                    catch (Exception ex) { }
                     int i = 0;
                     try
                     {
@@ -141,43 +149,24 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                 int c = 0;
                                 while (!hasJoined && c < 3)
                                 {
-                                    client.JoinGuild(invite);
+                                    try
+                                    {
+                                        joined_time = DateTime.Now;
 
-                                    if (acceptRules)
-                                    {
-                                        var z = 0;
-                                        while (z < 1)
-                                        {
-                                            try
-                                            {
-                                                var accepted = client.GetGuildVerificationForm(guild_id, invite);
-                                            }
-                                            catch (Exception ex) { Thread.Sleep((int)delay); z++; }
-                                        }
+                                        client.JoinGuild(invite);
                                     }
-                                    if (reaction_accept)
+                                    catch (Exception ex)
                                     {
-                                        try
+                                        if (ex.Message == "Failed to connect to Discord" && c >= 3)
                                         {
-                                            var messages = client.GetChannelMessages(channel_id, new MessageFilters()
+                                            Dispatcher.Invoke(() =>
                                             {
-                                                Limit = 20
+                                                App.mainView.logPrint($"{client.User.Username + "#" + client.User.Discriminator} could not join, may be a proxy problem or the token being banned.");
                                             });
-                                            foreach (var message in messages)
-                                            {
-                                                var reactions = message.Reactions;
-                                                foreach (var reaction in reactions)
-                                                {
-                                                    message.AddReaction(reaction.Emoji.Name, reaction.Emoji.Id);
-                                                }
-                                            }
                                         }
-                                        catch (Exception ex) { }
+                                        c++;
+                                        continue;
                                     }
-                                    joined++;
-                                    hasJoined = true;
-                                    clients1[i] = null;
-                                    clients[clients.IndexOf(client)] = null;
                                     var username = client.User.Username;
                                     var discr = client.User.Discriminator.ToString();
                                     for (int d = 0; d < 4 - discr.Length; d++)
@@ -185,6 +174,68 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                         discr = "0" + discr;
                                     }
                                     username += "#" + discr;
+                                    Task.Run(() =>
+                                    {
+                                        verifyingCount++;
+                                        if (acceptRules)
+                                        {
+                                            var z = 0;
+                                            while (z < 1)
+                                            {
+                                                try
+                                                {
+                                                    var accepted = client.GetGuildVerificationForm(guild_id, invite);
+                                                }
+                                                catch (Exception ex) { Thread.Sleep((int)delay); z++; }
+                                            }
+                                            Dispatcher.Invoke(() =>
+                                            {
+                                                App.mainView.logPrint($"{username} has accepted rules on server {guild_id}.");
+                                            });
+                                        }
+                                        if (reaction_accept)
+                                        {
+                                            try
+                                            {
+                                                var messages = client.GetChannelMessages(channel_id, new MessageFilters()
+                                                {
+                                                    Limit = 20
+                                                });
+                                                foreach (var message in messages)
+                                                {
+                                                    var reactions = message.Reactions;
+                                                    if(reactions.Count < 5)
+                                                    {
+                                                        foreach (var reaction in reactions)
+                                                        {
+                                                            message.AddReaction(reaction.Emoji.Name, reaction.Emoji.Id);
+                                                            Thread.Sleep(500);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        MessageReaction to_react = reactions.First();
+                                                        foreach (var reaction in reactions)
+                                                        {
+                                                            if (reaction.Count > to_react.Count)
+                                                                to_react = reaction;
+                                                        }
+                                                        message.AddReaction(to_react.Emoji.Name, to_react.Emoji.Id);
+                                                    }
+                                                }
+                                                Dispatcher.Invoke(() =>
+                                                {
+                                                    App.mainView.logPrint($"{username} has verified reaction on server {guild_id}.");
+                                                });
+                                            }
+                                            catch (Exception ex) { }
+                                        }
+                                        verifyingCount--;
+                                    });
+                                    joined++;
+                                    hasJoined = true;
+                                    clients1[i] = null;
+                                    clients[clients.IndexOf(client)] = null;
                                     Dispatcher.Invoke(() =>
                                     {
                                         App.mainView.logPrint($"{username} has joined server {guild_id}. {joined} accounts joined this server");
@@ -197,103 +248,27 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                     token_list.Remove(client.Token);
                                     Dispatcher.Invoke(() =>
                                     {
-                                        App.mainView.logPrint($"Token {client.Token} is probably phone locked, descarding it.");
+                                        App.mainView.logPrint($"Token {client.Token} is probably phone locked or banned from the guild, descarding it.");
                                     });
+                                    continue;
                                 }
                             }
                             catch (Exception ex) {
-                                if(ex.Message == "Failed to connect to Discord")
-                                {
-                                    int tries = 0;
-                                    proxies_list = Proxy.working_proxies;
-                                    if (Proxies.paidProxies)
-                                        proxies_list = Proxy.working_proxies_paid;
-                                    while (tries <= 5)
-                                    {
-                                        if (proxies_list.Count > 0)
-                                        {
-                                            proxy = proxies_list[rnd.Next(0, proxies_list.Count)];
-                                            if (proxy._ip != "" && proxy != null)
-                                            {
-                                                HttpProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
-                                                if (Proxies.paidProxies)
-                                                    proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port), proxy._username, proxy._password);
-                                                client.Proxy = proxies;
-                                                while (true)
-                                                {
-                                                    try
-                                                    {
-                                                        if (Proxies.paidProxies)
-                                                            break;
-                                                        var buff = client.GetBoostSlots();
-                                                        break;
-                                                    }
-                                                    catch (Exception exep)
-                                                    {
-                                                        try
-                                                        {
-                                                            proxies_list.Remove(proxy);
-                                                            if (proxies_list.Count > 0)
-                                                            {
-                                                                proxy = proxies_list[rnd.Next(0, proxies_list.Count - 1)];
-                                                                if (proxy._ip != "" && proxy != null)
-                                                                {
-                                                                    proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
-                                                                    client.Proxy = proxies;
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                //Proxy.GetProxies("https://discord.com");
-                                                                client.Proxy = null;
-                                                            }
-                                                            break;
-                                                        }
-                                                        catch { }
-                                                    }
-                                                }
-                                            }
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            if (Proxy.gettingProxies)
-                                            {
-                                                proxies_list = Proxy.working_proxies;
-                                                if (Proxies.paidProxies)
-                                                    proxies_list = Proxy.working_proxies_paid;
-                                                proxies_list = proxies_list.Except(original_proxies).ToList();
-                                                original_proxies = proxies_list;
-                                                tries++;
-                                                Thread.Sleep(1000);
-                                            }
-                                            else
-                                            {
-                                                Dispatcher.Invoke(() =>
-                                                {
-                                                    if (popup != null)
-                                                        return;
-                                                    popup = new CustomMessageBox("There are no more free proxies available. Try again in a few minutes");
-                                                    popup.ShowDialog();
-                                                    Set_Light(false);
-                                                });
-                                                joining = false;
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
                             }
                             i++;
-                            Thread.Sleep((int)delay);
+                            var to_sleep = delay - (DateTime.Now - joined_time).TotalMilliseconds;
+                            if (to_sleep < 0)
+                                to_sleep = 0;
+                            Thread.Sleep((int)to_sleep);
                         }
                     }
                     catch (InvalidOperationException ex) { Thread.Sleep(500); }
-                    Thread.Sleep(1000);
                 }
+                while (verifyingCount != 0)
+                    Thread.Sleep(500);
                 Dispatcher.Invoke(() => Set_Light(joining));
             });
-            joiner.Priority = ThreadPriority.BelowNormal;
+            joiner.Priority = ThreadPriority.AboveNormal;
             joiner.Start();
 
             var thread_pool = new List<Thread>() { };
@@ -301,9 +276,18 @@ namespace TempoWithGUI.MVVM.View.RaidView
             {
                 int i = 0;
                 var threads = 0;
-                foreach (var token in token_list)
+                while (tokens.loadingTokens)
                 {
-                    if (!joining)
+                    Dispatcher.Invoke(() =>
+                    {
+                        App.mainView.logPrint($"Token list loading, please wait a minute");
+                    });
+                    Thread.Sleep(1000);
+                }
+                var tk_list = token_list.ToArray();
+                foreach (var token in tk_list)
+                {
+                    if (!joining || thread_pool.Count >= max)
                         return;
                     Thread join1 = new Thread(() =>
                     {
@@ -358,8 +342,14 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                                     }
                                                     else
                                                     {
-                                                        //Proxy.GetProxies("https://discord.com");
-                                                        client.Proxy = null;
+                                                        Dispatcher.Invoke(() =>
+                                                        {
+                                                            if (popup != null)
+                                                                return;
+                                                            popup = new CustomMessageBox("There are no more free proxies available. Try again in a few minutes");
+                                                            popup.ShowDialog();
+                                                        });
+                                                        return;
                                                     }
                                                     break;
                                                 }
@@ -389,9 +379,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                                 return;
                                             popup = new CustomMessageBox("There are no more free proxies available. Try again in a few minutes");
                                             popup.ShowDialog();
-                                            Set_Light(false);
                                         });
-                                        joining = false;
                                         return;
                                     }
                                 }
@@ -480,19 +468,28 @@ namespace TempoWithGUI.MVVM.View.RaidView
         }
         public bool? IsInGuild(DiscordClient Client, ulong guildId)
         {
-            try
-            {
-                foreach (var guild in Client.GetGuilds())
-                {
-                    if (guildId == guild.Id)
-                        return true;
-                }
+            var tries = 0;
+            if (Client.User.PhoneNumber == null)
                 return false;
-            }
-            catch(Exception ex)
+            while(tries < 3)
             {
-                return null;
+                try
+                {
+                    foreach (var guild in Client.GetGuilds())
+                    {
+                        if (guildId == guild.Id)
+                            return true;
+                    }
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Contains("You need to verify"))
+                        return true;
+                    continue;
+                }
             }
+            return null;
         }
     }
 }

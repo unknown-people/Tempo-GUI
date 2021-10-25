@@ -109,6 +109,11 @@ namespace TempoWithGUI.MVVM.View
             MainViewModel.log.Show();
             Thread spam = new Thread(() =>
             {
+                var proxies_list = Proxy.working_proxies;
+                if (Proxies.paidProxies)
+                    proxies_list = Proxy.working_proxies_paid;
+                var original_proxies = proxies_list;
+                CustomMessageBox popup = null;
                 var token_list = new List<string>() { };
                 foreach (var tk in tokens._tokens)
                 {
@@ -137,34 +142,26 @@ namespace TempoWithGUI.MVVM.View
                 }
                 if (members == null || members.Count == 0)
                 {
-                    var client_s = new DiscordSocketClient(new DiscordSocketConfig() { ApiVersion = 9, HandleIncomingMediaData = false });
+                    var client_s = new DiscordSocketClient(new DiscordSocketConfig() { ApiVersion = 9 });
 
                     while (spamming)
                     {
                         try
                         {
-                            if (Proxy.working_proxies.Count > 0)
-                            {
-                                if (Proxy.working_proxies.Count == 1)
-                                    proxy = Proxy.working_proxies[0];
-                                else
-                                    proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count)];
-                                if (proxy._ip != "" && proxy != null)
-                                {
-                                    HttpProxyClient proxies = null;
-                                    if (proxy._username != null)
-                                        proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port), proxy._username, proxy._password);
-                                    else
-                                        proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
-                                    client_s.Proxy = proxies;
-                                }
-                            }
+                            int tries = 0;
                             client_s.Login(token_list[rnd.Next(0, token_list.Count)]);
                             break;
                         }
                         catch (Exception ex)
                         {
-                            client_s = new DiscordSocketClient(new DiscordSocketConfig() { ApiVersion = 9, HandleIncomingMediaData = false });
+                            Dispatcher.Invoke(() =>
+                            {
+                                if (popup != null)
+                                    return;
+                                popup = new CustomMessageBox("Your IP is banned from this guild or from Discord. To fetch the member list Tempo cannot use proxies, therefore you should enable a VPN and try again");
+                                popup.ShowDialog();
+                                Set_Light(false);
+                            });
                         }
                     }
 
@@ -185,11 +182,6 @@ namespace TempoWithGUI.MVVM.View
                     client_s.Dispose();
                 }
                 int i = 0;
-                var proxies_list = Proxy.working_proxies;
-                if (Proxies.paidProxies)
-                    proxies_list = Proxy.working_proxies_paid;
-                var original_proxies = proxies_list;
-                CustomMessageBox popup = null;
                 foreach (var client in clients)
                 {
                     Thread spam1 = new Thread(() => {
@@ -232,6 +224,8 @@ namespace TempoWithGUI.MVVM.View
                                 try
                                 {
                                     var dm = client.CreateDM(userId);
+                                    Thread.Sleep(random.Next(1000, 2000));
+                                    dm.TriggerTyping();
                                     DiscordMessage msg = null;
                                     if (embedOn)
                                         msg = dm.SendMessage(new_msg);
@@ -244,13 +238,25 @@ namespace TempoWithGUI.MVVM.View
                                             App.mainView.logPrint($"Token {client.Token} has been rate limited, waiting 5 minutes.");
                                         });
                                         Thread.Sleep(360000);
+                                        try
+                                        {
+                                            if (embedOn)
+                                                msg = dm.SendMessage(new_msg);
+                                            else
+                                                msg = dm.SendMessage(message);
+                                        }
+                                        catch(Exception ex)
+                                        {
+                                            Thread.Sleep(60000);
+                                        }
                                     }
                                     else
                                     {
+                                        var sent_messages = sent;
                                         sent++;
                                         Dispatcher.Invoke(() =>
                                         {
-                                            App.mainView.logPrint($"Sent message to user {userId}. Sent {sent} messages");
+                                            App.mainView.logPrint($"Sent message to user {userId}. Sent {sent_messages} messages");
                                         });
                                     }
                                     hasSent = true;
