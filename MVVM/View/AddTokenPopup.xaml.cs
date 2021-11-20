@@ -23,6 +23,7 @@ namespace TempoWithGUI.MVVM.View
         public AddTokenPopup()
         {
             InitializeComponent();
+            Debug.Log("Opened add token popup");
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

@@ -30,6 +30,7 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
         public bioProfiles()
         {
             InitializeComponent();
+            Debug.Log("Bio changer interface initialized");
         }
         private void Start_Click(object sender, RoutedEventArgs e)
         {

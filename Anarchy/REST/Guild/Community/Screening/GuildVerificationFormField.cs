@@ -10,17 +10,31 @@ namespace Discord
 
         [JsonProperty("label")]
         public string Label { get; set; }
+        
         [JsonProperty("description")]
-        public string Description { get; set; } = null;
+        public string Description { get; set; }
         [JsonProperty("automations")]
-        public string Automations { get; set; } = null;
-
-        [JsonProperty("required")]
-        public bool Required { get; set; } = true;
+        public string Automations { get; set; }
 
         [JsonProperty("values")]
         public IReadOnlyList<string> Values { get; set; }
+        [JsonProperty("required")]
+        public bool Required { get; set; } = true;
+        [JsonProperty("response")]
+        public object Response { get; set; }
+    }
+    public class GuildVerificationFormFieldMinimal
+    {
+        [JsonProperty("field_type")]
+        public string FieldType { get; set; }
 
+        [JsonProperty("label")]
+        public string Label { get; set; }
+
+        [JsonProperty("values")]
+        public IReadOnlyList<string> Values { get; set; }
+        [JsonProperty("required")]
+        public bool Required { get; set; } = true;
         [JsonProperty("response")]
         public object Response { get; set; }
     }

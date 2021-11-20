@@ -21,6 +21,7 @@ namespace TempoWithGUI.MVVM.View
         public Login()
         {
             InitializeComponent();
+            Debug.Log("Opened Login prompt");
             UsernameIn.Text = Settings.Default.tk1;
             PasswordIn.Text = Settings.Default.tk2;
         }
@@ -115,7 +116,7 @@ namespace TempoWithGUI.MVVM.View
             }
             else
             {
-                ErrorMsg.Text = "Invalid credentials.&#x0a;Register your account at unknown-people.it/register";
+                ErrorMsg.Text = "Invalid credentials.\nRegister your account at unknown-people.it/register";
                 ErrorMsg.Visibility = Visibility.Visible;
                 return;
             }

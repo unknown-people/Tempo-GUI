@@ -29,6 +29,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
         public LeaveGuild()
         {
             InitializeComponent();
+            Debug.Log("Leave guild interface initialized");
         }
         private void Start_Click(object sender, RoutedEventArgs e)
         {

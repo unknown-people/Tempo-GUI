@@ -29,6 +29,7 @@ namespace TempoWithGUI.MVVM.View
         public MusicBotView()
         {
             InitializeComponent();
+            Debug.Log("Opened MusicBot control");
             if (Settings.Default.Username != "")
                 this.UsernameIn.Text = Settings.Default.Username;
             if (Settings.Default.Password != "")

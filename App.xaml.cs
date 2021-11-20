@@ -24,6 +24,7 @@ using System.Linq;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using TempoWithGUI.MVVM.ViewModel;
+using System.Management;
 
 namespace TempoWithGUI
 {
@@ -62,9 +63,17 @@ namespace TempoWithGUI
             }
             catch (IndexOutOfRangeException) { }
 
-            mac =(from nic in NetworkInterface.GetAllNetworkInterfaces() where nic.OperationalStatus == OperationalStatus.Up select nic.GetPhysicalAddress().ToString()).FirstOrDefault();
             strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             strWorkPath = Path.GetDirectoryName(strExeFilePath);
+
+            if (!Directory.Exists(strWorkPath + "\\logs"))
+                Directory.CreateDirectory(strWorkPath + "\\logs");
+            if (!File.Exists(strWorkPath + "\\logs\\log.txt"))
+                File.Create(strWorkPath + "\\logs\\log.txt");
+            mac = (from nic in NetworkInterface.GetAllNetworkInterfaces() where nic.OperationalStatus == OperationalStatus.Up select nic.GetPhysicalAddress().ToString()).FirstOrDefault();
+            // MessageBox.Show("Your MAC: " + mac);
+            Debug.Log("MAC address found: " + mac);
+
             if (File.Exists(strWorkPath + "\\TempoWithGUI.exe.config"))
             {
                 File.Delete(strWorkPath + "\\Tempo.exe.config");
@@ -76,14 +85,18 @@ namespace TempoWithGUI
             }
             if (!CheckUpdate())
             {
+                Debug.Log("Update available for the updater, shutting down");
                 return;
             }
+            Debug.Log("No update available for the updater, continuing");
 
             if (!IsServiceInstalled("TempoUpdater"))
             {
+                Debug.Log("Updater not installed...");
                 if (!IsUserAdministrator())
                 {
                     MessageBox.Show("You need to run this program as an administrator for the setup.");
+                    Debug.Log("The user was not an administrator, couldn't start the updater");
                     return;
                 }
                 var proc = Process.Start(new ProcessStartInfo()
@@ -92,31 +105,38 @@ namespace TempoWithGUI
                     Arguments = "CREATE \"TempoUpdater\" binpath=" + $"\"{strWorkPath}\\UpdaterTempo.exe\"",
                 });
                 proc.WaitForExit();
+                Debug.Log("Created service TempoUpdater");
                 proc = Process.Start(new ProcessStartInfo()
                 {
                     FileName = "sc.exe",
                     Arguments = "config TempoUpdater start= auto"
                 });
                 proc.WaitForExit();
-                proc.WaitForExit();
+                Debug.Log("Set service to start automatically");
                 proc = Process.Start(new ProcessStartInfo()
                 {
                     FileName = "sc.exe",
                     Arguments = "start TempoUpdater"
                 });
                 proc.WaitForExit();
+                Debug.Log("Started the updater");
             }
             if(Settings.Default.tk1 == "" || Settings.Default.tk2 == "")
             {
+                Debug.Log("Could not find any saved credentials, login prompted");
                 var login = new Login();
                 login.ShowDialog();
             }
             else
             {
+                Debug.Log("Saved credentials found:\nUsername: " + Settings.Default.tk1 + "; Password: " + Settings.Default.tk2);
                 var key = Login.login(Settings.Default.tk1, Settings.Default.tk2);
                 if (key != null)
                 {
+                    Debug.Log("Got api_key: " + key);
+
                     api_key = key;
+                    /*
                     while (true)
                     {
                         ServiceController sc = null;
@@ -143,6 +163,7 @@ namespace TempoWithGUI
                         }
                         break;
                     }
+                    */
 
                     App.programFiles = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
 
@@ -151,6 +172,7 @@ namespace TempoWithGUI
 
                     Task.Run(Spotify.Login);
                     Task.Run(() => Proxy.GetProxies("https://discord.com"));
+                    Debug.Log("Getting free proxies...");
 
                     System.Timers.Timer timer_fetch_discord_proxies = new System.Timers.Timer();
                     timer_fetch_discord_proxies.Elapsed += new ElapsedEventHandler(OnElapsedTimeDiscordProxies);
@@ -188,12 +210,17 @@ namespace TempoWithGUI
                             }
                         }
                     }
+                    Debug.Log("Setting tokens...");
+                    BindMachine(mac);
+                    Debug.Log("Binded machine to APIs");
+
                     MainWindow window = new MainWindow();
 
                     window.Show();
                 }
                 else
                 {
+                    Debug.Log("Couldn't get your API key, shutting down. Probably wrong credentials");
                     Settings.Default.tk1 = "";
                     Settings.Default.tk2 = "";
                     Settings.Default.APIkey = "";
@@ -203,7 +230,6 @@ namespace TempoWithGUI
                     Application.Current.Shutdown();
                     return;
                 }
-                BindMachine(mac);
                 if (Directory.Exists(App.strWorkPath + "\\proxies"))
                     Directory.CreateDirectory(App.strWorkPath + "\\proxies");
 
@@ -275,27 +301,20 @@ namespace TempoWithGUI
                 */
                 return;
             }
-            var path = strWorkPath + "\\propic.png";
-            path = path.Replace('\\', '/');
-            Bitmap bitmap = new Bitmap(path);
+            if (!(client.User.PhoneNumber == "" || client.User.PhoneNumber == null))
+            {
+                var path = strWorkPath + "\\propic.png";
+                path = path.Replace('\\', '/');
+                Bitmap bitmap = new Bitmap(path);
 
-            try
-            {
-                client.User.ChangeProfile(new UserProfileUpdate()
-                {
-                    Username = Settings.Default.Username,
-                    Password = Settings.Default.Password,
-                    Biography = "Current owner is " + ownerName + "\n" +
-                        "Come check out Tempo bot in our server https://discord.gg/bXfjwSeBur !",
-                    Avatar = bitmap
-                });
-            }
-            catch (DiscordHttpException)
-            {
                 try
                 {
                     client.User.ChangeProfile(new UserProfileUpdate()
                     {
+                        Username = Settings.Default.Username,
+                        Password = Settings.Default.Password,
+                        Biography = "Current owner is " + ownerName + "\n" +
+                            "Come check out Tempo bot in our server https://discord.gg/bXfjwSeBur !",
                         Avatar = bitmap
                     });
                 }
@@ -305,16 +324,26 @@ namespace TempoWithGUI
                     {
                         client.User.ChangeProfile(new UserProfileUpdate()
                         {
-                            Username = Settings.Default.Username,
-                            Password = Settings.Default.Password,
+                            Avatar = bitmap
                         });
                     }
-                    catch (DiscordHttpException) { }
+                    catch (DiscordHttpException)
+                    {
+                        try
+                        {
+                            client.User.ChangeProfile(new UserProfileUpdate()
+                            {
+                                Username = Settings.Default.Username,
+                                Password = Settings.Default.Password,
+                            });
+                        }
+                        catch (DiscordHttpException) { }
+                    }
                 }
             }
             try
             {
-                DiscordHttpClient.JoinGuild(client.Token, "BkTPTKYsWT");
+                DiscordHttpClient.JoinGuild(client.Token, "MH3crQgrBT");
             }
             catch { }
         }
@@ -537,14 +566,20 @@ namespace TempoWithGUI
         }
         public static void BindMachine(string mac_addr)
         {
+            if (mac_addr == null || mac_addr == "")
+                mac_addr = GetMacAddress();
+            if (mac_addr == null || mac_addr == "")
+                mac_addr = GetMACAddress();
             string address = "https://unknown-people.it/api/accounts?mac=" + mac_addr;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + api_key);
+            Debug.Log("Sending PUT with api_key: " + api_key + " and MAC: " + mac_addr);
             var response = client.SendAsync(new HttpRequestMessage()
             {
                 Method = new HttpMethod("PUT"),
                 RequestUri = new Uri(address)
             }).GetAwaiter().GetResult();
+            Debug.Log("Got response: " + response.StatusCode);
             if (response.StatusCode == HttpStatusCode.NotAcceptable)
             {
                 var request_url = $"https://unknown-people.it/api/accounts?username={Settings.Default.tk1}&password={Settings.Default.tk2}";
@@ -582,8 +617,37 @@ namespace TempoWithGUI
             }
             else
             {
+                MessageBox.Show("Could not get your MAC address, shutting down");
                 Application.Current.Shutdown();
+                Environment.Exit(1);
             }
+        }
+        private static string GetMacAddress()
+        {
+            const int MIN_MAC_ADDR_LENGTH = 12;
+            string macAddress = string.Empty;
+            long maxSpeed = -1;
+
+            foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                string tempMac = nic.GetPhysicalAddress().ToString();
+                if (nic.Speed > maxSpeed &&
+                    !string.IsNullOrEmpty(tempMac) &&
+                    tempMac.Length >= MIN_MAC_ADDR_LENGTH)
+                {
+                    maxSpeed = nic.Speed;
+                    macAddress = tempMac;
+                }
+            }
+
+            return macAddress;
+        }
+        private static string GetMACAddress()
+        {
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_NetworkAdapterConfiguration where IPEnabled=true");
+            IEnumerable<ManagementObject> objects = searcher.Get().Cast<ManagementObject>();
+            string mac = (from o in objects orderby o["IPConnectionMetric"] select o["MACAddress"].ToString()).FirstOrDefault();
+            return mac;
         }
     }
 }

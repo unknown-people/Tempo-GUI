@@ -20,9 +20,11 @@ namespace TempoWithGUI.MVVM.View
     public partial class CustomMessageBoxConfirm : Window
     {
         public bool hasConfirmed { get; set; } = false;
-        public CustomMessageBoxConfirm()
+        public CustomMessageBoxConfirm(string input)
         {
             InitializeComponent();
+            Debug.Log("Opened confirmation message box: " + input);
+            TextField.Text = input;
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TempoWithGUI.MVVM.View" 
         xmlns:viewModel="clr-namespace:TempoWithGUI.MVVM.ViewModel"
         mc:Ignorable="d"
-        Title="Guild Spam" Height="600" Width="920"
+        Title="Profile changer" Height="600" Width="920"
         WindowStyle="None"
         ResizeMode="NoResize"
         Background="Transparent"

@@ -28,6 +28,7 @@ namespace TempoWithGUI.MVVM.View
         public Checker()
         {
             InitializeComponent();
+            Debug.Log("Opened token checker");
             Set_Light(checking);
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -125,7 +126,7 @@ namespace TempoWithGUI.MVVM.View
                                 break;
                             line = line.Trim('\n').Trim(' ').Trim('\t');
                             var line_arr = line.Split(':');
-                            if(line_arr.Length == 3)
+                            if(line_arr.Length < 6)
                             {
                                 if (isInListTokens(line_arr[0]))
                                     continue;

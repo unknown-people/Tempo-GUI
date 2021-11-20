@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Gateway;
 using Leaf.xNet;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Music_user_bot;
 using Newtonsoft.Json.Linq;
 using System;
@@ -28,11 +29,12 @@ namespace TempoWithGUI.MVVM.View
     /// </summary>
     public partial class MassDM : Window
     {
-        public static IReadOnlyList<GuildMember> members { get; set; }
+        public static List<ulong> members { get; set; }
         public static bool spamming { get; set; }
         public MassDM()
         {
             InitializeComponent();
+            Debug.Log("Mass DM interface initialized");
             Set_Light(spamming);
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -100,13 +102,21 @@ namespace TempoWithGUI.MVVM.View
                     return;
                 }
             }
+            bool useFile = (bool)FileCB.IsChecked;
 
             delay = (int)delay;
             spamming = true;
             int sent = 0;
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
-            MainViewModel.log.Show();
+            try
+            {
+                MainViewModel.log.Show();
+            }
+            catch (Exception ex)
+            {
+                MainViewModel.log.Visibility = Visibility.Visible;
+            }
             Thread spam = new Thread(() =>
             {
                 var proxies_list = Proxy.working_proxies;
@@ -140,7 +150,8 @@ namespace TempoWithGUI.MVVM.View
                 {
                     channels = clients[0].GetGuildChannels(guildId);
                 }
-                if (members == null || members.Count == 0)
+                members = new List<ulong>() { };
+                if (members == null || members.Count == 0 && !useFile)
                 {
                     var client_s = new DiscordSocketClient(new DiscordSocketConfig() { ApiVersion = 9 });
 
@@ -167,20 +178,60 @@ namespace TempoWithGUI.MVVM.View
 
                     while (client_s.State < GatewayConnectionState.Connected)
                         Thread.Sleep(100);
+                    var members1 = new List<GuildMember>() { };
                     while (true)
                     {
                         try
                         {
                             if (channelId != 0)
-                                members = client_s.GetGuildChannelMembers(guildId, channelId);
+                                members1 = (List<GuildMember>)client_s.GetGuildChannelMembersAsync(guildId, channelId).GetAwaiter().GetResult();
                             else
-                                members = client_s.GetGuildChannelMembers(guildId, channels[(int)(channels.Count / 2)].Id);
+                                members1 = (List<GuildMember>)client_s.GetGuildChannelMembersAsync(guildId, channels[(int)(channels.Count / 2)].Id).GetAwaiter().GetResult();
                             break;
                         }
                         catch (Exception ex) { Thread.Sleep(500); }
                     }
                     client_s.Dispose();
+                    foreach(var member in members1)
+                    {
+                        members.Add(member.User.Id);
+                    }
                 }
+                else
+                {
+                    string path = null;
+                    Dispatcher.Invoke(() =>
+                    {
+                        path = FileIn.Text;
+                    });
+                    if (!File.Exists(path))
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            App.mainView.logPrint($"The specified file does not exist: " + path);
+                        });
+                        return;
+                    }
+                    using(StreamReader reader = new StreamReader(path))
+                    {
+                        var line = reader.ReadLine();
+                        while (line != null)
+                        {
+                            line = line.Trim(' ').Trim('\n');
+                            if (line == "")
+                                break;
+                            if(ulong.TryParse(line, out var userId))
+                            {
+                                members.Add(userId);
+                            }
+                            line = reader.ReadLine();
+                        }
+                    }
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    App.mainView.logPrint($"Loaded {members.Count} members to message.");
+                });
                 int i = 0;
                 foreach (var client in clients)
                 {
@@ -204,18 +255,18 @@ namespace TempoWithGUI.MVVM.View
 
                         while (spamming)
                         {
-                            GuildMember user = null;
-                            try
-                            {
-                                user = members[random.Next(0, members.Count)];
-                            }
-                            catch { break; }
-                            members = members.Where(o => o != user).ToList();
-                            var userId = user.User.Id;
+                            var userId = members[random.Next(0, members.Count)];
+                            members = members.Where(o => o != userId).ToList();
+
                             EmbedMaker new_msg = null;
+
                             if (embedOn)
                             {
-                                new_msg = new EmbedMaker() { Title = client.User.Username, TitleUrl = "https://discord.gg/bXfjwSeBur", Color = System.Drawing.Color.IndianRed, Description = message };
+                                var avatar_url = "https://unknown-people.it/propic.png";
+                                if (client.User.Avatar != null)
+                                    avatar_url = client.User.Avatar.Url;
+                                new_msg = new EmbedMaker() { Title = client.User.Username, TitleUrl = "https://discord.gg/MH3crQgrBT", Color = System.Drawing.Color.IndianRed, ThumbnailUrl = avatar_url };
+                                new_msg.AddField("Tempo", message);
                             }
                             bool hasSent = false;
                             int c = 0;
@@ -291,6 +342,49 @@ namespace TempoWithGUI.MVVM.View
             else
             {
                 StatusLight.Fill = Brushes.Red;
+            }
+        }
+
+        private List<string> GetMembersFromFile(string path)
+        {
+            var ret = new List<string>() { };
+            using(StreamReader reader = new StreamReader(path))
+            {
+                var line = reader.ReadLine();
+                while(line != null)
+                {
+                    line = line.Trim('\n').Trim(' ');
+                    if (line == "")
+                        break;
+                    ret.Add(line);
+                }
+            }
+            return ret;
+        }
+        private void ExploreBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog();
+            dialog.Title = "Select your file";
+            dialog.AddToMostRecentlyUsedList = true;
+            dialog.EnsureFileExists = true;
+            dialog.EnsurePathExists = true;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                var path = dialog.FileName;
+
+                FileIn.Text = path;
+            }
+        }
+
+        private void FileCB_Click(object sender, RoutedEventArgs e)
+        {
+            if(FileGrid.Visibility == Visibility.Visible)
+            {
+                FileGrid.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                FileGrid.Visibility = Visibility.Visible;
             }
         }
     }

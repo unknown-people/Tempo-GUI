@@ -58,9 +58,9 @@ namespace Discord
             if (_embed.Fields.Count == 25)
                 throw new EmbedException(EmbedError.TooManyFields);
             if (name.Length > 256)
-                throw new EmbedException(EmbedError.FieldNameTooLong);
+                name = name.Substring(0, 255);
             if (content.Length > 1024)
-                throw new EmbedException(EmbedError.FieldContentTooLong);
+                content = content.Substring(0, 1023);
 
 
             List<EmbedField> fields = _embed.Fields.ToList();

@@ -250,7 +250,10 @@ namespace Music_user_bot
                     var targetConnected = _client.GetVoiceStates(Message.Author.User.Id).GuildVoiceStates.TryGetValue(Message.Guild.Id, out var theirState);
 
                     if (CanSendEmbed(_client)){
-                        var embed = new EmbedMaker() { Title = _client.User.Username, TitleUrl = "https://discord.gg/bXfjwSeBur", Color = System.Drawing.Color.IndianRed, ThumbnailUrl = _client.User.Avatar.Url };
+                        var avatar_url = "https://unknown-people.it/propic.png";
+                        if (_client.User.Avatar != null)
+                            avatar_url = _client.User.Avatar.Url;
+                        var embed = new EmbedMaker() { Title = _client.User.Username, TitleUrl = "https://discord.gg/MH3crQgrBT", Color = System.Drawing.Color.IndianRed, ThumbnailUrl = avatar_url };
                         embed.AddField("**Now playing:**\n", currentVideo.Title + "\n\n**Duration:** " + currentVideo.Duration);
 
                         last_message = Message.Channel.SendMessage(embed);

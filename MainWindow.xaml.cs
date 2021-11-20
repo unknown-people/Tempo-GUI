@@ -47,14 +47,13 @@ namespace TempoWithGUI
                 TrackQueue.currentSong.CancellationTokenSource.Cancel();
             if(App.mainClient != null)
                 App.mainClient.Dispose();
-            this.Hide();;
             Application.Current.Shutdown();
+            Environment.Exit(0);
         }
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }
-
         private void Logs_Click(object sender, RoutedEventArgs e)
         {
             MainViewModel.log.Show();

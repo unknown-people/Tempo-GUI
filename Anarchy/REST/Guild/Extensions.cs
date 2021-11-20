@@ -192,9 +192,9 @@ namespace Discord
         }
 
 
-        public static async Task<GuildInvite> JoinGuildAsync(this DiscordClient client, string invCode)
+        public static async Task<GuildInvite> JoinGuildAsync(this DiscordClient client, string invCode, ulong? guildId = null, ulong? channelId = null)
         {
-            return (await client.HttpClient.PostAsync($"/invites/{invCode}"))
+            return (await client.HttpClient.PostAsync($"/invites/{invCode}", null, guildId, channelId))
                                 .Deserialize<GuildInvite>().SetClient(client);
         }
         public static async Task<GuildInvite> AcceptRulesAsync(this DiscordClient client, string guildId)
@@ -207,9 +207,9 @@ namespace Discord
         /// Joins a guild
         /// </summary>
         /// <returns>The invite used to join the guild</returns>
-        public static GuildInvite JoinGuild(this DiscordClient client, string invCode)
+        public static GuildInvite JoinGuild(this DiscordClient client, string invCode, ulong? guildId = null, ulong? channelId = null)
         {
-            return client.JoinGuildAsync(invCode).GetAwaiter().GetResult();
+            return client.JoinGuildAsync(invCode, guildId, channelId).GetAwaiter().GetResult();
         }
 
 

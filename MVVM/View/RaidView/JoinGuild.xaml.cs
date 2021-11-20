@@ -33,6 +33,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
         public JoinGuild()
         {
             InitializeComponent();
+            Debug.Log("Join guild interface initialized");
             var react = ReactionCB.IsChecked;
             if (react != false)
             {
@@ -50,13 +51,33 @@ namespace TempoWithGUI.MVVM.View.RaidView
         {
             bool acceptRules = (bool)RulesCB.IsChecked;
             bool reaction_accept = (bool)ReactionCB.IsChecked;
+            CustomMessageBox popup = null;
             if (joining)
                 return;
             StartBtn.Cursor = Cursors.AppStarting;
             var invite = InviteIn.Text;
             if (invite.StartsWith("https://discord.gg/"))
                 invite = invite.Remove(0, "https://discord.gg/".Length);
-            var guildId = Get_GuildID(invite);
+            if(invite.StartsWith("https://discord.com/invite/"))
+                invite = invite.Remove(0, "https://discord.com/invite/".Length);
+            Dispatcher.Invoke(() =>
+            {
+                App.mainView.logPrint($"Getting guild ID");
+            });
+            var (guildId, channelWelcomeId) = Get_GuildID(invite);
+            if (guildId == "1")
+            {
+                if(popup == null)
+                {
+                    popup = new CustomMessageBox("Could not get invite informations.\nYou are probably IP banned or rate-limited from Discord. Please activate a vpn and try again");
+                    popup.ShowDialog();
+                    return;
+                }
+            }
+            Dispatcher.Invoke(() =>
+            {
+                App.mainView.logPrint($"Guild ID is: {guildId}");
+            });
             var channelId = ChannelIn.Text;
             if (invite == null || invite == "")
             {
@@ -90,11 +111,16 @@ namespace TempoWithGUI.MVVM.View.RaidView
             joining = true;
             var max_tokens = TokensIn.Text;
             int max = tokens._tokens.Count;
-            if (!(max_tokens == null || max_tokens.ToString().Trim('\n') == ""))
+            if (!(max_tokens == null || max_tokens.ToString().Trim('\n') == "" || int.TryParse(max_tokens, out max)))
             {
                 if (!int.TryParse(max_tokens, out max))
                 {
-                    MessageBox.Show("Please insert a valid value for max tokens");
+                    if (popup == null)
+                    {
+                        popup = new CustomMessageBox("Please insert a valid value for max tokens. Leave empty to use all tokens");
+                        popup.ShowDialog();
+                        return;
+                    }
                     StartBtn.Cursor = Cursors.Arrow;
                     return;
                 }
@@ -102,7 +128,6 @@ namespace TempoWithGUI.MVVM.View.RaidView
 
             StatusLight.Fill = Brushes.Green;
             StartBtn.Cursor = Cursors.Arrow;
-            CustomMessageBox popup = null;
             bool useProxies = (bool)ProxiesCB.IsChecked;
             Random rnd = new Random();
             Proxy proxy = null;
@@ -115,6 +140,8 @@ namespace TempoWithGUI.MVVM.View.RaidView
             var token_list = new List<string>() { };
             foreach (var tk in tokens._tokens)
             {
+                if (token_list.Count >= max)
+                    break;
                 if (tk.Active)
                     token_list.Add(tk.Token);
             }
@@ -153,7 +180,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                     {
                                         joined_time = DateTime.Now;
 
-                                        client.JoinGuild(invite);
+                                        client.JoinGuild(invite, guild_id, ulong.Parse(channelWelcomeId));
                                     }
                                     catch (Exception ex)
                                     {
@@ -180,7 +207,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                         if (acceptRules)
                                         {
                                             var z = 0;
-                                            while (z < 1)
+                                            while (z < 3)
                                             {
                                                 try
                                                 {
@@ -188,10 +215,20 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                                 }
                                                 catch (Exception ex) { Thread.Sleep((int)delay); z++; }
                                             }
-                                            Dispatcher.Invoke(() =>
+                                            if(z >= 3)
                                             {
-                                                App.mainView.logPrint($"{username} has accepted rules on server {guild_id}.");
-                                            });
+                                                Dispatcher.Invoke(() =>
+                                                {
+                                                    App.mainView.logPrint($"{username} could not accepted rules on server {guild_id}.");
+                                                });
+                                            }
+                                            else
+                                            {
+                                                Dispatcher.Invoke(() =>
+                                                {
+                                                    App.mainView.logPrint($"{username} has accepted rules on server {guild_id}.");
+                                                });
+                                            }
                                         }
                                         if (reaction_accept)
                                         {
@@ -241,7 +278,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                         App.mainView.logPrint($"{username} has joined server {guild_id}. {joined} accounts joined this server");
                                     });
                                 }
-                                if(c >= 3)
+                                if(c >= 4)
                                 {
                                     clients1[i] = null;
                                     clients[clients.IndexOf(client)] = null;
@@ -415,7 +452,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
             join.Start();
         }
             
-        public static string Get_GuildID(string invite)
+        public static (string, string) Get_GuildID(string invite)
         {
             string request_url = $"https://discord.com/api/v9/invites/{invite}";
             HttpClient client = new HttpClient();
@@ -424,16 +461,21 @@ namespace TempoWithGUI.MVVM.View.RaidView
                 Method = new System.Net.Http.HttpMethod("GET"),
                 RequestUri = new Uri(request_url)
             }).GetAwaiter().GetResult();
+            if(((int)response.StatusCode) == 429)
+            {
+                return ("1", null);
+            }
             var jtoken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
             var json = JObject.Parse(jtoken.ToString());
             try
             {
                 string guild_id = json["guild"].Value<string>("id");
-                return guild_id;
+                string channel_id = json["channel"].Value<string>("id");
+                return (guild_id, channel_id);
             }
             catch (Exception ex)
             {
-                return null;
+                return (null, null);
             }
         }
         private void Stop_Click(object sender, RoutedEventArgs e)

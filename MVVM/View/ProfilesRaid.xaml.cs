@@ -23,6 +23,7 @@ namespace TempoWithGUI.MVVM.View
         public ProfilesRaid()
         {
             InitializeComponent();
+            Debug.Log("Profile editing interface initialized");
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

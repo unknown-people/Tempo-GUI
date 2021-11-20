@@ -22,6 +22,7 @@ namespace TempoWithGUI.MVVM.View
         public CustomMessageBox(string input)
         {
             InitializeComponent();
+            Debug.Log("Opened info message box: " + input);
             TextField.Text = input;
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

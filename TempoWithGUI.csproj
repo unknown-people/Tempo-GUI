@@ -207,6 +207,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -736,6 +737,7 @@
     <Compile Include="Commands\OwnerCommands\ChangeVoiceTTS.cs" />
     <Compile Include="Commands\OwnerCommands\DjRole.cs" />
     <Compile Include="Commands\OwnerCommands\DmAll.cs" />
+    <Compile Include="Commands\OwnerCommands\ExportMembers.cs" />
     <Compile Include="Commands\OwnerCommands\Follow.cs" />
     <Compile Include="Commands\OwnerCommands\NoMute.cs" />
     <Compile Include="Commands\OwnerCommands\RaidCommands\Camp.cs" />
@@ -766,6 +768,7 @@
     <Compile Include="Commands\Speed.cs" />
     <Compile Include="Commands\Stop.cs" />
     <Compile Include="Commands\VolumeCommand.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="DiscordAccount.cs" />
     <Compile Include="FFmpeg.cs" />
     <Compile Include="MVVM\ViewModel\AccountsModel.cs" />
@@ -798,6 +801,9 @@
     </Compile>
     <Compile Include="MVVM\View\AddTokenPopup.xaml.cs">
       <DependentUpon>AddTokenPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\EmbedMakerWindow.xaml.cs">
+      <DependentUpon>EmbedMakerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\FriendRaid.xaml.cs">
       <DependentUpon>FriendRaid.xaml</DependentUpon>
@@ -903,6 +909,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MVVM\View\AddTokenPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\EmbedMakerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1101,6 +1111,7 @@
     <Resource Include="Images\propic.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\reload.png" />
     <Content Include="OpenCvSharpExtern.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

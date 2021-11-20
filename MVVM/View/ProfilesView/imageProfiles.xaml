@@ -63,7 +63,7 @@
                 <ColumnDefinition Width="240">
                 </ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0, 40"
+            <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0, 30"
                         HorizontalAlignment="Center">
                 <Grid Height="95">
                     <Grid.ColumnDefinitions>
@@ -93,7 +93,8 @@
                     <TextBlock Text="Delay (ms)" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0"/>
                     <TextBox Style="{DynamicResource ModernTextBoxOther}" Grid.Column="0" HorizontalAlignment="Left" Padding="5,0,0,0"
                          Height="25" Width="100" Margin="0,0,0,0" x:Name="DelayIn"/>
-                    <TextBlock Text="Max tokens" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2"/>
+                    <TextBlock Text="Max tokens" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2"
+                               ToolTip="Max number of tokens to use"/>
                     <TextBox Style="{DynamicResource ModernTextBoxOther}" Grid.Column="2" HorizontalAlignment="Left" Padding="5,0,0,0"
                          Height="25" Width="150" Margin="0,0,0,0" x:Name="TokensIn"/>
                 </Grid>

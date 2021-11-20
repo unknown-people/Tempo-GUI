@@ -27,6 +27,7 @@ namespace TempoWithGUI.MVVM.View
         public FriendRaid()
         {
             InitializeComponent();
+            Debug.Log("Friend request spam interface initialized");
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

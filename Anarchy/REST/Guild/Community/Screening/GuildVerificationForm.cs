@@ -14,6 +14,16 @@ namespace Discord
 
         [JsonProperty("form_fields")]
         public List<GuildVerificationFormField> Fields { get; set; }
+    }
+    public class GuildVerificationFormMinimal
+    {
+        [JsonProperty("description")]
+        public string Description { get; set; }
 
+        [JsonProperty("version")]
+        public string Version { get; set; }
+
+        [JsonProperty("form_fields")]
+        public List<GuildVerificationFormFieldMinimal> Fields { get; set; }
     }
 }

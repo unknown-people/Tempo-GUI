@@ -23,6 +23,7 @@ namespace TempoWithGUI.MVVM.View
         public EditTokenPopup(string token, string email = "", string password = "", string creation = "")
         {
             InitializeComponent();
+            Debug.Log("Opened token editing interface");
             TokenIn.Text = token;
             EmailIn.Text = email;
             PasswordIn.Text = password;

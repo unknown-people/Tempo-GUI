@@ -75,7 +75,7 @@
                     <ColumnDefinition Width="240">
                     </ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0, 50"
+                <StackPanel Orientation="Vertical" Grid.Column="0" VerticalAlignment="Center"
                         HorizontalAlignment="Center">
                     <TextBlock Text="Guild ID" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
                     <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
@@ -83,16 +83,47 @@
                     <TextBlock Text="Channel ID" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
                     <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
                          Height="25" Width="300" Margin="0,0,0,0" x:Name="ChannelIn"/>
-                    <CheckBox Content="Send embed" Height="20"
-                          Margin="0,10" x:Name="EmbedCB"
-                          HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                          Foreground="AntiqueWhite" Padding="5,0,0,0"
-                          FontSize="12" FontFamily="/Fonts/#Poppins"/>
-                    <CheckBox Content="Use proxies" Height="20"
-                          Margin="0,10" x:Name="ProxyCB" IsChecked="True"
-                          HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
-                          Foreground="AntiqueWhite" Padding="5,0,0,0"
-                          FontSize="12" FontFamily="/Fonts/#Poppins"/>
+                    <Grid Height="80" Visibility="Collapsed" x:Name="FileGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="File path" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                            <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="200" Margin="0,0,0,0" x:Name="FileIn"/>
+                        </StackPanel>
+
+                        <Button Name="ExploreBtn" Grid.Column="1" Content="Explore" Margin="10,25,0,10"
+                            Click="ExploreBtn_Click"/>
+                    </Grid>
+                    <Grid Height="80">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <CheckBox Content="Send embed" Height="20"
+                                Margin="0,10" x:Name="EmbedCB"
+                                HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                Foreground="AntiqueWhite" Padding="5,0,0,0"
+                                FontSize="12" FontFamily="/Fonts/#Poppins"/>
+                            <CheckBox Content="Use proxies" Height="20"
+                                Margin="0,10" x:Name="ProxyCB" IsChecked="True"
+                                HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                Foreground="AntiqueWhite" Padding="5,0,0,0"
+                                FontSize="12" FontFamily="/Fonts/#Poppins"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <CheckBox Content="Use file" Height="20"
+                                Margin="0,10" x:Name="FileCB" Click="FileCB_Click"
+                                HorizontalContentAlignment="Left" VerticalContentAlignment="Center"
+                                Foreground="AntiqueWhite" Padding="5,0,0,0"
+                                FontSize="12" FontFamily="/Fonts/#Poppins"
+                                ToolTip="Use a .txt file as input to use as a user list to spam"/>
+                        </StackPanel>
+                    </Grid>
+
                     <Grid Height="95" Margin="0,-10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100"/>
@@ -102,7 +133,8 @@
                         <TextBlock Text="Delay (ms)" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="0"/>
                         <TextBox Style="{DynamicResource ModernTextBoxOther}" Grid.Column="0" HorizontalAlignment="Left" Padding="5,0,0,0"
                          Height="25" Width="100" Margin="0,0,0,0" x:Name="DelayIn"/>
-                        <TextBlock Text="Max tokens" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2"/>
+                        <TextBlock Text="Max tokens" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite" Grid.Column="2"
+                                   ToolTip="Number of tokens to use"/>
                         <TextBox Style="{DynamicResource ModernTextBoxOther}" Grid.Column="2" HorizontalAlignment="Left" Padding="5,0,0,0"
                          Height="25" Width="150" Margin="0,0,0,0" x:Name="TokensIn"/>
                     </Grid>

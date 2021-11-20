@@ -23,6 +23,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
         public GuildRaid()
         {
             InitializeComponent();
+            Debug.Log("Guild raid interface initialized");
         }
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {

@@ -115,7 +115,7 @@ namespace Discord
             driver.Dispose();
         }
 
-        private async Task<DiscordHttpResponse> SendAsync(Leaf.xNet.HttpMethod method, string endpoint, object payload = null)
+        private async Task<DiscordHttpResponse> SendAsync(Leaf.xNet.HttpMethod method, string endpoint, object payload = null, ulong? guildId = null, ulong? channelId = null)
         {
             if (!endpoint.StartsWith("https"))
                 endpoint = DiscordHttpUtil.BuildBaseUrl(_discordClient.Config.ApiVersion, _discordClient.Config.SuperProperties.ReleaseChannel) + endpoint;
@@ -144,8 +144,8 @@ namespace Discord
                         {
                             KeepTemporaryHeadersOnRedirect = false,
                             EnableMiddleHeaders = false,
-                            AllowEmptyHeaderValues = false,
-                            SslProtocols = SslProtocols.Tls12
+                            AllowEmptyHeaderValues = false
+                            //SslProtocols = SslProtocols.Tls12
                         };
                         request.Proxy = _discordClient.Proxy;
                         /*
@@ -159,7 +159,7 @@ namespace Discord
                         request.AddHeader("Accept-Language", "it");
                         request.AddHeader("Authorization", _discordClient.Token);
                         request.AddHeader("Connection", "keep-alive");
-                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=it");
+                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d");
                         request.AddHeader("DNT", "1");
                         request.AddHeader("origin", "https://discord.com");
                         request.AddHeader("Referer", "https://discord.com/channels/@me");
@@ -171,14 +171,15 @@ namespace Discord
                         if(endpoint == "https://discord.com/api/v9/users/@me/channels")
                         {
                             request.AddHeader("x-context-properties", "e30=");
-                            request.AddHeader("Content-Length", json.Length.ToString());
-                            response = request.Post(endpoint, json, "application/json");
                         }
                         else
                         {
-                            response = request.Post(endpoint);
+                            var context_pr = "{" + $"\"location\":\"Join Guild\",\"location_guild_id\":\"{guildId}\",\"location_channel_id\":\"{channelId}\",\"location_channel_type\":0" + "}";
+                            var encoded_pr = Base64Encode(context_pr);
+                            request.AddHeader("X-Context-Properties", encoded_pr);
                         }
-
+                        request.AddHeader("Content-Length", ASCIIEncoding.UTF8.GetBytes(json).Length.ToString());
+                        response = request.Post(endpoint, json, "application/json");
                         resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
                     }
                     else if (_discordClient.Proxy == null || _discordClient.Proxy.Type == ProxyType.HTTP)
@@ -268,29 +269,16 @@ namespace Discord
                             AllowEmptyHeaderValues = false
                         };
 
-                        Random rnd = new Random();
-                        Proxy proxy = null;
-                        if (Proxy.working_proxies.Count > 0)
-                        {
-                            proxy = Proxy.working_proxies[rnd.Next(0, Proxy.working_proxies.Count)];
-                            if (proxy._ip != "" && proxy != null)
-                            {
-                                ProxyClient proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
-
-                                if (proxies != null)
-                                    request.Proxy = proxies;
-                            }
-                        }
+                        request.Proxy = _discordClient.Proxy;
 
                         var form = JsonConvert.DeserializeObject<GuildVerificationForm>(JsonConvert.SerializeObject(resp.Body));
+
                         var time_zone = int.Parse(form.Version.Split('+')[1].Split(':')[0]);
                         StringBuilder sb = new StringBuilder(form.Version);
                         int h = int.Parse(sb[11].ToString() + sb[12].ToString());
-                        h = h - 2;
-                        if (h == -1)
-                            h = 23;
-                        if (h == -2)
-                            h = 22;
+                        h = h - time_zone;
+                        if (h < 1)
+                            h = 24 - h;
                         //sb.Replace("+02:00", "000+00:00");
                         //form.Version = sb.ToString();
                         var hString = h.ToString();
@@ -301,9 +289,16 @@ namespace Discord
                                 hString = "0" + hString;
                             }
                         }
+                        var time_zone_string = time_zone.ToString();
+                        if (time_zone_string.Length < 2)
+                        {
+                            while (time_zone_string.Length < 2)
+                            {
+                                time_zone_string = "0" + time_zone_string;
+                            }
+                        }
                         string buf1 = form.Version.Substring(0, 11) + hString + form.Version.Substring(13);
-
-                        form.Version = buf1;
+                        form.Version = buf1.Replace("+" + time_zone_string + ":00", "000+00:00");
                         string json_string = "";
                         try
                         {
@@ -313,21 +308,32 @@ namespace Discord
                         form.Description = null;
                         var desc = "{\"description\":null,";
                         json_string = JsonConvert.SerializeObject(form, Formatting.None);
+                        if (!resp.Body.ToString().Contains(",\"description\":null,\"automations\":null"))
+                        {
+                            if (resp.Body.ToString().Contains("\"description\":null"))
+                            {
+                                json_string = json_string.Replace(",\"automations\":null", "");
+                            }
+                            else
+                            {
+                                json_string = json_string.Replace(",\"description\":null,\"automations\":null", "");
+                            }
+                        }
                         json_string = "{" + json_string.Substring(desc.Length);
-                        var guildId = endpoint.Split('/')[1];
                         request.ClearAllHeaders();
                         request.AddHeader("Accept", "*/*");
                         request.AddHeader("Accept-Encoding", "gzip, deflate");
                         request.AddHeader("Accept-Language", "it");
                         request.AddHeader("Authorization", _discordClient.Token);
                         //request.AddHeader("Content-Type", "application/json");
-                        request.AddHeader("Content-Length", (json_string.Length).ToString());
-                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d; locale=it");
+                        request.AddHeader("Content-Length", (ASCIIEncoding.UTF8.GetBytes(json_string).Length).ToString());
+                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d");
                         request.AddHeader("origin", "https://discord.com");
                         request.AddHeader("Referer", $"https://discord.com/channels/{guild_id}");
                         request.AddHeader("TE", "Trailers");
                         request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
                         request.AddHeader("X-Debug-Options", "bugReporterEnabled");
+                        //request.AddHeader("x-fingerprint", "903995807798296608.8ycsY24VnE7UWwSqpXx2yeE-AfM");
                         request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
 
                         var response = request.Put(endpoint, json_string, "application/json");
@@ -464,9 +470,9 @@ namespace Discord
         }
 
 
-        public async Task<DiscordHttpResponse> PostAsync(string endpoint, object payload = null)
+        public async Task<DiscordHttpResponse> PostAsync(string endpoint, object payload = null, ulong? guildId = null, ulong? channelId = null)
         {
-            return await SendAsync(Leaf.xNet.HttpMethod.POST, endpoint, payload);
+            return await SendAsync(Leaf.xNet.HttpMethod.POST, endpoint, payload, guildId, channelId);
         }
 
         public async Task<DiscordHttpResponse> PostAsyncJoin(string endpoint, object payload = null)
@@ -474,12 +480,10 @@ namespace Discord
             return await SendAsyncJoin(Leaf.xNet.HttpMethod.POST, endpoint, payload);
         }
 
-
         public async Task<DiscordHttpResponse> DeleteAsync(string endpoint, object payload = null)
         {
             return await SendAsync(Leaf.xNet.HttpMethod.DELETE, endpoint, payload);
         }
-
 
         public async Task<DiscordHttpResponse> PutAsync(string endpoint, object payload = null)
         {
@@ -491,7 +495,13 @@ namespace Discord
         {
             return await SendAsync(Leaf.xNet.HttpMethod.PATCH, endpoint, payload);
         }
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
     }
+
     public class Fingerprint
     {
         [JsonProperty("assignments")]

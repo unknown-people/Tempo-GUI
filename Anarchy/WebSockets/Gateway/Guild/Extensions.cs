@@ -151,6 +151,7 @@ namespace Discord.Gateway
                     Threads = true,
                     Channels = { { channelId, CreateChunks(0, false) } }
                 });
+
             }
 
             void handler(DiscordSocketClient s, DiscordMemberListUpdate e)

@@ -38,6 +38,7 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
         public imageProfiles()
         {
             InitializeComponent();
+            Debug.Log("Image changer interface initialized");
         }
 
         private void Start_Click(object sender, RoutedEventArgs e)
@@ -50,11 +51,15 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
             images = new List<string>() { };
             if (isFolder)
             {
-                foreach (var file in Directory.GetFiles(image))
+                try
                 {
-                    if(file.EndsWith(".png") || file.EndsWith(".jpg"))
-                    images.Add(file);
+                    foreach (var file in Directory.GetFiles(image))
+                    {
+                        if (file.EndsWith(".png") || file.EndsWith(".jpg"))
+                            images.Add(file);
+                    }
                 }
+                catch(Exception ex) { }
             }
             else
             {

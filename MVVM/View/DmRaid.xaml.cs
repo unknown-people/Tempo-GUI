@@ -31,6 +31,7 @@ namespace TempoWithGUI.MVVM.View
         public DmRaid()
         {
             InitializeComponent();
+            Debug.Log("DM spam interface initialized");
             Set_Light(spamming);
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -185,6 +186,10 @@ namespace TempoWithGUI.MVVM.View
                     }
                     while (spamming)
                     {
+                        Dispatcher.Invoke(() =>
+                        {
+                            App.mainView.logPrint($"{client.User.Username + "#" + client.User.Discriminator} started spamming to {userId}");
+                        });
                         Random random = new Random();
                         EmbedMaker new_msg = null;
                         if (embedOn)

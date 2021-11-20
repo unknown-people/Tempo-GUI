@@ -34,12 +34,14 @@ namespace TempoWithGUI.MVVM.View
         public tokens()
         {
             InitializeComponent();
+            Debug.Log("Opened Tokens control");
             if (!File.Exists(App.strWorkPath + "\\tokens\\tokens.txt"))
                 File.Create(App.strWorkPath + "\\tokens\\tokens.txt");
             if(_tokens == null)
                 _tokens = new List<DiscordToken>();
-
+            this.Cursor = Cursors.AppStarting;
             SetTokens();
+            this.Cursor = Cursors.Arrow;
         }
         public void SetTokens()
         {
@@ -65,7 +67,7 @@ namespace TempoWithGUI.MVVM.View
                         {
                             buff.Add(new DiscordToken(true, token_array[1], token_array[0]));
                         }
-                    } 
+                    }
                 }
             }
             var i = 0;
@@ -90,6 +92,7 @@ namespace TempoWithGUI.MVVM.View
             }
             _tokens = buff;
             ListTokens.ItemsSource = _tokens;
+            TkCounter.Text = _tokens.Count.ToString() + " Tokens";
             loadingTokens = false;
         }
         public static string[] GetTokenInfo(string token)
@@ -256,6 +259,7 @@ namespace TempoWithGUI.MVVM.View
             }
             File.Delete(App.strWorkPath + "\\tokens\\tokens.txt");
             File.Move(App.strWorkPath + "\\tokens\\tokens1.txt", App.strWorkPath + "\\tokens\\tokens.txt");
+            TkCounter.Text = _tokens.Count.ToString() + " Tokens";
             loadingTokens = false;
         }
 
@@ -289,6 +293,13 @@ namespace TempoWithGUI.MVVM.View
                     return true;
             }
             return false;
+        }
+
+        private void Reload_Click(object sender, RoutedEventArgs e)
+        {
+            this.Cursor = Cursors.AppStarting;
+            SetTokens();
+            this.Cursor = Cursors.Arrow;
         }
 
         /*

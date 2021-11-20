@@ -33,6 +33,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
         public SpamGuild()
         {
             InitializeComponent();
+            Debug.Log("Spam guild interface initialized");
             Set_Light(spamming);
         }
 

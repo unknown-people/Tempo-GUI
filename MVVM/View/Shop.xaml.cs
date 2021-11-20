@@ -14,6 +14,7 @@ namespace TempoWithGUI.MVVM.View
         public Shop()
         {
             InitializeComponent();
+            Debug.Log("Opened Shop");
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

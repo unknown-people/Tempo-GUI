@@ -23,6 +23,7 @@ namespace TempoWithGUI.MVVM.View
         public Log()
         {
             InitializeComponent();
+            Debug.Log("Initialized session logs");
         }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {

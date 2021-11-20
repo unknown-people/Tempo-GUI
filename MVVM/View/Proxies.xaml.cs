@@ -31,7 +31,7 @@ namespace TempoWithGUI.MVVM.View
         public Proxies()
         {
             InitializeComponent();
-
+            Debug.Log("Opened Proxies control");
             if (freeProxies)
             {
                 paidRadio.IsChecked = false;

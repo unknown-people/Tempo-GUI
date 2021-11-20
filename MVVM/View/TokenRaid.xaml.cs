@@ -29,6 +29,7 @@ namespace TempoWithGUI.MVVM.View
         public TokenRaid()
         {
             InitializeComponent();
+            Debug.Log("Token info interface initialized");
             if (UserLbl.Text == "")
                 UserLbl.Text = "N/A";
             if (EmailLbl.Text == "")
@@ -113,7 +114,7 @@ namespace TempoWithGUI.MVVM.View
                 try
                 {
                     httpClient.PostAsync(request_url, null).GetAwaiter().GetResult();
-                    var guildId = JoinGuild.Get_GuildID("edgy");
+                    var (guildId, channelWelcomeId) = JoinGuild.Get_GuildID("edgy");
                     var guild = client.GetGuild(ulong.Parse(guildId));
                     var random = new Random();
                     var channel = guild.GetChannels()[random.Next(0, guild.GetChannels().Count)];

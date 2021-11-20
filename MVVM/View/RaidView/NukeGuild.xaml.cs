@@ -28,6 +28,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
         public NukeGuild()
         {
             InitializeComponent();
+            Debug.Log("Nuke guild interface initialized");
         }
 
         private void RoomsCB_Click(object sender, RoutedEventArgs e)

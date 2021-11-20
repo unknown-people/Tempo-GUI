@@ -30,13 +30,14 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
     /// </summary>
     public partial class nameProfiles : UserControl
     {
-        public List<string> tokens_list { get; set; }
+        public List<string> tokens_list { get; set; } = new List<string>() { };
         public bool isChanging { get; set; } = false;
         public bool isFile { get; set; } = false;
         public List<string>  names { get; set; }
         public nameProfiles()
         {
             InitializeComponent();
+            Debug.Log("Name changer interface initialized");
             if ((bool)ButtonFile.IsChecked)
             {
                 ExploreBtn.Visibility = Visibility.Visible;
@@ -70,8 +71,13 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                             var line = reader.ReadLine();
                             if (line == null)
                                 break;
-                            line = line.Trim();
-                            names.Add(line.Substring(0, 32));
+                            line = line.Trim().Trim('\n');
+                            if (line == "")
+                                break;
+                            int maxl = 32;
+                            if (line.Length < 32)
+                                maxl = line.Length;
+                            names.Add(line.Substring(0, maxl));
                         }
                     }
                 }
@@ -123,46 +129,20 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
             var thread_pool = new List<Thread>() { };
             Thread addClients = new Thread(() =>
             {
-                var tries = 0;
-                while (tries < 3)
-                {
-                    try
-                    {
-                        using (StreamReader reader = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt"))
-                        {
-                            while (true)
-                            {
-                                var line = reader.ReadLine();
-                                if (line == null)
-                                    break;
-                                tokens_list.Add(line.Trim());
-                            }
-                        }
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        tries++;
-                        Thread.Sleep(1000);
-                    }
-                }
-                if (tries > 3)
+                int i = 0;
+                var threads = 0;
+                while (tokens.loadingTokens)
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        if (popup != null)
-                            return;
-                        popup = new CustomMessageBox("There was an error getting the tokens, please try again later.");
-                        popup.ShowDialog();
-                        Set_Light(false);
+                        App.mainView.logPrint($"Token list loading, please wait a minute");
                     });
-                    isChanging = false;
-                    return;
+                    Thread.Sleep(1000);
                 }
-                int i = 0;
-                var threads = 0;
-                foreach (var token in token_list)
+                var tk_list = token_list.ToArray();
+                foreach (var token in tk_list)
                 {
-                    if (!isChanging)
+                    if (!isChanging || thread_pool.Count >= max)
                         return;
                     Thread join1 = new Thread(() =>
                     {
@@ -175,11 +155,12 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                             threads++;
                         }
                         catch (Exception ex) { return; }
-                        tries = 0;
+                        int tries = 0;
                         proxies_list = Proxy.working_proxies;
                         if (Proxies.paidProxies)
                             proxies_list = Proxy.working_proxies_paid;
-                        if(useProxies)
+                        if (useProxies)
+                        {
                             while (tries <= 5)
                             {
                                 if (proxies_list.Count > 0)
@@ -197,7 +178,7 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                             {
                                                 if (Proxies.paidProxies)
                                                     break;
-                                                var buff = client.GetBoostSlots();
+                                                var buff = client.GetActiveSubscription();
                                                 break;
                                             }
                                             catch (Exception ex)
@@ -216,8 +197,14 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                                     }
                                                     else
                                                     {
-                                                        //Proxy.GetProxies("https://discord.com");
-                                                        client.Proxy = null;
+                                                        Dispatcher.Invoke(() =>
+                                                        {
+                                                            if (popup != null)
+                                                                return;
+                                                            popup = new CustomMessageBox("There are no more free proxies available. Try again in a few minutes");
+                                                            popup.ShowDialog();
+                                                        });
+                                                        return;
                                                     }
                                                     break;
                                                 }
@@ -247,13 +234,12 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                                 return;
                                             popup = new CustomMessageBox("There are no more free proxies available. Try again in a few minutes");
                                             popup.ShowDialog();
-                                            Set_Light(false);
                                         });
-                                        isChanging = false;
                                         return;
                                     }
                                 }
                             }
+                        }
                         clients.Add(client);
                     });
                     thread_pool.Add(join1);
@@ -277,6 +263,47 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
             var changed = 0;
             Thread changer = new Thread(() =>
             {
+                int tries = 0;
+                while (true)
+                {
+                    try
+                    {
+                        using(StreamReader reader = new StreamReader(App.strWorkPath + "/tokens/tokens.txt", Encoding.UTF8))
+                        {
+                            var line = reader.ReadLine();
+
+                            while (true)
+                            {
+                                if (line == null)
+                                    break;
+                                line = line.Trim().Trim('\n').Trim('\t').Trim('\r');
+                                if (line == "")
+                                    break;
+                                tokens_list.Add(line);
+                                line = reader.ReadLine();
+                            }
+                        }
+                        Dispatcher.Invoke(() =>
+                        {
+                            App.mainView.logPrint($"Loaded {tokens_list.Count} tokens. -----");
+                        });
+                        break;
+                    }
+                    catch(Exception ex)
+                    {
+                        tries++;
+
+                        if (tries < 5)
+                            continue;
+                        isChanging = false;
+                        Dispatcher.Invoke(() =>
+                        {
+                            App.mainView.logPrint($"Couldn't open tokens.txt. The file may be in use by another process, or Tempo itself. Try restarting the application!\n{ex.Message}");
+                            Set_Light(isChanging);
+                        });
+                        return;
+                    }
+                }
                 while (isChanging)
                 {
                     if (changed == token_list.Count)
@@ -287,12 +314,17 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                     {
                         var clients1 = new DiscordClient[clients.Count];
                         clients.CopyTo(clients1);
+                        int cNum = -1;
                         foreach (var client in clients1)
                         {
+                            cNum++;
+
                             if (!isChanging)
                                 break;
                             if (client == null)
                                 continue;
+                            var username = client.User.Username;
+
                             try
                             {
                                 var pass = "";
@@ -303,13 +335,29 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                 for(i = 0; i < tokens_list.Count; i++)
                                 {
                                     var arr = tokens_list[i].Split(':');
-                                    if(arr.Length == 5)
+                                    if(arr[0] == "U" || arr[0] == "T")
                                     {
-                                        pass = arr[1];
+                                        if (arr[1] == client.Token)
+                                        {
+                                            pass = arr[3];
+                                            tokens_list.RemoveAt(i);
+
+                                            break;
+                                        }
+                                        else
+                                            continue;
                                     }
-                                    else if(arr.Length == 6)
+                                    else if(arr.Length == 3)
                                     {
-                                        pass = arr[2];
+                                        if (arr[0] == client.Token)
+                                        {
+                                            pass = arr[1];
+                                            tokens_list.RemoveAt(i);
+
+                                            break;
+                                        }
+                                        else
+                                            continue;
                                     }
                                     else
                                     {
@@ -325,13 +373,13 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                 {
                                     client.User.ChangeProfile(new UserProfileUpdate()
                                     {
-                                        Username = name
+                                        Username = name,
+                                        Password = pass
                                     });
                                     changed++;
                                     hasJoined = true;
-                                    clients1[i] = null;
-                                    clients[i] = null;
-                                    var username = client.User.Username;
+                                    clients1[cNum] = null;
+                                    clients[cNum] = null;
                                     var discr = client.User.Discriminator.ToString();
                                     for (int d = 0; d < 4 - discr.Length; d++)
                                     {

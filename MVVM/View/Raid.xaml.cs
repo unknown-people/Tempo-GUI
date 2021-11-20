@@ -23,6 +23,7 @@ namespace TempoWithGUI.MVVM.View
         public Raid()
         {
             InitializeComponent();
+            Debug.Log("Opened Raid control");
         }
     }
 }
