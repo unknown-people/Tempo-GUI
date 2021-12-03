@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Discord;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -62,7 +63,10 @@ namespace TempoWithGUI.MVVM.ViewModel
             TokensVm = new TokensModel();
             ProxiesVm = new ProxiesModel();
             MoreVm = new MoreModel();
-
+            Task.Run(() =>
+            {
+                Fingerprint.GetFingerprint().GetAwaiter().GetResult();
+            });
             CurrentView = MusicBotVm;
 
             MusicBotCommand = new RelayCommand(o =>

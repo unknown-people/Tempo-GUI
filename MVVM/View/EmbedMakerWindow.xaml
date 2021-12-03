@@ -5,8 +5,122 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TempoWithGUI.MVVM.View"
         mc:Ignorable="d"
-        Title="EmbedMakerWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Embed Maker" Height="550" Width="550"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True">
+    <Window.Resources>
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}" x:Key="ExitStyle">
+            <Style.Setters>
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{TemplateBinding Background}">
+                                <TextBlock Text="{TemplateBinding Property=Content}" VerticalAlignment="Center" FontFamily="/Fonts/#Poppins"
+                                       HorizontalAlignment="Center" Foreground="AntiqueWhite"
+                                           Padding="10"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#141114"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="{x:Type Button}" x:Key="AddStyle">
+            <Style.Setters>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{TemplateBinding Background}">
+                                <Image Source="/Images/plus.png" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Stretch="Fill" Grid.Column="1"
+                                    Height="15" Width="15"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#141114"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Border Background="#0F0D0F" CornerRadius="20" MouseDown="Window_MouseDown">
+
+        <StackPanel>
+            <Grid Height="50">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Embed Maker" FontSize="36" FontFamily="Fonts/#Poppins"
+                       VerticalAlignment="Center" Margin="30, 0, 0, -10"
+                       Foreground="AntiqueWhite"/>
+                </Grid>
+                <Button Content="X" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20"
+                    FontSize="11" FontStretch="Expanded" VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center" Margin="10"
+                    Padding="1,-1,0,0" Background="Gray"
+                    x:Name="ExitButton" Style="{StaticResource ExitButtonTheme}" Click="ExitButton_Click"/>
+
+            </Grid>
+
+            <Border BorderThickness="0" CornerRadius="20" Background="#19161A"
+                Height="5" Width="600" Margin="10" HorizontalAlignment="Left"/>
+            <Grid Height="460">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*">
+                    </ColumnDefinition>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Grid.Column="0" VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="Author" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="300" Margin="0,0,0,0" x:Name="AuthorIn"/>
+                    <TextBlock Text="Description" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="300" Margin="0,0,0,0" x:Name="DescriptionIn"/>
+                    <TextBlock Text="Thumbnail" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="300" Margin="0,0,0,0" x:Name="ThumbnailIn"/>
+                    <TextBlock Text="Image" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="300" Margin="0,0,0,0" x:Name="ImageIn"/>
+                    <TextBlock Text="Footer" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                    <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="300" Margin="0,0,0,0" x:Name="FooterIn"/>
+                    <Grid Height="80" Visibility="Collapsed" x:Name="FileGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="File path" Margin="10,10,0,5" FontSize="15" Foreground="AntiqueWhite"/>
+                            <TextBox Style="{DynamicResource ModernTextBoxOther}" HorizontalAlignment="Left" Padding="5,0,0,10"
+                         Height="25" Width="200" Margin="0,0,0,0" x:Name="FileIn"/>
+                        </StackPanel>
+
+                        <Button Name="ExploreBtn" Grid.Column="1" Content="Explore" Margin="10,25,0,10"
+                            Click="ExploreBtn_Click"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Border>
 </Window>

@@ -110,7 +110,10 @@ namespace Discord
         {
             _embed = new DiscordEmbed();
         }
-
+        public EmbedMaker(string json)
+        {
+            _embed = new DiscordEmbed(json);
+        }
 
         public static implicit operator DiscordEmbed(EmbedMaker instance)
         {

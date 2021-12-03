@@ -126,7 +126,7 @@ namespace TempoWithGUI.MVVM.View
                                 break;
                             line = line.Trim('\n').Trim(' ').Trim('\t');
                             var line_arr = line.Split(':');
-                            if(line_arr.Length < 6)
+                            if(line_arr[0].Length != 1)
                             {
                                 if (isInListTokens(line_arr[0]))
                                     continue;

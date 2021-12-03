@@ -118,6 +118,32 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="{x:Type TextBox}" x:Key="ModernTextBoxDouble">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border CornerRadius="10" Background="#49464d">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Rectangle StrokeThickness="1"/>
+                                <TextBox Margin="1" Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" Background="Transparent" VerticalContentAlignment="Center" Foreground="#CECECF" Padding="5,0,0,3" BorderThickness="0"/>
+                            </Grid>
+                            <Border BorderThickness="0" Background="#19161A"
+                                Height="2" Width="600" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <Grid Grid.Row="1">
+                                <Rectangle StrokeThickness="1"/>
+                                <TextBox Margin="1" Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}" Background="Transparent" VerticalContentAlignment="Center" Foreground="#CECECF" Padding="5,0,0,3" BorderThickness="0"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <Style TargetType="{x:Type TextBox}" x:Key="ModernTextBoxMultiLine">
         <Setter Property="Template">
             <Setter.Value>

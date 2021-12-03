@@ -16,6 +16,15 @@ namespace Discord
             Author = new EmbedAuthor();
         }
 
+        public DiscordEmbed(string json)
+        {
+            Fields = new List<EmbedField>();
+            Thumbnail = new EmbedImage();
+            Image = new EmbedImage();
+            Footer = new EmbedFooter();
+            Author = new EmbedAuthor();
+        }
+
 
         [JsonProperty("title")]
         public string Title { get; internal set; }

@@ -22,6 +22,10 @@ namespace Discord
                 return (await client.HttpClient.PostAsync($"/channels/{channelId}/messages", properties))
                                      .Deserialize<DiscordMessage>().SetClient(client);
             }
+            catch (DiscordHttpException ex)
+            {
+                return new DiscordMessage();
+            }
             catch
             {
                 return null;
@@ -54,7 +58,18 @@ namespace Discord
         {
             return await client.SendMessageAsync(channelId, new MessageProperties() { Embed = embed });
         }
-
+        public static async Task<DiscordMessage> SendMessageAsync(this DiscordClient client, ulong channelId, string json)
+        {
+            try
+            {
+                var msgProp = JsonConvert.DeserializeObject<MessageProperties>(json);
+                return await client.SendMessageAsync(channelId, msgProp);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
         public static DiscordMessage SendMessage(this DiscordClient client, ulong channelId, EmbedMaker embed)
         {
             return client.SendMessageAsync(channelId, embed).GetAwaiter().GetResult();

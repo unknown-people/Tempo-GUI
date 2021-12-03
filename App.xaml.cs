@@ -25,6 +25,7 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using TempoWithGUI.MVVM.ViewModel;
 using System.Management;
+using System.Threading;
 
 namespace TempoWithGUI
 {
@@ -186,30 +187,46 @@ namespace TempoWithGUI
                     timer_fetch_proxies.Interval = 5 * 60 * 1000;
                     timer_fetch_proxies.Enabled = true;
                     */
-                    using (StreamReader stream = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt", true))
+                    if (!File.Exists(App.strWorkPath + "\\tokens\\tokens.txt"))
+                        File.Create(App.strWorkPath + "\\tokens\\tokens.txt");
+                    int tries = 0;
+                    while(tries < 3)
                     {
-                        tokens._tokens = new List<DiscordToken>() { };
-                        while (true)
+                        try
                         {
-                            var line = stream.ReadLine();
-                            if (line == null || line.Trim('\n') == "")
-                                break;
-                            var token_array = line.Split(':');
-                            if (token_array.Length == 3)
-                                tokens._tokens.Add(new DiscordToken(true, token_array[0], "U"));
-                            else
+                            using (StreamReader stream = new StreamReader(App.strWorkPath + "\\tokens\\tokens.txt", true))
                             {
-                                if (token_array[0].Length != 1)
+                                tokens._tokens = new List<DiscordToken>() { };
+                                while (true)
                                 {
-                                    tokens._tokens.Add(new DiscordToken(true, token_array[0], "U"));
-                                }
-                                else
-                                {
-                                    tokens._tokens.Add(new DiscordToken(true, token_array[1], token_array[0]));
+                                    var line = stream.ReadLine();
+                                    if (line == null || line.Trim('\n') == "")
+                                        break;
+                                    var token_array = line.Split(':');
+                                    if (token_array.Length == 3)
+                                        tokens._tokens.Add(new DiscordToken(true, token_array[0], "U"));
+                                    else
+                                    {
+                                        if (token_array[0].Length != 1)
+                                        {
+                                            tokens._tokens.Add(new DiscordToken(true, token_array[0], "U"));
+                                        }
+                                        else
+                                        {
+                                            tokens._tokens.Add(new DiscordToken(true, token_array[1], token_array[0]));
+                                        }
+                                    }
                                 }
                             }
+                            break;
+                        }
+                        catch (IOException ex)
+                        {
+                            Thread.Sleep(1000);
+                            tries++;
                         }
                     }
+
                     Debug.Log("Setting tokens...");
                     BindMachine(mac);
                     Debug.Log("Binded machine to APIs");

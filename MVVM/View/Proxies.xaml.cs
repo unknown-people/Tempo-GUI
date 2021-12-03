@@ -125,30 +125,43 @@ namespace TempoWithGUI.MVVM.View
         {
             if (Proxy.working_proxies_paid == null)
                 Proxy.working_proxies_paid = new List<Proxy>() { };
-            using (StreamReader stream = new StreamReader(App.strWorkPath + "\\proxies\\user_proxies.txt", true))
+            int tries = 0;
+            while (tries < 3)
             {
-                while (true)
+                try
                 {
-                    var line = stream.ReadLine();
-                    if (line == null)
-                        break;
-                    line = line.Trim('\n').Trim(' ');
-                    var proxy_list = line.Split(':');
-                    if (proxy_list.Length == 2)
+                    using (StreamReader stream = new StreamReader(App.strWorkPath + "\\proxies\\user_proxies.txt", true))
                     {
-                        Proxy.working_proxies_paid.Add(new Proxy(proxy_list[0], proxy_list[1]));
-                    }
-                    else if (proxy_list.Length == 4)
-                    {
-                        if (uint.TryParse(proxy_list[1], out var port))
+                        while (true)
                         {
-                            Proxy.working_proxies_paid.Add(new Proxy(proxy_list[0], proxy_list[1], proxy_list[2], proxy_list[3]));
-                        }
-                        else
-                        {
-                            Proxy.working_proxies_paid.Add(new Proxy(proxy_list[2], proxy_list[3], proxy_list[0], proxy_list[1]));
+                            var line = stream.ReadLine();
+                            if (line == null)
+                                break;
+                            line = line.Trim('\n').Trim(' ');
+                            var proxy_list = line.Split(':');
+                            if (proxy_list.Length == 2)
+                            {
+                                Proxy.working_proxies_paid.Add(new Proxy(proxy_list[0], proxy_list[1]));
+                            }
+                            else if (proxy_list.Length == 4)
+                            {
+                                if (uint.TryParse(proxy_list[1], out var port))
+                                {
+                                    Proxy.working_proxies_paid.Add(new Proxy(proxy_list[0], proxy_list[1], proxy_list[2], proxy_list[3]));
+                                }
+                                else
+                                {
+                                    Proxy.working_proxies_paid.Add(new Proxy(proxy_list[2], proxy_list[3], proxy_list[0], proxy_list[1]));
+                                }
+                            }
                         }
                     }
+                    break;
+                }
+                catch (IOException ex)
+                {
+                    Thread.Sleep(1000);
+                    tries++;
                 }
             }
         }

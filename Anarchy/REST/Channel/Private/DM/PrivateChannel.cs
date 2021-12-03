@@ -120,12 +120,18 @@ namespace Discord
         {
             return Client.SendMessageAsync(Id, embed);
         }
-
+        public Task<DiscordMessage> SendMessageAsync(string embed_json)
+        {
+            return Client.SendMessageAsync(Id, embed_json);
+        }
         public DiscordMessage SendMessage(EmbedMaker embed)
         {
             return SendMessageAsync(embed).GetAwaiter().GetResult();
         }
-
+        public DiscordMessage SendMessage(string embed_json)
+        {
+            return SendMessageAsync(embed_json).GetAwaiter().GetResult();
+        }
 
         public async Task<DiscordMessage> SendFileAsync(string fileName, byte[] fileData, string message = null, bool tts = false)
         {

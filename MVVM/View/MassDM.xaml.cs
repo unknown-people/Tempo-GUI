@@ -6,6 +6,7 @@ using Music_user_bot;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -27,10 +28,11 @@ namespace TempoWithGUI.MVVM.View
     /// <summary>
     /// Interaction logic for MassDM.xaml
     /// </summary>
-    public partial class MassDM : Window
+    public partial class MassDM : System.Windows.Window
     {
         public static List<ulong> members { get; set; }
         public static bool spamming { get; set; }
+        public static bool setupCompleted { get; set; }
         public MassDM()
         {
             InitializeComponent();
@@ -52,7 +54,7 @@ namespace TempoWithGUI.MVVM.View
             if (spamming)
                 return;
             bool proxyOn = (bool)ProxyCB.IsChecked;
-
+            setupCompleted = false;
             if (Proxies.freeProxies && proxyOn)
             {
                 MessageBox.Show("Mass DM spam is currently not supported with free proxies");
@@ -89,7 +91,11 @@ namespace TempoWithGUI.MVVM.View
                 delay = 10000;
             }
             bool embedOn = (bool)EmbedCB.IsChecked;
-
+            string json = null;
+            if (embedOn)
+            {
+                json = MessageIn.Text;
+            }
             var max_tokens = TokensIn.Text;
 
             int max = 0;
@@ -117,39 +123,45 @@ namespace TempoWithGUI.MVVM.View
             {
                 MainViewModel.log.Visibility = Visibility.Visible;
             }
+            Random random = new Random();
+            var proxies_list = Proxy.working_proxies;
+            if (Proxies.paidProxies)
+                proxies_list = Proxy.working_proxies_paid;
+            List<DiscordClient> clients = new List<DiscordClient>();
+            var rnd = new Random();
+
             Thread spam = new Thread(() =>
             {
-                var proxies_list = Proxy.working_proxies;
-                if (Proxies.paidProxies)
-                    proxies_list = Proxy.working_proxies_paid;
                 var original_proxies = proxies_list;
                 CustomMessageBox popup = null;
                 var token_list = new List<string>() { };
+
                 foreach (var tk in tokens._tokens)
                 {
                     if (tk.Active)
                         token_list.Add(tk.Token);
                 }
-                List<DiscordClient> clients = new List<DiscordClient>();
+                Dispatcher.Invoke(() =>
+                {
+                    App.mainView.logPrint($"Loading {token_list.Count} clients into memory");
+                });
                 foreach (var token in token_list)
                 {
                     try
                     {
                         clients.Add(new DiscordClient(token));
                     }
-                    catch { }
+                    catch (Exception ex) { }
                     if (max > 0)
                         if (clients.Count >= max)
                             break;
                 }
-                Random random = new Random();
-                var rnd = new Random();
-                Proxy proxy = null;
-                IReadOnlyList<GuildChannel> channels = null;
-                if (channelId == 0)
+                Dispatcher.Invoke(() =>
                 {
-                    channels = clients[0].GetGuildChannels(guildId);
-                }
+                    App.mainView.logPrint($"Loaded {token_list.Count} valid clients into memory");
+                });
+                Proxy proxy = null;
+
                 members = new List<ulong>() { };
                 if (members == null || members.Count == 0 && !useFile)
                 {
@@ -179,14 +191,30 @@ namespace TempoWithGUI.MVVM.View
                     while (client_s.State < GatewayConnectionState.Connected)
                         Thread.Sleep(100);
                     var members1 = new List<GuildMember>() { };
+                    SocketGuild guild = null;
                     while (true)
                     {
                         try
                         {
+                            guild = client_s.GetCachedGuild(guildId);
+                            if(guild == null)
+                                guild = (SocketGuild)client_s.GetGuild(guildId);
+
+                            Dispatcher.Invoke(() =>
+                            {
+                                App.mainView.logPrint($"Fetching member list for guild: {guild.Name}");
+                            });
                             if (channelId != 0)
-                                members1 = (List<GuildMember>)client_s.GetGuildChannelMembersAsync(guildId, channelId).GetAwaiter().GetResult();
+                                members1 = guild.GetChannelMembersAsync(channelId).GetAwaiter().GetResult().ToList();
                             else
-                                members1 = (List<GuildMember>)client_s.GetGuildChannelMembersAsync(guildId, channels[(int)(channels.Count / 2)].Id).GetAwaiter().GetResult();
+                            {
+                                IReadOnlyList<GuildChannel> channels = null;
+                                if (channelId == 0)
+                                {
+                                    channels = clients[0].GetGuildChannels(guildId);
+                                }
+                                members1 = guild.GetChannelMembersAsync(channels[(int)(channels.Count / 2)].Id).GetAwaiter().GetResult().ToList();
+                            }
                             break;
                         }
                         catch (Exception ex) { Thread.Sleep(500); }
@@ -228,105 +256,134 @@ namespace TempoWithGUI.MVVM.View
                         }
                     }
                 }
+                setupCompleted = true;
                 Dispatcher.Invoke(() =>
                 {
                     App.mainView.logPrint($"Loaded {members.Count} members to message.");
                 });
                 int i = 0;
-                foreach (var client in clients)
+                if(clients.Count == 0)
                 {
-                    Thread spam1 = new Thread(() => {
-                        if (proxyOn)
-                        {
-                            if (Proxy.working_proxies_paid.Count > 0)
-                            {
-                                proxy = Proxy.working_proxies_paid[rnd.Next(0, Proxy.working_proxies_paid.Count)];
-                                if (proxy._ip != "" && proxy != null)
-                                {
-                                    HttpProxyClient proxies = null;
-                                    if (proxy._username != null)
-                                        proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port), proxy._username, proxy._password);
-                                    else
-                                        proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
-                                    client.Proxy = proxies;
-                                }
-                            }
-                        }
-
-                        while (spamming)
-                        {
-                            var userId = members[random.Next(0, members.Count)];
-                            members = members.Where(o => o != userId).ToList();
-
-                            EmbedMaker new_msg = null;
-
-                            if (embedOn)
-                            {
-                                var avatar_url = "https://unknown-people.it/propic.png";
-                                if (client.User.Avatar != null)
-                                    avatar_url = client.User.Avatar.Url;
-                                new_msg = new EmbedMaker() { Title = client.User.Username, TitleUrl = "https://discord.gg/MH3crQgrBT", Color = System.Drawing.Color.IndianRed, ThumbnailUrl = avatar_url };
-                                new_msg.AddField("Tempo", message);
-                            }
-                            bool hasSent = false;
-                            int c = 0;
-                            while (!hasSent && c < 3)
-                            {
-                                try
-                                {
-                                    var dm = client.CreateDM(userId);
-                                    Thread.Sleep(random.Next(1000, 2000));
-                                    dm.TriggerTyping();
-                                    DiscordMessage msg = null;
-                                    if (embedOn)
-                                        msg = dm.SendMessage(new_msg);
-                                    else
-                                        msg = dm.SendMessage(message);
-                                    if(msg == null)
-                                    {
-                                        Dispatcher.Invoke(() =>
-                                        {
-                                            App.mainView.logPrint($"Token {client.Token} has been rate limited, waiting 5 minutes.");
-                                        });
-                                        Thread.Sleep(360000);
-                                        try
-                                        {
-                                            if (embedOn)
-                                                msg = dm.SendMessage(new_msg);
-                                            else
-                                                msg = dm.SendMessage(message);
-                                        }
-                                        catch(Exception ex)
-                                        {
-                                            Thread.Sleep(60000);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var sent_messages = sent;
-                                        sent++;
-                                        Dispatcher.Invoke(() =>
-                                        {
-                                            App.mainView.logPrint($"Sent message to user {userId}. Sent {sent_messages} messages");
-                                        });
-                                    }
-                                    hasSent = true;
-                                }
-                                catch (Exception ex)
-                                {
-                                    c++;
-                                }
-
-                            }
-                            Thread.Sleep((int)delay);
-                        }
-                        Dispatcher.Invoke(() => StatusLight.Fill = Brushes.Red);
-                        spamming = false;
+                    Dispatcher.Invoke(() =>
+                    {
+                        App.mainView.logPrint($"There was an error initializing the clients");
                     });
-                    spam1.Start();
                 }
             });
             spam.Start();
+
+            Thread spammer = new Thread(() =>
+            {
+                while (!setupCompleted)
+                    Thread.Sleep(100);
+                Dispatcher.Invoke(() =>
+                {
+                    App.mainView.logPrint($"Setup completed, starting to spam...");
+                });
+                foreach (var client in clients)
+                {
+                    if (proxyOn)
+                    {
+                        if (Proxy.working_proxies_paid.Count > 0)
+                        {
+                            var proxy = Proxy.working_proxies_paid[rnd.Next(0, Proxy.working_proxies_paid.Count)];
+                            if (proxy._ip != "" && proxy != null)
+                            {
+                                HttpProxyClient proxies = null;
+                                if (proxy._username != null)
+                                    proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port), proxy._username, proxy._password);
+                                else
+                                    proxies = new HttpProxyClient(proxy._ip, int.Parse(proxy._port));
+                                client.Proxy = proxies;
+                            }
+                        }
+                    }
+                }
+                Thread spam1 = new Thread(() => {
+                    if (clients.Count == 0)
+                        return;
+                    var usedClients = new Dictionary<DiscordClient, DateTime> { };
+                    string new_msg = null;
+                    if (embedOn)
+                    {
+                        new_msg = json;
+                    }
+                    while (spamming)
+                    {
+                        if (members.Count == 0)
+                            return;
+                        if(clients.Count == 0)
+                        {
+                            clients = usedClients.Keys.ToList();
+                            usedClients = new Dictionary<DiscordClient, DateTime> { };
+                        }
+                        var client = clients[random.Next(0, clients.Count - 1)];
+                        while (usedClients.ContainsKey(client))
+                        {
+                            if ((int)(DateTime.Now - usedClients[client]).TotalMilliseconds < (int)delay)
+                            {
+                                client = clients[random.Next(0, clients.Count - 1)];
+                                Thread.Sleep(100);
+                            }
+                            else
+                                break;
+                        }
+                        clients.Remove(client);
+                        try
+                        {
+                            usedClients.Add(client, DateTime.Now);
+                        }
+                        catch(Exception ex) { }
+                        var userId = members[random.Next(0, members.Count)];
+                        members = members.Where(o => o != userId).ToList();
+
+                        bool hasSent = false;
+                        int c = 0;
+                        while (!hasSent && c < 3)
+                        {
+                            try
+                            {
+                                var dm = client.CreateDM(userId);
+                                //Thread.Sleep(random.Next(1000, 2000));
+                                dm.TriggerTyping();
+                                DiscordMessage msg = null;
+                                if (embedOn)
+                                    msg = dm.SendMessage(new_msg);
+                                else
+                                    msg = dm.SendMessage(message);
+                                if (msg == new DiscordMessage())
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        App.mainView.logPrint($"Token {client.Token} has been rate limited, or embed (if using it) malformed, waiting 5 minutes.");
+                                    });
+                                    //Thread.Sleep(360000);
+                                    usedClients[client].AddMinutes(5); 
+                                }
+                                else
+                                {
+                                    sent++;
+                                    var sent_messages = sent;
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        App.mainView.logPrint($"Sent message to user {userId}. Sent {sent_messages} messages");
+                                    });
+                                }
+                                hasSent = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                c++;
+                            }
+                        }
+                        //Thread.Sleep((int)delay);
+                    }
+                    Dispatcher.Invoke(() => StatusLight.Fill = Brushes.Red);
+                    spamming = false;
+                });
+                spam1.Start();
+            });
+            spammer.Start();
         }
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
@@ -385,6 +442,20 @@ namespace TempoWithGUI.MVVM.View
             else
             {
                 FileGrid.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void EmbedCB_Click(object sender, RoutedEventArgs e)
+        {
+            if(this.EmbedCB.IsChecked == true)
+            {
+                this.MessageLbl.Text = "Embed Json";
+                string url = "https://glitchii.github.io/embedbuilder/";
+                Process.Start(url);
+            }
+            else
+            {
+                this.MessageLbl.Text = "Message";
             }
         }
     }

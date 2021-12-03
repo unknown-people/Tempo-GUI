@@ -136,7 +136,7 @@ namespace Discord
             {
                 try
                 {
-                    DiscordHttpResponse resp;
+                    DiscordHttpResponse resp = null;
 
                     if (method == Leaf.xNet.HttpMethod.POST && (endpoint.Contains("/invites/") || endpoint == "https://discord.com/api/v9/users/@me/channels"))
                     {
@@ -180,6 +180,37 @@ namespace Discord
                         }
                         request.AddHeader("Content-Length", ASCIIEncoding.UTF8.GetBytes(json).Length.ToString());
                         response = request.Post(endpoint, json, "application/json");
+                        resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
+                    }
+                    else if(method == Leaf.xNet.HttpMethod.PATCH && endpoint == "https://discord.com/api/v9/users/@me")
+                    {
+                        HttpRequest request = new HttpRequest()
+                        {
+                            KeepTemporaryHeadersOnRedirect = false,
+                            EnableMiddleHeaders = false,
+                            AllowEmptyHeaderValues = false
+                            //SslProtocols = SslProtocols.Tls12
+                        };
+                        request.Proxy = _discordClient.Proxy;
+                        request.ClearAllHeaders();
+                        request.AddHeader("Accept", "*/*");
+                        request.AddHeader("Accept-Encoding", "gzip, deflate");
+                        request.AddHeader("Accept-Language", "it");
+                        request.AddHeader("Authorization", _discordClient.Token);
+                        request.AddHeader("Connection", "keep-alive");
+                        request.AddHeader("Cookie", "__cfduid=db537515176b9800b51d3de7330fc27d61618084707; __dcfduid=ec27126ae8e351eb9f5865035b40b75d");
+                        request.AddHeader("DNT", "1");
+                        request.AddHeader("origin", "https://discord.com");
+                        request.AddHeader("Referer", "https://discord.com/channels/@me");
+                        request.AddHeader("TE", "Trailers");
+                        request.AddHeader("User-Agent", _discordClient.Config.SuperProperties.UserAgent);
+                        request.AddHeader("X-Super-Properties", _discordClient.Config.SuperProperties.ToBase64());
+                        request.AddHeader("Content-Length", ASCIIEncoding.UTF8.GetBytes(json).Length.ToString());
+                        request.AddHeader("X-Debug-Options", "bugReporterEnabled");
+                        if (Fingerprint.fingerprint == null)
+                            Fingerprint.GetFingerprint().GetAwaiter().GetResult();
+                        request.AddHeader("X-Fingerprint", Fingerprint.fingerprint);
+                        var response = request.Patch(endpoint, json, "application/json");
                         resp = new DiscordHttpResponse((int)response.StatusCode, response.ToString());
                     }
                     else if (_discordClient.Proxy == null || _discordClient.Proxy.Type == ProxyType.HTTP)
@@ -346,6 +377,8 @@ namespace Discord
                 }
                 catch (Exception ex) when (ex is HttpException || ex is HttpRequestException || ex is TaskCanceledException)
                 {
+                    if (ex.Message.EndsWith("429"))
+                        throw;
                     if (retriesLeft == 0)
                         throw new DiscordConnectionException();
 
@@ -356,7 +389,7 @@ namespace Discord
                     if (_discordClient.Config.RetryOnRateLimit)
                         Thread.Sleep(ex.RetryAfter);
                     else
-                        throw;
+                        throw new DiscordHttpException(new DiscordHttpError(DiscordError.CannotExecuteInDM, "Rate Limit"));
                 }
             }
         }
@@ -502,11 +535,24 @@ namespace Discord
         }
     }
 
-    public class Fingerprint
+    public static class Fingerprint
     {
         [JsonProperty("assignments")]
-        public Array assignments { get; set; }
+        public static Array assignments { get; set; } = null;
         [JsonProperty("fingerprint")]
-        public string fingerprint { get; set; }
+        public static string fingerprint { get; set; } = null;
+        public static async Task GetFingerprint()
+        {
+            string request_url = "https://discord.com/api/v9/experiments";
+            HttpClient client = new HttpClient();
+            var response_context = await client.SendAsync(new HttpRequestMessage()
+            {
+                Method = new System.Net.Http.HttpMethod("GET"),
+                RequestUri = new Uri(request_url)
+            });
+            var resp_context = new DiscordHttpResponse((int)response_context.StatusCode, response_context.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(resp_context.Body.ToString());
+            Fingerprint.fingerprint = json.Value<string>("fingerprint");
+        }
     }
 }
