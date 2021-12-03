@@ -184,7 +184,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                                     }
                                     catch (Exception ex)
                                     {
-                                        if (ex.Message == "Failed to connect to Discord" && c >= 3)
+                                        if (ex.Message == "Failed to connect to Discord" && c >= 1)
                                         {
                                             Dispatcher.Invoke(() =>
                                             {

@@ -317,6 +317,8 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                         int cNum = -1;
                         foreach (var client in clients1)
                         {
+                            if (changed == token_list.Count)
+                                isChanging = false;
                             cNum++;
 
                             if (!isChanging)
@@ -324,7 +326,7 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                             if (client == null)
                                 continue;
                             var username = client.User.Username;
-
+                            name = names[rnd.Next(0, names.Count)];
                             try
                             {
                                 var pass = "";
@@ -335,7 +337,7 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                 for(i = 0; i < tokens_list.Count; i++)
                                 {
                                     var arr = tokens_list[i].Split(':');
-                                    if(arr[0] == "U" || arr[0] == "T")
+                                    if(arr[0].Length == 1)
                                     {
                                         if (arr[1] == client.Token)
                                         {
@@ -347,26 +349,19 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                         else
                                             continue;
                                     }
-                                    else if(arr.Length == 3)
+                                    else
                                     {
                                         if (arr[0] == client.Token)
                                         {
-                                            pass = arr[1];
+                                            pass = arr[2];
                                             tokens_list.RemoveAt(i);
 
                                             break;
                                         }
                                         else
-                                            continue;
-                                    }
-                                    else
-                                    {
-                                        Dispatcher.Invoke(() =>
                                         {
-                                            App.mainView.logPrint($"Couldn't get password for token {client.Token}");
-                                        });
-                                        tokens_list.RemoveAt(i);
-                                        continue;
+                                            continue;
+                                        }
                                     }
                                 }
                                 while (!hasJoined && c < 3)
@@ -388,7 +383,14 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                     username += "#" + discr;
                                     Dispatcher.Invoke(() =>
                                     {
-                                        App.mainView.logPrint($"{username} has changed name: ({name})");
+                                        App.mainView.logPrint($"{username} has changed name: ({name}) || {changed} accounts changed their name");
+                                    });
+                                }
+                                if(c >= 3)
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        App.mainView.logPrint($"Could not fetch password for {username}, make sure to buy tokens from our shop to make this work!");
                                     });
                                 }
                             }

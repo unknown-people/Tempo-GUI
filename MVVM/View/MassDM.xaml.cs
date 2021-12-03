@@ -217,7 +217,12 @@ namespace TempoWithGUI.MVVM.View
                             }
                             break;
                         }
-                        catch (Exception ex) { Thread.Sleep(500); }
+                        catch (Exception ex) {
+                            Dispatcher.Invoke(() =>
+                            {
+                                App.mainView.logPrint($"{ex.Message}");
+                            });
+                            Thread.Sleep(500); }
                     }
                     client_s.Dispose();
                     foreach(var member in members1)
@@ -311,7 +316,7 @@ namespace TempoWithGUI.MVVM.View
                     while (spamming)
                     {
                         if (members.Count == 0)
-                            return;
+                            break;
                         if(clients.Count == 0)
                         {
                             clients = usedClients.Keys.ToList();
@@ -335,7 +340,6 @@ namespace TempoWithGUI.MVVM.View
                         }
                         catch(Exception ex) { }
                         var userId = members[random.Next(0, members.Count)];
-                        members = members.Where(o => o != userId).ToList();
 
                         bool hasSent = false;
                         int c = 0;
@@ -351,7 +355,7 @@ namespace TempoWithGUI.MVVM.View
                                     msg = dm.SendMessage(new_msg);
                                 else
                                     msg = dm.SendMessage(message);
-                                if (msg == new DiscordMessage())
+                                if (msg.Content == null)
                                 {
                                     Dispatcher.Invoke(() =>
                                     {
@@ -362,12 +366,23 @@ namespace TempoWithGUI.MVVM.View
                                 }
                                 else
                                 {
-                                    sent++;
-                                    var sent_messages = sent;
-                                    Dispatcher.Invoke(() =>
+                                    if(msg == null)
                                     {
-                                        App.mainView.logPrint($"Sent message to user {userId}. Sent {sent_messages} messages");
-                                    });
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            App.mainView.logPrint($"Could not send message to {userId}, probably closed DMs");
+                                        });
+                                    }
+                                    else
+                                    {
+                                        members = members.Where(o => o != userId).ToList();
+                                        sent++;
+                                        var sent_messages = sent;
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            App.mainView.logPrint($"Sent message to user {userId}. Sent {sent_messages} messages");
+                                        });
+                                    }
                                 }
                                 hasSent = true;
                             }
