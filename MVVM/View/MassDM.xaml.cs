@@ -354,8 +354,8 @@ namespace TempoWithGUI.MVVM.View
                                 if (embedOn)
                                     msg = dm.SendMessage(new_msg);
                                 else
-                                    msg = dm.SendMessage(message);
-                                if (msg.Content == null)
+                                    msg = dm.SendMessage(message, tts: false);
+                                if (msg == null || msg.Content == null)
                                 {
                                     Dispatcher.Invoke(() =>
                                     {

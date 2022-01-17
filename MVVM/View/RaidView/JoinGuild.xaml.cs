@@ -174,7 +174,7 @@ namespace TempoWithGUI.MVVM.View.RaidView
                             {
                                 bool hasJoined = false;
                                 int c = 0;
-                                while (!hasJoined && c < 3)
+                                while (!hasJoined && c < 1)
                                 {
                                     try
                                     {

@@ -264,6 +264,8 @@ namespace TempoWithGUI.MVVM.View.ProfilesView
                                 continue;
                             try
                             {
+                                path = images[rnd.Next(0, images.Count)];
+                                path = path.Replace('\\', '/');
                                 bool hasJoined = false;
                                 int c = 0;
                                 while (!hasJoined && c < 3)

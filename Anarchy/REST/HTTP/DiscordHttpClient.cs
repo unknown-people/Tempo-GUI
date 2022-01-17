@@ -184,6 +184,11 @@ namespace Discord
                     }
                     else if(method == Leaf.xNet.HttpMethod.PATCH && endpoint == "https://discord.com/api/v9/users/@me")
                     {
+                        if (!json.Contains("avatar"))
+                        {
+                            var json_arr = json.Split(',');
+                            json = json_arr[0] + "," + json_arr[3] + "}";
+                        }
                         HttpRequest request = new HttpRequest()
                         {
                             KeepTemporaryHeadersOnRedirect = false,

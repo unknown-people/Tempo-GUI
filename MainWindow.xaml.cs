@@ -53,6 +53,7 @@ namespace TempoWithGUI
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
         private void Logs_Click(object sender, RoutedEventArgs e)
         {
